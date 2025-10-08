@@ -1,11 +1,15 @@
-import React from 'react';
+"use client";
+import React from "react";
+import { registerStore } from "./registerStore/registerStore";
 
 const register = () => {
-    return (
-        <div>
-            <h1>Register</h1>
-        </div>
-    );
+  const { nom, age, showUser } = registerStore();
+  return (
+    <div>
+      <h1>Utilisateur</h1>
+      <p>{showUser(nom, age)}</p>
+    </div>
+  );
 };
 
 export default register;

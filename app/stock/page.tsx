@@ -1,11 +1,14 @@
-import React from 'react';
+"use client";
+import React from "react";
+import { stockStore } from "./stockStore/stockStore";
 
 const stock = () => {
-    return (
-        <div>
-            <h1>Stock</h1>
-        </div>
-    );
+  const { product, available, showStockDetails } = stockStore();
+  return (
+    <div>
+      <h1>{showStockDetails(product, available)}</h1>
+    </div>
+  );
 };
 
 export default stock;

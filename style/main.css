@@ -1,0 +1,54 @@
+.nav ul {
+  padding: 0;
+  margin: 0;
+}
+h1{
+    font-size: 80px;
+}
+.p{
+    font-size: 32px;
+}
+.nav_active {
+  color: #F39C12;
+}
+.icon{
+    font-size: 25px;
+    color: #F39C12;
+}
+.nav ul li a {
+  font-size: 18px;
+  font-weight: 500;
+  transition: 0.3s;
+  color: #2C3E50;
+}
+
+.nav ul li a:hover {
+  color: #e68414;
+}
+.mobile-nav ul li a{
+  font-size: 18px;
+}
+.btn {
+  background-color: #F39C12;
+  color: white;
+  transition: 0.3s;
+}
+@media screen and (max-width: 425px){
+  h1{
+    font-size: 50;
+  }
+}
+/* .footer{
+  background-color: #000000;
+}
+.footer-menu li a, .footer-text{
+  color: #FFFFFF ;
+}
+.footer-menu li a:hover{
+  color: #F39C12;
+} */
+/* .sbtn:hover {
+  background-color: transparent;
+  border: 1px solid #0077b6;
+  transition: 0.3s;
+} */

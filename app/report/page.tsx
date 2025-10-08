@@ -1,11 +1,15 @@
-import React from 'react';
+"use client";
+import React from "react";
+import { reportStore } from "./reportStore/reportStore";
 
 const report = () => {
-    return (
-        <div>
-            <h1>Rapport et statistiques</h1>
-        </div>
-    );
+  const { title, details, showReportDetails } = reportStore();
+  return (
+    <div>
+      <h1>Rapport et statistiques</h1>
+      <p>{showReportDetails(title, details)}</p>
+    </div>
+  );
 };
 
 export default report;
