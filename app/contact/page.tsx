@@ -1,11 +1,15 @@
-import React from 'react';
+"use client";
+import React from "react";
+import { contactStore } from "./contactStore/contactStore";
 
 const contact = () => {
-    return (
-        <div>
-            <h1>Contact</h1>
-        </div>
-    );
+  const { name, firstName, getFullName } = contactStore();
+
+  return (
+    <div>
+      <h1>{getFullName(name, firstName)}</h1>
+    </div>
+  );
 };
 
 export default contact;

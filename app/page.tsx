@@ -1,9 +1,18 @@
-import { Button } from "@/components/ui/button";
-
+"use client";
+import About from "@/components/About";
+import { myStore } from "./customerCredits/customerCreditsStore/customerCreditsStore";
+import Header from "@/components/layout/Header";
+import Services from "@/components/Services";
+import Shop from "@/components/Shop";
 export default function Home() {
+  const { firstName, lastName, getFullName } = myStore();
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-     <Button>Click me</Button>
+    <div>
+      <Header />
+      <About />
+      <Services />
+      <Shop/>
     </div>
   );
 }

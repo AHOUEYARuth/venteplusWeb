@@ -1,11 +1,15 @@
-import React from 'react';
+"use client";
+import React from "react";
+import { princingStore } from "./pricingStore/princingStore";
 
 const pricing = () => {
-    return (
-        <div>
-            <h1>Pricing</h1>
-        </div>
-    );
+  const { type, price, showPrincing } = princingStore();
+  return (
+    <div>
+      <h1>Pricing</h1>
+      <p>{showPrincing(type, price)}</p>
+    </div>
+  );
 };
 
 export default pricing;

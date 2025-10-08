@@ -1,11 +1,14 @@
-import React from 'react';
+"use client";
+import React from "react";
+import { shopStore } from "./shopStore/shopStore";
 
 const shop = () => {
-    return (
-        <div>
-            <h1>Shop</h1>
-        </div>
-    );
+  const { name, location, showShopDetails } = shopStore();
+  return (
+    <div>
+      <h1>Boutique Détails: {showShopDetails(name, location)}</h1>
+    </div>
+  );
 };
 
 export default shop;

@@ -1,11 +1,15 @@
-import React from 'react';
+"use client";
+import React from "react";
+import { servicesStore } from "./servicesStore/servicesStore";
 
 const services = () => {
-    return (
-        <div>
-            <h1>Services</h1>
-        </div>
-    );
+  const { name, description, showService } = servicesStore();
+  return (
+    <div>
+      <h1>Services</h1>
+      <p>{showService(name, description)}</p>
+    </div>
+  );
 };
 
 export default services;

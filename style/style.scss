@@ -1,0 +1,40 @@
+.column-reverse {
+    display: flex;
+    flex-direction: row;
+    &::selection{
+        background-color: black;
+        color: white;
+    }
+
+    @media (max-width: 767px) {
+        flex-direction: column-reverse;
+        row-gap: 14px;
+    }
+
+     @media (min-width: 768px) and (max-width: 1024px) {
+     flex-direction: column-reverse;
+     row-gap: 14px;
+  }
+}
+
+.column {
+    display: flex;
+    flex-direction: row;
+      @media (max-width: 767px) {
+          flex-direction: column;
+          row-gap: 14px;
+      }
+      @media (min-width: 768px) and (max-width: 1024px) {
+          flex-direction: column;
+          row-gap: 14px;
+      }
+}
+
+.column-img, .column-text {
+    @media (max-width: 767px) {
+        width: 100%;
+    }
+    @media (min-width: 768px) and (max-width: 1024px) {
+        width: 100%;
+    }
+}

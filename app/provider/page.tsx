@@ -1,11 +1,14 @@
-import React from 'react';
+"use client";
+import React from "react";
+import { providerStore } from "./providerStore/providerStore";
 
 const provider = () => {
-    return (
-        <div>
-            <h1>Fournisseurs</h1>
-        </div>
-    );
+  const { name, address, showProvider } = providerStore();
+  return (
+    <div>
+      <h1>Fournisseurs: {showProvider(name, address)}</h1>
+    </div>
+  );
 };
 
 export default provider;

@@ -1,11 +1,14 @@
-import React from 'react';
+"use client";
+import React from "react";
+import { sellingStore } from "./sellingStore/sellingStore";
 
 const selling = () => {
-    return (
-        <div>
-            <h1>Selling</h1>
-        </div>
-    );
+  const { name, details, showSellingsDetails } = sellingStore();
+  return (
+    <div>
+      <h1>{showSellingsDetails(name, details)}</h1>
+    </div>
+  );
 };
 
 export default selling;

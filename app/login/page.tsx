@@ -1,11 +1,14 @@
-import React from 'react';
+"use client";
+import React from "react";
+import { loginStore } from "./loginStore/loginStore";
 
 const login = () => {
-    return (
-        <div>
-            <h1>login</h1>
-        </div>
-    );
+  const { name, showLogin } = loginStore();
+  return (
+    <div>
+      <h1>login: {showLogin(name)}</h1>
+    </div>
+  );
 };
 
 export default login;
