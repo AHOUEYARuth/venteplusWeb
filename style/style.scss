@@ -1,7 +1,8 @@
 .column-reverse {
     display: flex;
     flex-direction: row;
-    &::selection{
+
+    &::selection {
         background-color: black;
         color: white;
     }
@@ -11,30 +12,164 @@
         row-gap: 14px;
     }
 
-     @media (min-width: 768px) and (max-width: 1024px) {
-     flex-direction: column-reverse;
-     row-gap: 14px;
-  }
+    @media (min-width: 768px) and (max-width: 1024px) {
+        flex-direction: column-reverse;
+        row-gap: 14px;
+    }
 }
 
 .column {
     display: flex;
     flex-direction: row;
-      @media (max-width: 767px) {
-          flex-direction: column;
-          row-gap: 14px;
-      }
-      @media (min-width: 768px) and (max-width: 1024px) {
-          flex-direction: column;
-          row-gap: 14px;
-      }
+
+    @media (max-width: 767px) {
+        flex-direction: column;
+        row-gap: 14px;
+    }
+
+    @media (min-width: 768px) and (max-width: 1024px) {
+        flex-direction: column;
+        row-gap: 14px;
+    }
 }
 
-.column-img, .column-text {
+.column-img,
+.column-text {
     @media (max-width: 767px) {
         width: 100%;
     }
+
     @media (min-width: 768px) and (max-width: 1024px) {
         width: 100%;
+    }
+}
+
+.shop-item,
+.auth-btn {
+    @media (max-width: 767px) {
+        width: 100%;
+    }
+
+    @media (min-width: 768px) and (max-width: 1024px) {
+        width: 100%;
+    }
+}
+
+.content {
+    @media (max-width: 767px) {
+        width: 100%;
+        background-color: transparent;
+        display: flex;
+        justify-content: center;
+    }
+
+    @media (min-width: 768px) and (max-width: 1024px) {
+        width: 100%;
+        background-color: transparent;
+        display: flex;
+        justify-content: center;
+    }
+}
+
+.login {
+    @media (max-width: 767px) {
+        display: none;
+    }
+
+    @media (min-width: 768px) and (max-width: 1024px) {
+        display: none;
+    }
+
+}
+
+.custom-box {
+    @media (max-width: 767px) {
+        width: 100%;
+        background-color: white;
+        border-radius: 1rem;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+            0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    @media (min-width: 768px) and (max-width: 1024px) {
+        width: 100%;
+        background-color: white;
+        border-radius: 1rem;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+            0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+}
+
+.center-text {
+    @media (max-width: 767px) {
+        text-align: center;
+    }
+
+    @media (min-width: 768px) and (max-width: 1024px) {
+        text-align: center;
+    }
+}
+
+.res-card-padding {
+    @media (max-width: 767px) {
+        padding-right: 40px;
+        border-radius: 6px;
+    }
+
+    @media (min-width: 768px) and (max-width: 1024px) {
+        padding-right: 40px;
+        border-radius: 6px;
+    }
+}
+
+.res-card-position {
+    @media (max-width: 767px) {
+        position: relative;
+        top: 0px;
+        left: 0px;
+        border-radius: 6px;
+    }
+
+    @media (min-width: 768px) and (max-width: 1024px) {
+        position: relative;
+        top: 0px;
+        left: 0px;
+        border-radius: 6px;
+    }
+}
+
+.team-position {
+    @media (max-width: 767px) {
+        position: absolute;
+        bottom: 40px;
+        left: 5px;
+    }
+
+    @media (min-width: 768px) and (max-width: 1024px) {
+        position: absolute;
+        bottom: 80px;
+        left: 5px;
+    }
+}
+
+.value-col {
+    @media (max-width: 767px) {
+        flex-direction: column;
+        row-gap: 14px;
+    }
+
+}
+
+.value-text {
+    @media (max-width: 767px) {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+.value-card {
+    @media (max-width: 767px) {
+        justify-content: space-between;
+        height: 350px;
     }
 }

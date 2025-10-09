@@ -1,7 +1,14 @@
 "use client";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import React from "react";
 const Footer = () => {
+  const pathname = usePathname();
+  const hidePaths = ["/register", "/login"];
+
+  if (hidePaths.includes(pathname)) {
+    return null;
+  }
   return (
     <footer className="footer bg-white text-black pt-[100] ">
       <div className="max-w-[80%] mx-auto  py-10 ">
