@@ -38,8 +38,8 @@ const Services = () => {
                       sequi?
                     </p>
                     <div className=" flex items-center justify-start gap-x-5 text-xl text-[#F39C12] p-px ">
-                      <Link href="" className="">
-                        Explorer le service{" "}
+                      <Link href="/services" className="">
+                        Tout Explorer{" "}
                       </Link>
                       <FaArrowRight />
                     </div>
@@ -62,8 +62,8 @@ const Services = () => {
                       sequi?
                     </p>
                     <div className=" flex items-center justify-start gap-x-5 text-xl text-[#F39C12] p-px ">
-                      <Link href="" className="">
-                        Explorer le service{" "}
+                      <Link href="/services" className="">
+                        Tout Explorer{" "}
                       </Link>
                       <FaArrowRight />
                     </div>
@@ -94,8 +94,8 @@ const Services = () => {
                       sequi?
                     </p>
                     <div className=" flex items-center justify-start gap-x-5 text-xl text-[#F39C12] p-px ">
-                      <Link href="" className="">
-                        Explorer le service{" "}
+                      <Link href="/services" className="">
+                        Tout Explorer{" "}
                       </Link>
                       <FaArrowRight />
                     </div>
@@ -118,8 +118,8 @@ const Services = () => {
                       sequi?
                     </p>
                     <div className=" flex items-center justify-start gap-x-5 text-xl text-[#F39C12] p-px ">
-                      <Link href="" className="">
-                        Explorer le service{" "}
+                      <Link href="/services" className="">
+                        Tout Explorer{" "}
                       </Link>
                       <FaArrowRight />
                     </div>

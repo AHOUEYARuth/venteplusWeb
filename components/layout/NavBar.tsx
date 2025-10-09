@@ -1,4 +1,5 @@
 "use client";
+
 import Link from "next/link";
 import React, { useState } from "react";
 import "@/style/main.css";
@@ -9,6 +10,14 @@ import { AiOutlineUser, AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
 const NavBar = () => {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+
+
+  const hidePaths = ["/register", "/login"];
+
+
+  if (hidePaths.includes(pathname)) {
+    return null;
+  }
 
   return (
     <header className="w-full bg-[#F9FAFB] fixed top-0 left-0 z-50  py-4">
@@ -49,6 +58,14 @@ const NavBar = () => {
                 className={pathname === "/pricing" ? "nav_active" : ""}
               >
                 Tarifs
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/about"
+                className={pathname === "/about" ? "nav_active" : ""}
+              >
+                À Propos
               </Link>
             </li>
             <li>
@@ -122,6 +139,15 @@ const NavBar = () => {
           </li>
           <li>
             <Link
+              href="/about"
+              onClick={() => setOpen(false)}
+              className={pathname === "/about" ? "nav_active block" : "block"}
+            >
+              À Propos
+            </Link>
+          </li>
+          <li>
+            <Link
               href="/pricing"
               onClick={() => setOpen(false)}
               className={pathname === "/pricing" ? "nav_active block" : "block"}
@@ -155,4 +181,3 @@ const NavBar = () => {
 };
 
 export default NavBar;
-/* focus:outline-none focus:ring-2 focus:ring-[#F39C12] */
