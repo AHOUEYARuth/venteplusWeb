@@ -6,6 +6,7 @@ import "@/style/main.css";
 import { Button } from "../ui/button";
 import { usePathname } from "next/navigation";
 import { AiOutlineUser, AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
+import { FiShoppingCart } from "react-icons/fi";
 
 const NavBar = () => {
   const pathname = usePathname();
@@ -32,14 +33,17 @@ const NavBar = () => {
         <nav className="nav hidden lg:flex flex-1 justify-center">
           <ul className="flex items-center space-x-6 lg:space-x-10 text-gray-700 font-medium">
             <li>
-              <Link href="/" className={pathname === "/" ? "nav_active" : ""}>
+              <Link
+                href="/"
+                className={pathname === "/" ? "nav_active" : "inactive"}
+              >
                 Accueil
               </Link>
             </li>
             <li>
               <Link
                 href="/services"
-                className={pathname === "/services" ? "nav_active" : ""}
+                className={pathname === "/services" ? "nav_active" : "inactive"}
               >
                 Services
               </Link>
@@ -47,7 +51,7 @@ const NavBar = () => {
             <li>
               <Link
                 href="/shop"
-                className={pathname === "/shop" ? "nav_active" : ""}
+                className={pathname === "/shop" ? "nav_active" : "inactive"}
               >
                 Boutiques
               </Link>
@@ -55,7 +59,7 @@ const NavBar = () => {
             <li>
               <Link
                 href="/pricing"
-                className={pathname === "/pricing" ? "nav_active" : ""}
+                className={pathname === "/pricing" ? "nav_active" : "inactive"}
               >
                 Tarifs
               </Link>
@@ -63,7 +67,7 @@ const NavBar = () => {
             <li>
               <Link
                 href="/about"
-                className={pathname === "/about" ? "nav_active" : ""}
+                className={pathname === "/about" ? "nav_active" : "inactive"}
               >
                 À Propos
               </Link>
@@ -71,7 +75,7 @@ const NavBar = () => {
             <li>
               <Link
                 href="/contact"
-                className={pathname === "/contact" ? "nav_active" : ""}
+                className={pathname === "/contact" ? "nav_active" : "inactive"}
               >
                 Nous contacter
               </Link>
@@ -97,6 +101,12 @@ const NavBar = () => {
           <Link href="/register">
             <Button className="btn bg-transparent border border-[#F39C12] text-[#F39C12] hover:bg-[#F39C12] hover:text-white rounded-3xl text-sm md:text-base lg:text-lg py-2 px-4 md:py-3 md:px-6 transition-all">
               Commencer
+            </Button>
+          </Link>
+          <Link href="/cart" className="hidden sm:flex">
+            <Button className="btn bg-transparent border border-[#F39C12] text-[#F39C12] hover:bg-[#F39C12] hover:text-white rounded-3xl text-sm md:text-base lg:text-lg py-2 px-4 md:py-3 md:px-6 transition-all">
+              Panier
+              <FiShoppingCart />
             </Button>
           </Link>
         </div>
@@ -174,6 +184,12 @@ const NavBar = () => {
               <span>Se connecter</span>
             </Link>
           </li>
+          <Link href="/cart" className="sm:flex">
+            <Button className="btn bg-transparent border border-[#F39C12] text-[#F39C12] hover:bg-[#F39C12] hover:text-white rounded-3xl text-sm md:text-base lg:text-lg py-2 px-4 md:py-3 md:px-6 transition-all">
+              Panier
+              <FiShoppingCart />
+            </Button>
+          </Link>
         </ul>
       </div>
     </header>

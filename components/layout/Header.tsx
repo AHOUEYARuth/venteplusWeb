@@ -1,5 +1,6 @@
 import Hero from "@/assets/images/hero4.svg";
 import "@/style/main.css";
+import Link from "next/link";
 const Header = () => {
   return (
     <section
@@ -21,15 +22,21 @@ const Header = () => {
           </p>
 
           <div className="flex gap-4 mt-6 flex-wrap justify-center">
-            <button className="bg-[#F39C12] cursor-pointer text-white text-xl px-6 py-2 rounded-full transition hover:bg-white hover:text-[#2C3E50]">
-              Commencer
-            </button>
-            <button className="bg-white text-[#2C3E50] cursor-pointer text-xl px-6 py-2 rounded-full transition hover:bg-[#F39C12] hover:text-white">
-              explorer
-            </button>
-            <button className="bg-white text-[#2C3E50] cursor-pointer text-xl px-6 py-2 rounded-full transition hover:bg-[#F39C12] hover:text-white">
-              en savoir plus
-            </button>
+            <Link href="/register">
+              <button className="bg-[#F39C12] cursor-pointer text-white text-xl px-6 py-2 rounded-full transition hover:bg-white hover:text-[#2C3E50]">
+                Commencer
+              </button>
+            </Link>
+            <Link href="/services">
+              <button className="bg-white text-[#2C3E50] cursor-pointer text-xl px-6 py-2 rounded-full transition hover:bg-[#F39C12] hover:text-white">
+                explorer
+              </button>
+            </Link>
+            <Link href="/about">
+              <button className="bg-white text-[#2C3E50] cursor-pointer text-xl px-6 py-2 rounded-full transition hover:bg-[#F39C12] hover:text-white">
+                en savoir plus
+              </button>
+            </Link>
           </div>
         </div>
       </div>

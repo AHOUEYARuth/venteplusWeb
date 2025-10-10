@@ -8,6 +8,7 @@ import Profile3 from "@/assets/images/profile3.jpg";
 import Profile4 from "@/assets/images/profile5.jpg";
 import Profile from "@/assets/images/maskProfil.jpg";
 import "@/style/style.scss";
+import {FaLaptop, FaSeedling, FaShoppingCart } from "react-icons/fa";
 const about = () => {
   return (
     <div>
@@ -24,33 +25,36 @@ const about = () => {
               gestion commerciale simple, accessible et performante. Ensemble,
               digitalisons le commerce de proximité.
             </div>
-            <Button className="mt-5 bg-[#F39C12]">Devenir partenaire</Button>
+            <Link href="/register">
+              {" "}
+              <Button className="mt-5 bg-[#F39C12]">Devenir partenaire</Button>
+            </Link>
           </div>
         </div>
       </section>
-      <section className="bg-[#F4F4F4] py-10 my-5 mt-10">
+      <section className="bg-[#F4F4F4] py-10 my-5 ">
         <div className="max-w-[80%] mx-auto">
           <div className="column w-full text-start flex  items-center justify-between   ">
-            <div className="column-text center-text w-[30%]">
+            <div className="column-text center-text w-[25%]">
               <h2 className="text-5xl text-[#1c1c1c] font-semibold">
-                Insights and Performance Metrics
+                Nos Objectifs, Votre Réussite
               </h2>
             </div>
 
             <div className="column column-img card_list flex items-center gap-8">
-              <div className="column-text card_item bg-[#1c1c1c] text-white w-[300px] h-[150px] flex flex-col items-center justify-center rounded-lg gap-2 cursor-pointer hover:shadow-[0_8px_24px_rgba(149,157,165,0.2)] transition-shadow">
-                <h3 className="text-lg font-bold">5000+</h3>
-                <p className="text-xl">Total Listings in the System</p>
+              <div className="column-text card_item bg-[#1c1c1c] text-white w-[350px] h-[150px] flex flex-col items-center justify-center rounded-lg gap-2 cursor-pointer hover:shadow-[0_8px_24px_rgba(149,157,165,0.2)] transition-shadow">
+                <FaLaptop className="text-5xl" />
+                <p className="text-xl">Digitaliser les petits commerces</p>
               </div>
 
-              <div className="column-text card_item bg-[#1c1c1c] text-white w-[300px] h-[150px] flex flex-col items-center justify-center rounded-lg gap-2 cursor-pointer hover:shadow-[0_8px_24px_rgba(149,157,165,0.2)] transition-shadow">
-                <h3 className="text-lg font-bold">1000+</h3>
-                <p className="text-xl">Active Listings</p>
+              <div className="column-text card_item bg-[#1c1c1c] text-white w-[350px] h-[150px] flex flex-col items-center justify-center rounded-lg gap-2 cursor-pointer hover:shadow-[0_8px_24px_rgba(149,157,165,0.2)] transition-shadow">
+                <FaShoppingCart className="text-5xl" />
+                <p className="text-xl">Dynamiser la gestion des ventes</p>
               </div>
 
-              <div className="column-text card_item bg-[#1c1c1c] text-white w-[300px] h-[150px] flex flex-col items-center justify-center rounded-lg gap-2 cursor-pointer hover:shadow-[0_8px_24px_rgba(149,157,165,0.2)] transition-shadow">
-                <h3 className="text-lg font-bold">30+</h3>
-                <p className="text-xl">Articles in the Blog</p>
+              <div className="column-text card_item bg-[#1c1c1c] text-white w-[350px] h-[150px] flex flex-col items-center justify-center rounded-lg gap-2 cursor-pointer hover:shadow-[0_8px_24px_rgba(149,157,165,0.2)] transition-shadow">
+                <FaSeedling className="text-5xl" />
+                <p className="text-xl">Favoriser la croissance locale</p>
               </div>
             </div>
           </div>
@@ -64,27 +68,21 @@ const about = () => {
               <div className="column-img res-card-padding w-[60%] text-start pt-[40px] pr-[100px] pb-[40px] pl-[40px] bg-[#000000] text-white ">
                 <h2 className="text-[30px]">Mission</h2>
                 <p className="text-xl">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Labore libero sapiente eum unde expedita illum nemo odio
-                  provident voluptates cumque, quia quas dolorem, recusandae
-                  consequatur ducimus aliquam? Aut ut, eveniet velit vel commodi
-                  sint molestiae, culpa repellendus exercitationem quia quidem
-                  iste tempore numquam eum facilis sed asperiores eius et magni
-                  facere laudantium eaque? Ullam rerum beatae dolorum officiis.
-                  Est
+                  Notre mission est d’accompagner les entreprises dans leur
+                  transformation digitale en leur offrant des solutions de
+                  gestion simples, performantes et accessibles. Nous visons à
+                  optimiser leurs opérations quotidiennes, à renforcer leur
+                  visibilité en ligne et à favoriser leur croissance durable
+                  grâce à des outils technologiques innovants.
                 </p>
               </div>
               <div className="column-img res-card-position w-[50%] text-start p-[40px] relative top-20 right-24 bg-[#F39C12] text-white">
                 <h2 className="text-[30px]">Vision</h2>
                 <p className="text-xl">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Similique quibusdam qui rerum tenetur culpa voluptatem sit
-                  quasi vitae illum, tempore facere consequatur doloremque
-                  quidem autem minima sapiente, nostrum quod alias corporis
-                  dolor adipisci amet sunt omnis. Cum culpa laborum nam, vero
-                  ipsa quos modi ex asperiores dolorum quasi, minima dolores,
-                  voluptatum ratione nemo nesciunt ullam veritatis. Nihil
-                  facilis unde fugiat
+                  Devenir une référence en matière de digitalisation des
+                  entreprises en Afrique, en construisant un écosystème où la
+                  technologie simplifie la gestion, stimule la productivité et
+                  crée de nouvelles opportunités pour chaque acteur économique.
                 </p>
               </div>
             </div>
@@ -157,7 +155,7 @@ const about = () => {
           </div>
         </div>
       </section>
-      <section className="w-full py-25 mt-10">
+      <section className="w-full pb-25 mt-10">
         <div className="max-w-[80%] mx-auto">
           <div className="w-full flex flex-col justify-center items-center gap-y-5">
             <h2 className="text-4xl font-bold">Notre Équipe</h2>

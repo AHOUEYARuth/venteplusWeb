@@ -28,11 +28,14 @@ const services = () => {
               simplifier votre quotidien. Adoptez une gestion moderne, rapide et
               efficace.
             </div>
-            <Button className="mt-5 bg-[#F39C12]">Commencer</Button>
+            <Link href="/register">
+              {" "}
+              <Button className="mt-5 bg-[#F39C12] text-lg">Commencer</Button>
+            </Link>
           </div>
         </div>
       </section>
-      <section className="w-full bg-white pb-[40] sm:px-6 lg:px-8 ">
+      <section className="w-full bg-white pb-[40] sm:px-6 lg:px-8 my-3">
         <div className="max-w-[80%] mx-auto">
           <div className="list w-full flex flex-col items-start gap-y-25 ">
             <div className="column item w-full flex  items-center justify-between">
@@ -46,10 +49,9 @@ const services = () => {
                   Gestion Crédits Clients
                 </h3>
                 <p className="text-xl text-gray-700">
-                  Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                  Quaerat assumenda accusantium voluptas, veritatis natus
-                  suscipit minima nobis expedita fuga nemo quis eveniet illum
-                  eius praesentium autem totam, quasi asperiores sequi?
+                  Gardez le contrôle sur les paiements différés. Enregistrez,
+                  suivez et relancez vos clients en toute transparence grâce à
+                  un système de gestion des crédits intégré.
                 </p>
                 <div className=" flex items-center justify-start gap-x-5 text-xl text-[#F39C12] p-px ">
                   <Link href="/register" className="">
@@ -67,10 +69,9 @@ const services = () => {
                   Facturation et Reçus Automatisés
                 </h3>
                 <p className="text-xl text-gray-700">
-                  Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                  Quaerat assumenda accusantium voluptas, veritatis natus
-                  suscipit minima nobis expedita fuga nemo quis eveniet illum
-                  eius praesentium autem totam, quasi asperiores sequi?
+                  Gardez le contrôle sur les paiements différés. Enregistrez,
+                  suivez et relancez vos clients en toute transparence grâce à
+                  un système de gestion des crédits intégré.
                 </p>
                 <div className=" flex items-center justify-start gap-x-5 text-xl text-[#F39C12] p-px ">
                   <Link href="/register" className="">
@@ -96,10 +97,9 @@ const services = () => {
                   Analyse et Statistiques Avancées
                 </h3>
                 <p className="text-xl text-gray-700">
-                  Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                  Quaerat assumenda accusantium voluptas, veritatis natus
-                  suscipit minima nobis expedita fuga nemo quis eveniet illum
-                  eius praesentium autem totam, quasi asperiores sequi?
+                  Prenez des décisions éclairées grâce à des rapports détaillés.
+                  Analysez vos ventes, identifiez les tendances et anticipez vos
+                  besoins en un coup d’œil.
                 </p>
                 <div className=" flex items-center justify-start gap-x-5 text-xl text-[#F39C12] p-px ">
                   <Link href="/register" className="">
@@ -117,10 +117,9 @@ const services = () => {
                   Boutique Virtuelle
                 </h3>
                 <p className="text-xl text-gray-700">
-                  Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                  Quaerat assumenda accusantium voluptas, veritatis natus
-                  suscipit minima nobis expedita fuga nemo quis eveniet illum
-                  eius praesentium autem totam, quasi asperiores sequi?
+                  Automatisez vos opérations comptables et gardez une vision
+                  claire de vos finances. Suivez vos dépenses, vos marges et vos
+                  bénéfices en toute simplicité.
                 </p>
                 <div className=" flex items-center justify-start gap-x-5 text-xl text-[#F39C12] p-px ">
                   <Link href="/register" className="">

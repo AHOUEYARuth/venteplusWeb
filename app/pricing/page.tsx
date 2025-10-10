@@ -4,6 +4,7 @@ import { princingStore } from "./pricingStore/princingStore";
 import { Button } from "@/components/ui/button";
 import { IoCheckmark } from "react-icons/io5";
 import "@/style/style.scss";
+import Link from "next/link";
 const pricing = () => {
   const { type, price, showPrincing } = princingStore();
   return (
@@ -21,13 +22,16 @@ const pricing = () => {
               croissance, Vente+ évolue avec vous. Commencez dès aujourd’hui et
               faites passer votre commerce à un autre niveau.
             </div>
-            <Button className="mt-5 bg-[#F39C12]">Commencer</Button>
+            <Link href="/register">
+              {" "}
+              <Button className="mt-5 bg-[#F39C12] text-lg">Commencer</Button>
+            </Link>
           </div>
         </div>
       </section>
-      <section className="w-full pb-10 ">
+      <section className="w-full pb-10 my-3">
         <div className="max-w-[80%] mx-auto">
-          <div className="column w-full flex flex-wrap justify-center gap-y-5 lg:justify-between pt-20 text-start">
+          <div className="column w-full flex flex-wrap justify-center gap-y-5 lg:justify-between text-start">
             <div className="column-img w-[450px] h-[650px] flex flex-col justify-between mx-auto bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-all duration-300 hover:border-[#F39C12]">
               <div className="p-6">
                 <h2 className="text-3xl font-bold">Gratuit</h2>

@@ -15,7 +15,7 @@ h1{
     font-size: 25px;
     color: #F39C12;
 }
-.nav ul li a {
+.inactive {
   font-size: 18px;
   font-weight: 500;
   transition: 0.3s;

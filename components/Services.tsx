@@ -31,11 +31,9 @@ const Services = () => {
                       Tableau de Bord
                     </h3>
                     <p className="text-xl text-gray-700">
-                      Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                      Quaerat assumenda accusantium voluptas, veritatis natus
-                      suscipit minima nobis expedita fuga nemo quis eveniet
-                      illum eius praesentium autem totam, quasi asperiores
-                      sequi?
+                      Visualisez la performance de votre activité en temps réel.
+                      Suivez vos ventes, vos stocks et vos indicateurs clés sur
+                      un tableau de bord dynamique et intuitif.
                     </p>
                     <div className=" flex items-center justify-start gap-x-5 text-xl text-[#F39C12] p-px ">
                       <Link href="/services" className="">
@@ -55,11 +53,9 @@ const Services = () => {
                       Gestion Commerciale
                     </h3>
                     <p className="text-xl text-gray-700">
-                      Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                      Quaerat assumenda accusantium voluptas, veritatis natus
-                      suscipit minima nobis expedita fuga nemo quis eveniet
-                      illum eius praesentium autem totam, quasi asperiores
-                      sequi?
+                      Simplifiez vos ventes au quotidien grâce à un système
+                      intuitif. Enregistrez vos transactions, suivez vos
+                      produits, et gérez vos fournisseurs sans effort.
                     </p>
                     <div className=" flex items-center justify-start gap-x-5 text-xl text-[#F39C12] p-px ">
                       <Link href="/services" className="">
@@ -87,11 +83,9 @@ const Services = () => {
                       Gestion Comptable
                     </h3>
                     <p className="text-xl text-gray-700">
-                      Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                      Quaerat assumenda accusantium voluptas, veritatis natus
-                      suscipit minima nobis expedita fuga nemo quis eveniet
-                      illum eius praesentium autem totam, quasi asperiores
-                      sequi?
+                      Automatisez vos opérations comptables et gardez une vision
+                      claire de vos finances. Suivez vos dépenses, vos marges et
+                      vos bénéfices en toute simplicité.
                     </p>
                     <div className=" flex items-center justify-start gap-x-5 text-xl text-[#F39C12] p-px ">
                       <Link href="/services" className="">
@@ -111,11 +105,9 @@ const Services = () => {
                       Boutique Virtuelle
                     </h3>
                     <p className="text-xl text-gray-700">
-                      Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                      Quaerat assumenda accusantium voluptas, veritatis natus
-                      suscipit minima nobis expedita fuga nemo quis eveniet
-                      illum eius praesentium autem totam, quasi asperiores
-                      sequi?
+                      Automatisez vos opérations comptables et gardez une vision
+                      claire de vos finances. Suivez vos dépenses, vos marges et
+                      vos bénéfices en toute simplicité.
                     </p>
                     <div className=" flex items-center justify-start gap-x-5 text-xl text-[#F39C12] p-px ">
                       <Link href="/services" className="">
