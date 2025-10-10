@@ -173,3 +173,46 @@
         height: 350px;
     }
 }
+.shop-hero{
+     @media (max-width: 767px) {
+         height: auto;
+     }
+
+     @media (min-width: 768px) and (max-width: 1024px) {
+         height: auto;
+     }
+}
+.text_size{
+   @media (max-width: 767px) {
+       font-size: 40px;
+   }
+
+}
+.product_card{
+     @media (max-width: 767px) {
+        width: 100%;
+     }
+
+     @media (min-width: 768px) and (max-width: 1024px) {
+         width: 45%;
+     }
+}
+.title{
+     @media (max-width: 767px) {
+         width: 100%;
+     }
+}
+.margin{
+    @media (max-width: 767px) {
+        margin-bottom: 50px;
+    }
+
+    @media (min-width: 768px) and (max-width: 1024px) {
+        margin-bottom: 50px;
+    }
+}
+.padding{
+    @media (max-width: 767px) {
+        padding: 0;
+    }
+}
