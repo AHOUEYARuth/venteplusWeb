@@ -6,7 +6,8 @@ const spending = () => {
   const { name, date, showSpendingDetails } = spendingStore();
   return (
     <div>
-      <h1>Dépenses: {showSpendingDetails(name, date)}</h1>
+      <h2 className="text-xl">Dépenses: {showSpendingDetails(name, date)}</h2>
+      <p>{name}</p>
     </div>
   );
 };

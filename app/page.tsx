@@ -1,6 +1,6 @@
 "use client";
 import About from "@/components/About";
-import { myStore } from "./customerCredits/customerCreditsStore/customerCreditsStore";
+import { myStore } from "./(dashboard)/customerCredits/customerCreditsStore/customerCreditsStore";
 import Header from "@/components/layout/Header";
 import Services from "@/components/Services";
 import Shop from "@/components/Shop";

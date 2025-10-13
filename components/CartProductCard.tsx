@@ -1,13 +1,14 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 import { Button } from "./ui/button";
 import { IoClose } from "react-icons/io5";
 
 interface CartProductCardProps {
-  image: string; 
+  image: string;
   name: string;
   category: string;
   price: number;
-  quantity?: number; 
+  quantity?: number;
 }
 
 const CartProductCard: React.FC<CartProductCardProps> = ({
@@ -15,10 +16,20 @@ const CartProductCard: React.FC<CartProductCardProps> = ({
   name,
   category,
   price,
-  quantity ,
+  quantity = 1, 
 }) => {
+  const [quantite, setQuantite] = useState<number>(quantity);
+
+  const incrementerQuantite = () => {
+    setQuantite((prev) => prev + 1);
+  };
+
+  const decrementerQuantite = () => {
+    setQuantite((prev) => (prev > 1 ? prev - 1 : 1));
+  };
+
   return (
-    <div className="w-[48%] border border-gray-300 flex justify-between py-4 px-4 rounded-xl">
+    <div className="column-img w-[48%] border border-gray-300 flex justify-between py-4 px-4 rounded-xl cursor-pointer">
       <div
         className="w-[40%] h-[150px] bg-center bg-cover rounded-md bg-no-repeat"
         style={{ backgroundImage: `url(${image})` }}
@@ -34,15 +45,23 @@ const CartProductCard: React.FC<CartProductCardProps> = ({
         </div>
 
         <div className="w-full flex items-start justify-between">
-          <div className="w-[50%] flex border-1 border-gray-200 p-2 rounded-full flex-row justify-between items-center">
-            <div className="cursor-pointer text-lg font-bold">-</div>
-            <div className="text-xl font-semibold">{quantity}</div>
-            <div className="cursor-pointer text-lg font-bold">+</div>
+          <div className="w-[50%] flex border border-gray-200 p-2 rounded-full flex-row justify-between items-center">
+            <div
+              className="cursor-pointer text-lg font-bold select-none"
+              onClick={decrementerQuantite}
+            >
+              –
+            </div>
+            <div className="text-xl font-semibold">{quantite}</div>
+            <div
+              className="cursor-pointer text-lg font-bold select-none"
+              onClick={incrementerQuantite}
+            >
+              +
+            </div>
           </div>
 
-          <Button
-            className="bg-[#F39C12] text-white hover:bg-[#e58e09]"
-          >
+          <Button className="bg-[#F39C12] text-white hover:bg-[#e58e09] cursor-pointer">
             <IoClose />
           </Button>
         </div>

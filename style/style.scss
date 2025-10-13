@@ -216,3 +216,11 @@
         padding: 0;
     }
 }
+.active{
+    color: #F39C12;
+}
+.size{
+    &::placeholder{
+        font-size: 17px ;
+    }
+}

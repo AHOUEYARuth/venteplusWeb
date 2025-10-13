@@ -13,7 +13,17 @@ const NavBar = () => {
   const [open, setOpen] = useState(false);
 
 
-  const hidePaths = ["/register", "/login"];
+  const hidePaths = [
+    "/register",
+    "/login",
+    "/dashboard",
+    "/customerCredits",
+    "/report",
+    "/selling",
+    "/spending",
+    "/stock",
+    "/product"
+  ];
 
 
   if (hidePaths.includes(pathname)) {
@@ -99,12 +109,12 @@ const NavBar = () => {
             {open ? <AiOutlineClose size={22} /> : <AiOutlineMenu size={22} />}
           </button>
           <Link href="/register">
-            <Button className="btn bg-transparent border border-[#F39C12] text-[#F39C12] hover:bg-[#F39C12] hover:text-white rounded-3xl text-sm md:text-base lg:text-lg py-2 px-4 md:py-3 md:px-6 transition-all">
+            <Button className="btn cursor-pointer bg-transparent border border-[#F39C12] text-[#F39C12] hover:bg-[#F39C12] hover:text-white rounded-3xl text-sm md:text-base lg:text-lg py-2 px-4 md:py-3 md:px-6 transition-all">
               Commencer
             </Button>
           </Link>
           <Link href="/cart" className="hidden sm:flex">
-            <Button className="btn bg-transparent border border-[#F39C12] text-[#F39C12] hover:bg-[#F39C12] hover:text-white rounded-3xl text-sm md:text-base lg:text-lg py-2 px-4 md:py-3 md:px-6 transition-all">
+            <Button className="btn cursor-pointer bg-transparent border border-[#F39C12] text-[#F39C12] hover:bg-[#F39C12] hover:text-white rounded-3xl text-sm md:text-base lg:text-lg py-2 px-4 md:py-3 md:px-6 transition-all">
               Panier
               <FiShoppingCart />
             </Button>
@@ -185,7 +195,7 @@ const NavBar = () => {
             </Link>
           </li>
           <Link href="/cart" className="sm:flex">
-            <Button className="btn bg-transparent border border-[#F39C12] text-[#F39C12] hover:bg-[#F39C12] hover:text-white rounded-3xl text-sm md:text-base lg:text-lg py-2 px-4 md:py-3 md:px-6 transition-all">
+            <Button className="btn cursor-pointer bg-transparent border border-[#F39C12] text-[#F39C12] hover:bg-[#F39C12] hover:text-white rounded-3xl text-sm md:text-base lg:text-lg py-2 px-4 md:py-3 md:px-6 transition-all">
               Panier
               <FiShoppingCart />
             </Button>

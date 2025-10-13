@@ -4,7 +4,17 @@ import { usePathname } from "next/navigation";
 import React from "react";
 const Footer = () => {
   const pathname = usePathname();
-  const hidePaths = ["/register", "/login"];
+  const hidePaths = [
+    "/register",
+    "/login",
+    "/dashboard",
+    "/customerCredits",
+    "/report",
+    "/selling",
+    "/spending",
+    "/stock",
+    "/product",
+  ];
 
   if (hidePaths.includes(pathname)) {
     return null;
@@ -23,7 +33,7 @@ const Footer = () => {
             <div className="flex flex-col items-start gap-3">
               <Link
                 href="mailto:ruahoueya@gmail.com"
-                className="footer-text text-lg text-gray-700"
+                className="footer-text text-lg text-[#F39C12]"
               >
                 ruahoueya@gmail.com
               </Link>

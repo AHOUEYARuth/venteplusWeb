@@ -7,9 +7,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import Product1 from "@/assets/images/product1.png";
-import Product2 from "@/assets/images/profile3.jpg";
-
+import Product1 from "@/assets/images/product9.png";
+import Product2 from "@/assets/images/product10.jpg";
+import Product4 from "@/assets/images/product8.png";
+import Product5 from "@/assets/images/product5.png";
+import Product6 from "@/assets/images/product2.png";
+import "@/style/style.scss";
 const cart = () => {
   return (
     <div>
@@ -32,7 +35,7 @@ const cart = () => {
       <section className="py-10 my-5">
         <div className="max-w-[80%] mx-auto">
           <div className="column w-full text-start flex  gap-7 items-start justify-center ">
-            <div className="w-[60%] flex flex-row flex-wrap gap-y-8 justify-between border border-[#F39C12] p-5 rounded-xl">
+            <div className="column column-img w-[60%] flex flex-row flex-wrap gap-y-8 justify-between border border-[#F39C12] p-5 rounded-xl">
               <CartProductCard
                 image={Product1.src}
                 name="Tee-Shirt"
@@ -42,22 +45,29 @@ const cart = () => {
               />
               <CartProductCard
                 image={Product2.src}
-                name="Chaussures"
-                category="Cuir"
+                name="Tee-Shirt"
+                category="Coton"
                 price={25}
                 quantity={1}
               />
               <CartProductCard
-                image={Product1.src}
-                name="Chaussures"
-                category="Cuir"
+                image={Product4.src}
+                name="Tee-Shirt"
+                category="Coton"
                 price={25}
                 quantity={1}
               />
               <CartProductCard
-                image={Product1.src}
-                name="Chaussures"
-                category="Cuir"
+                image={Product5.src}
+                name="Chemise"
+                category="Trico"
+                price={25}
+                quantity={1}
+              />
+              <CartProductCard
+                image={Product6.src}
+                name="Pull"
+                category="Coton"
                 price={25}
                 quantity={1}
               />
@@ -69,9 +79,9 @@ const cart = () => {
                   <div>
                     <h2 className="text-xl font-bold">Montant Total</h2>
                   </div>
-                  <p className="text-xl text-[#F39C12] font-semibold">$134</p>
+                  <p className="text-2xl text-[#F39C12] font-semibold">$134</p>
                 </div>
-                <p className="mt-2 text-gray-700 text-lg leading-relaxed">
+                <p className="mt-6 text-gray-700 text-lg leading-relaxed">
                   Démarrez votre activité sans frais et découvrez les
                 </p>
               </div>
