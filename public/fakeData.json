@@ -1,0 +1,362 @@
+{
+  "commandes": [
+    {
+      "id": 1,
+      "client": "Rose Béry",
+      "phoneNumber": "0145234566",
+      "email": "rose@gmail.com",
+      "product": "Tee-shirt",
+      "quantity": 1,
+      "taille": "xl",
+      "unitPrice": 5000,
+      "totalPrice": 5000,
+      "deliveryAddress": "calavi",
+      "status": "En cours",
+      "orderDate": "2023-10-01"
+    },
+    {
+      "id": 2,
+      "client": "Jean Dupont",
+      "phoneNumber": "0145234567",
+      "email": "jean]gmail.com",
+      "product": "Jeans",
+      "quantity": 2,
+      "taille": "m",
+      "unitPrice": 15000,
+      "totalPrice": 30000,
+      "deliveryAddress": "calavi",
+      "status": "Livrée",
+      "orderDate": "2023-10-02"
+    },
+    {
+      "id": 3,
+      "client": "Alice Martin",
+      "phoneNumber": "0145234568",
+      "email": "alice]gmail.com",
+      "product": "Robe",
+      "quantity": 1,
+      "taille": "s",
+      "unitPrice": 20000,
+      "totalPrice": 20000,
+      "deliveryAddress": "calavi",
+      "status": "Annulée",
+      "orderDate": "2023-10-03"
+    },
+    {
+      "id": 4,
+      "client": "Paul Durand",
+      "phoneNumber": "0145234569",
+      "email": "paul]gmail.com",
+      "product": "Veste",
+      "quantity": 1,
+      "taille": "l",
+      "unitPrice": 25000,
+      "totalPrice": 25000,
+      "deliveryAddress": "calavi",
+      "status": "En cours",
+      "orderDate": "2023-10-04"
+    },
+    {
+      "id": 5,
+      "client": "Sophie Bernard",
+      "phoneNumber": "0145234570",
+      "email": "sophie]gmail.com",
+      "product": "Chaussures",
+      "quantity": 1,
+      "taille": "42",
+      "unitPrice": 30000,
+      "totalPrice": 30000,
+      "deliveryAddress": "calavi",
+      "status": "Livrée",
+      "orderDate": "2023-10-05"
+    },
+    {
+      "id": 6,
+      "client": "Sophie Bernard",
+      "phoneNumber": "0145234570",
+      "email": "sophie]gmail.com",
+      "product": "Chaussures",
+      "quantity": 1,
+      "taille": "42",
+      "unitPrice": 30000,
+      "totalPrice": 30000,
+      "deliveryAddress": "calavi",
+      "status": "Livrée",
+      "orderDate": "2023-10-05"
+    },
+    {
+      "id": 7,
+      "client": "Sophie Bernard",
+      "phoneNumber": "0145234570",
+      "email": "sophie]gmail.com",
+      "product": "Chaussures",
+      "quantity": 1,
+      "taille": "42",
+      "unitPrice": 30000,
+      "totalPrice": 30000,
+      "deliveryAddress": "calavi",
+      "status": "Livrée",
+      "orderDate": "2023-10-05"
+    },
+    {
+      "id": 8,
+      "client": "Sophie Bernard",
+      "phoneNumber": "0145234570",
+      "email": "sophie]gmail.com",
+      "product": "Chaussures",
+      "quantity": 1,
+      "taille": "42",
+      "unitPrice": 30000,
+      "totalPrice": 30000,
+      "deliveryAddress": "calavi",
+      "status": "Livrée",
+      "orderDate": "2023-10-05"
+    },
+    {
+      "id": 9,
+      "client": "Sophie Bernard",
+      "phoneNumber": "0145234570",
+      "email": "sophie]gmail.com",
+      "product": "Chaussures",
+      "quantity": 1,
+      "taille": "42",
+      "unitPrice": 30000,
+      "totalPrice": 30000,
+      "deliveryAddress": "calavi",
+      "status": "Livrée",
+      "orderDate": "2023-10-05"
+    }
+  ],
+  "ventes": [
+    {
+      "id": 1,
+      "product": "Tee-shirt",
+      "quantitySold": 10,
+      "taille": "xl",
+      "unitPrice": 5000,
+      "purchasePrice": 3000,
+      "totalRevenue": 50000,
+      "totalProfit": 20000,
+      "saleDate": "2023-10-01"
+    },
+    {
+      "id": 2,
+      "product": "Jeans",
+      "quantitySold": 5,
+      "taille": "m",
+      "unitPrice": 15000,
+      "purchasePrice": 10000,
+      "totalRevenue": 75000,
+      "totalProfit": 25000,
+      "saleDate": "2023-10-02"
+    },
+    {
+      "id": 3,
+      "product": "Robe",
+      "quantitySold": 3,
+      "taille": "s",
+      "unitPrice": 20000,
+      "purchasePrice": 12000,
+      "totalRevenue": 60000,
+      "totalProfit": 24000,
+      "saleDate": "2023-10-03"
+    },
+    {
+      "id": 4,
+      "product": "Veste",
+      "quantitySold": 4,
+      "taille": "l",
+      "unitPrice": 25000,
+      "purchasePrice": 15000,
+      "totalRevenue": 100000,
+      "totalProfit": 40000,
+      "saleDate": "2023-10-04"
+    },
+    {
+      "id": 5,
+      "product": "Chaussures",
+      "quantitySold": 6,
+      "taille": "42",
+      "unitPrice": 30000,
+      "purchasePrice": 20000,
+      "totalRevenue": 180000,
+      "totalProfit": 60000,
+      "saleDate": "2023-10-05"
+    }
+  ],
+  "stocks": [
+    {
+      "id": 1,
+      "stockName": "stock de Tee-shirt ",
+      "product": "Tee-shirt",
+      "qteInStock": 50,
+      "minQte": 10
+    },
+    {
+      "id": 2,
+      "stockName": "stock de Chemise ",
+      "product": "Chemise",
+      "qteInStock": 46,
+      "minQte": 10
+    },
+    {
+      "id": 3,
+      "stockName": "stock de Manteau ",
+      "product": "Manteau",
+      "qteInStock": 50,
+      "minQte": 10
+    },
+    {
+      "id": 4,
+      "stockName": "stock de Pantalon ",
+      "product": "Pantalon",
+      "qteInStock": 50,
+      "minQte": 10
+    },
+    {
+      "id": 5,
+      "stockName": "stock Ensemble pantalon ",
+      "product": "Ensemble pantalon",
+      "qteInStock": 50,
+      "minQte": 10
+    },
+    {
+      "id": 6,
+      "stockName": "stock Ensemble Cullotte ",
+      "product": "Ensemble Cullotte",
+      "qteInStock": 50,
+      "minQte": 10
+    },
+     {
+       "id": 7,
+        "stockName": "stock de Robe ",
+       "product": "Robe",
+       "qteInStock": 50,
+       "minQte": 10
+     },
+      {
+        "id": 8,
+        "stockName": "stock de Jupe ",
+        "product": "Jupe",
+        "qteInStock": 50,
+        "minQte": 10
+      },
+      {
+        "id": 9,
+        "stockName": "stock de Short ",
+        "product": "Short",
+        "qteInStock": 50,
+        "minQte": 10
+      }
+  ],
+  "dettes": [
+    {
+      "id": 1,
+      "client": "Rose Béry",
+      "phoneNumber": "0145234566",
+      "email": "rose@gmail.com",
+      "product": "Tee-shirt",
+      "quantity": 1,
+      "unitPrice": 5000,
+      "totalPrice": 5000,
+      "status": "Non Payée",
+      "orderDate": "2023-10-01"
+    },
+    {
+      "id": 2,
+      "client": "Jean Dupont",
+      "phoneNumber": "0145234567",
+      "email": "jean]gmail.com",
+      "product": "Jeans",
+      "quantity": 2,
+      "unitPrice": 15000,
+      "totalPrice": 30000,
+      "status": "Payée",
+      "orderDate": "2023-10-02"
+    },
+    {
+      "id": 3,
+      "client": "Alice Martin",
+      "phoneNumber": "0145234568",
+      "email": "alice]gmail.com",
+      "product": "Robe",
+      "quantity": 1,
+      "unitPrice": 20000,
+      "totalPrice": 20000,
+      "status": "Non Payée",
+      "orderDate": "2023-10-03"
+    },
+    {
+      "id": 4,
+      "client": "Paul Durand",
+      "phoneNumber": "0145234569",
+      "email": "paul]gmail.com",
+      "product": "Veste",
+      "quantity": 1,
+      "unitPrice": 25000,
+      "totalPrice": 25000,
+      "status": "Payée",
+      "orderDate": "2023-10-04"
+    },
+    {
+      "id": 5,
+      "client": "Sophie Bernard",
+      "phoneNumber": "0145234570",
+      "email": "sophie]gmail.com",
+      "product": "Chaussures",
+      "quantity": 1,
+      "unitPrice": 30000,
+      "totalPrice": 30000,
+      "status": "Non Payée",
+      "orderDate": "2023-10-05"
+    },
+    {
+      "id": 6,
+      "client": "Sophie Bernard",
+      "phoneNumber": "0145234570",
+      "email": "sophie]gmail.com",
+      "product": "Chaussures",
+      "quantity": 1,
+      "unitPrice": 30000,
+      "totalPrice": 30000,
+      "status": "Non Payée",
+      "orderDate": "2023-10-05"
+    },
+    {
+      "id": 7,
+      "client": "Sophie Bernard",
+      "phoneNumber": "0145234570",
+      "email": "sophie]gmail.com",
+      "product": "Chaussures",
+      "quantity": 1,
+      "unitPrice": 30000,
+      "totalPrice": 30000,
+      "status": "Non Payée",
+      "orderDate": "2023-10-05"
+    },
+    {
+      "id": 8,
+      "client": "Sophie Bernard",
+      "phoneNumber": "0145234570",
+      "email": "sophie]gmail.com",
+      "product": "Chaussures",
+      "quantity": 1,
+      "unitPrice": 30000,
+      "totalPrice": 30000,
+      "status": "Non Payée",
+      "orderDate": "2023-10-05"
+    },
+    {
+      "id": 9,
+      "client": "Sophie Bernard",
+      "phoneNumber": "0145234570",
+      "email": "sophie]gmail.com",
+      "product": "Chaussures",
+      "quantity": 1,
+      "unitPrice": 30000,
+      "totalPrice": 30000,
+      "status": "Non Payée",
+      "orderDate": "2023-10-05"
+    }
+  ]
+}
