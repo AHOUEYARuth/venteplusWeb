@@ -6,7 +6,7 @@ const selling = () => {
   const { name, details, showSellingsDetails } = sellingStore();
   return (
     <div>
-      <h1>{showSellingsDetails(name, details)}</h1>
+      <h2 className="text-2xl">{showSellingsDetails(name, details)}</h2>
     </div>
   );
 };

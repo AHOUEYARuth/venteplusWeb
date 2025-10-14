@@ -21,11 +21,13 @@ const Shop = () => {
             </h2>
             <div className="w-full flex flex-wrap justify-center gap-6 lg:justify-between pt-20">
               <div
-                className="w-full sm:w-[100%] lg:w-[32%] h-[450px] relative rounded-2xl overflow-hidden bg-cover bg-center bg-no-repeat"
+                className="w-full hover:shadow-xl sm:w-[100%] lg:w-[32%] h-[450px] relative rounded-2xl overflow-hidden bg-cover bg-center bg-no-repeat cursor-pointer"
                 style={{ backgroundImage: `url(${Shop1.src})` }}
               >
-                <div className="absolute inset-0 bg-gradient-to-tr from-black via-black/50 to-transparent" />
-
+                <Link href="/shop">
+                  {" "}
+                  <div className="absolute inset-0 bg-gradient-to-tr from-black via-black/50 to-transparent" />
+                </Link>
                 <div className="absolute bottom-0 left-0 w-full flex flex-col items-start px-5 pb-6 text-white z-10 gap-y-2">
                   <h3 className="text-3xl font-semibold text-[#F39C12]">
                     Amra&apos; Shop
@@ -42,11 +44,13 @@ const Shop = () => {
               </div>
 
               <div
-                className="w-full sm:w-[100%] lg:w-[32%] h-[450px] relative rounded-2xl overflow-hidden bg-cover bg-center bg-no-repeat"
+                className="w-full sm:w-[100%] hover:shadow-xl lg:w-[32%] h-[450px] relative rounded-2xl overflow-hidden bg-cover bg-center bg-no-repeat cursor-pointer"
                 style={{ backgroundImage: `url(${Shop2.src})` }}
               >
-                <div className="absolute inset-0 bg-gradient-to-tr from-black via-black/50 to-transparent" />
-
+                <Link href="/shop">
+                  {" "}
+                  <div className="absolute inset-0 bg-gradient-to-tr from-black via-black/50 to-transparent" />
+                </Link>
                 <div className="absolute bottom-0 left-0 w-full flex flex-col items-start px-5 pb-6 text-white z-10 gap-y-2">
                   <h3 className="text-3xl font-semibold text-[#F39C12]">
                     Nana House
@@ -64,11 +68,13 @@ const Shop = () => {
                 </div>
               </div>
               <div
-                className="w-full sm:w-[100%] lg:w-[32%] h-[450px] relative rounded-2xl overflow-hidden bg-cover bg-center bg-no-repeat"
+                className="w-full hover:shadow-xl sm:w-[100%] lg:w-[32%] h-[450px] relative rounded-2xl overflow-hidden bg-cover bg-center bg-no-repeat cursor-pointer"
                 style={{ backgroundImage: `url(${Shop3.src})` }}
               >
-                <div className="absolute inset-0 bg-gradient-to-tr from-black via-black/50 to-transparent" />
-
+                <Link href="/shop">
+                  {" "}
+                  <div className="absolute inset-0 bg-gradient-to-tr from-black via-black/50 to-transparent" />
+                </Link>
                 <div className="absolute bottom-0 left-0 w-full flex flex-col items-start px-5 pb-6 text-white z-10 gap-y-2">
                   <h3 className="text-3xl font-semibold text-[#F39C12]">
                     Sam Tech

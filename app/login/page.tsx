@@ -80,7 +80,7 @@ const Login = () => {
               <p className="text-gray-600">
                 Vous n’avez pas encore de compte ?{" "}
                 <Link
-                  href="#"
+                  href="/register"
                   className="text-[#F39C12] hover:text-[#d6860f] font-semibold"
                 >
                   Créez-en un

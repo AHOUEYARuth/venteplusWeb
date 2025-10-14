@@ -6,7 +6,7 @@ const stock = () => {
   const { product, available, showStockDetails } = stockStore();
   return (
     <div>
-      <h1>{showStockDetails(product, available)}</h1>
+      <h2 className="text-xl">{showStockDetails(product, available)}</h2>
     </div>
   );
 };

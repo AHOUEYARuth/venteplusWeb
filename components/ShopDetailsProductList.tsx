@@ -1,6 +1,13 @@
 import React from 'react';
 import ShopProductCard from './ShopProductCard';
 import Product1 from "@/assets/images/product1.png"
+import Product2 from "@/assets/images/product2.png"
+import Product3 from "@/assets/images/product3.png";
+import Product4 from "@/assets/images/product8.png";
+import Product5 from "@/assets/images/product5.png";
+import Product6 from "@/assets/images/product6.png";
+import Product7 from "@/assets/images/product7.png";
+import Product8 from "@/assets/images/product9.png";
 const ShopDetailsProductList = () => {
     return (
       <div className="column-img w-[75%]">
@@ -24,40 +31,46 @@ const ShopDetailsProductList = () => {
               image={Product1.src}
             />
             <ShopProductCard
-              qualite="Soie"
-              nom="Chemise"
+              qualite="Coton"
+              nom="Pull-Over"
               prix={35}
-              image={Product1.src}
+              image={Product2.src}
             />
             <ShopProductCard
-              qualite="Soie"
-              nom="Chemise"
+              qualite="Coton"
+              nom="Pull-Over"
               prix={35}
-              image={Product1.src}
+              image={Product3.src}
             />
             <ShopProductCard
-              qualite="Soie"
-              nom="Chemise"
+              qualite="Coton"
+              nom="Tee-Shirt"
               prix={35}
-              image={Product1.src}
+              image={Product4.src}
             />
             <ShopProductCard
-              qualite="Soie"
+              qualite="Trico"
               nom="Chemise"
               prix={35}
-              image={Product1.src}
+              image={Product5.src}
             />
             <ShopProductCard
-              qualite="Soie"
-              nom="Chemise"
+              qualite="Coton"
+              nom="Tee-Shirt"
               prix={35}
-              image={Product1.src}
+              image={Product6.src}
             />
             <ShopProductCard
-              qualite="Soie"
-              nom="Chemise"
+              qualite="Trico"
+              nom="Bornet"
               prix={35}
-              image={Product1.src}
+              image={Product7.src}
+            />
+            <ShopProductCard
+              qualite="Trico"
+              nom="Bornet"
+              prix={35}
+              image={Product8.src}
             />
           </div>
         </div>
