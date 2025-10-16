@@ -19,7 +19,7 @@ const Shop = () => {
             <h2 className="lg:text-5xl md:text-4xl text-3xl text-[#2C3E50] font-semibold text-center">
               Explorez les boutiques créées avec Vente+
             </h2>
-            <div className="w-full flex flex-wrap justify-center gap-6 lg:justify-between pt-20">
+            <div className="w-full flex flex-wrap justify-center gap-6 pt-20">
               <div
                 className="w-full hover:shadow-xl sm:w-[100%] lg:w-[32%] h-[450px] relative rounded-2xl overflow-hidden bg-cover bg-center bg-no-repeat cursor-pointer"
                 style={{ backgroundImage: `url(${Shop1.src})` }}
