@@ -2,7 +2,7 @@
 import About from "@/components/About";
 import Header from "@/components/layout/Header";
 import Services from "@/components/Services";
-import Shop from "@/components/Shop";
+//import Shop from "@/components/Shop";
 export default function Home() {
 
   return (
@@ -10,7 +10,7 @@ export default function Home() {
       <Header />
       <About />
       <Services />
-      <Shop/>
+      {/* <Shop/> */}
     </div>
   );
 }

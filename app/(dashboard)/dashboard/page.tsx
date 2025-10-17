@@ -54,7 +54,7 @@ const dashboard = () => {
         </div>
       </div>
       <div className="w-full flex flex-row flex-wrap items-center justify-between py-8 gap-y-5">
-        <div className="w-70 bg-gradient-to-br from-[#F39C12]/70 to-[#F39C12] text-white rounded-xl p-5  shadow-md hover:shadow-xl flex flex-col justify-between cursor-pointer">
+        <div className="w-90 bg-gradient-to-br from-[#F39C12]/70 to-[#F39C12] text-white rounded-xl p-5  shadow-md hover:shadow-xl flex flex-col justify-between cursor-pointer">
           <div className="flex justify-between items-start">
             <h2 className="text-2xl font-bold">Vente du jour</h2>
             <div className="bg-white hover:bg-white/30 transition-colors rounded-full p-2">
@@ -71,10 +71,10 @@ const dashboard = () => {
               5
               <IoMdArrowDropup size={30} />
             </span>
-            <p className="text-sm text-white/80">Increased from last month</p>
+            <p className="text-sm text-white/80">Progression mensuelle</p>
           </div>
         </div>
-        <div className="w-70 bg-white text-black rounded-xl p-5  shadow-md hover:shadow-xl flex flex-col justify-between cursor-pointer">
+        <div className="w-90 bg-white text-black rounded-xl p-5  shadow-md hover:shadow-xl flex flex-col justify-between cursor-pointer">
           <div className="flex justify-between items-start">
             <h2 className="text-2xl font-bold">Bénéfice net</h2>
             <div className="bg-[#F39C12] hover:bg-white/30 transition-colors rounded-full p-2">
@@ -91,10 +91,10 @@ const dashboard = () => {
               3
               <IoMdArrowDropup size={30} />
             </span>
-            <p className="text-sm text-[#F39C12]">Increased from last month</p>
+            <p className="text-sm text-[#F39C12]">Progression mensuelle</p>
           </div>
         </div>
-        <div className="w-70 bg-white text-black rounded-xl p-5  shadow-md hover:shadow-xl flex flex-col justify-between cursor-pointer">
+        <div className="w-90 bg-white text-black rounded-xl p-5  shadow-md hover:shadow-xl flex flex-col justify-between cursor-pointer">
           <div className="flex justify-between items-start">
             <h2 className="text-2xl font-bold">Commande Client</h2>
             <div className="bg-[#F39C12] hover:bg-white/30 transition-colors rounded-full p-2">
@@ -111,27 +111,7 @@ const dashboard = () => {
               3
               <IoMdArrowDropup size={30} />
             </span>
-            <p className="text-sm text-[#F39C12]">Increased from last month</p>
-          </div>
-        </div>
-        <div className="w-70 bg-white text-black rounded-xl p-5  shadow-md hover:shadow-xl flex flex-col justify-between cursor-pointer">
-          <div className="flex justify-between items-start">
-            <h2 className="text-2xl font-bold">Nombre visiteurs</h2>
-            <div className="bg-[#F39C12] hover:bg-white/30 transition-colors rounded-full p-2">
-              <FiArrowUpRight className="text-white " size={16} />
-            </div>
-          </div>
-
-          <div className="mt-4">
-            <h2 className="text-4xl font-semibold">5</h2>
-          </div>
-
-          <div className="flex items-center gap-2 mt-4">
-            <span className="flex items-center gap-1 border border-[#F39C12] px-1 py-0.5 rounded-xl text-lg font-medium">
-              6
-              <IoMdArrowDropup size={30} />
-            </span>
-            <p className="text-sm text-[#F39C12]">Increased from last month</p>
+            <p className="text-sm text-[#F39C12]">Progression mensuelle</p>
           </div>
         </div>
       </div>

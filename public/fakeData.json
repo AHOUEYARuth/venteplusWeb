@@ -358,5 +358,56 @@
       "status": "Non Payée",
       "orderDate": "2023-10-05"
     }
+  ],
+  "spending": [
+    {
+      "id": 1,
+      "label": "Achat de fournitures",
+      "amount": 150000,
+      "date": "2023-10-01",
+      "description": "Achat de fournitures de bureau"
+    },
+    {
+      "id": 2,
+      "label": "Paiement des salaires",
+      "amount": 300000,
+      "date": "2023-10-05",
+      "description": "Paiement des salaires du mois de septembre"
+    },
+    {
+      "id": 3,
+      "label": "Frais de transport",
+      "amount": 50000,
+      "date": "2023-10-10",
+      "description": "Frais de transport pour la livraison des produits"
+    },
+    {
+      "id": 4,
+      "label": "Entretien du matériel",
+      "amount": 80000,
+      "date": "2023-10-15",
+      "description": "Entretien et réparation du matériel informatique"
+    },
+    {
+      "id": 5,
+      "label": "Marketing et publicité",
+      "amount": 120000,
+      "date": "2023-10-20",
+      "description": "Campagne de marketing sur les réseaux sociaux"
+    },
+    {
+      "id": 6,
+      "label": "Fournitures de bureau",
+      "amount": 60000,
+      "date": "2023-10-25",
+      "description": "Achat de papier, stylos et autres fournitures"
+    },
+    {
+      "id": 7,
+      "label": "Services publics",
+      "amount": 90000,
+      "date": "2023-10-28",
+      "description": "Paiement des factures d'électricité et d'eau"
+    }
   ]
 }
