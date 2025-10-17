@@ -26,7 +26,7 @@ const DashboardLeftSideBar = () => {
       </Link>
 
       <div className="flex-1 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-        <div className="flex flex-col gap-y-8 pr-2 pt-4">
+        <div className="flex flex-col gap-y-20 pr-2 pt-4">
           <div className="flex flex-col gap-y-8">
             <h2 className="text-xl font-bold">MENU</h2>
             <ul className="space-y-8">
@@ -86,19 +86,7 @@ const DashboardLeftSideBar = () => {
                   }`}
                 >
                   <FaShoppingCart className="text-xl flex-shrink-0" />
-                  <span>Ventes</span>
-                </Link>
-              </li>
-
-              <li className="text-lg text-[#2C3E50] font-medium">
-                <Link
-                  href="/"
-                  className={`flex flex-row items-center gap-x-3 hover:text-[#F39C12] transition-colors ${
-                    pathname === "/" ? "active" : ""
-                  }`}
-                >
-                  <FaShoppingBag className="text-xl flex-shrink-0" />
-                  <span>Commandes Clients</span>
+                  <span>Commandes et Ventes</span>
                 </Link>
               </li>
 
@@ -143,28 +131,6 @@ const DashboardLeftSideBar = () => {
           <div className="flex flex-col gap-y-8">
             <h2 className="text-xl font-bold">GÉNÉRAL</h2>
             <ul className="space-y-8">
-              <li className="text-lg text-[#2C3E50] font-medium">
-                <Link
-                  href="/"
-                  className={`flex flex-row items-center gap-x-3 hover:text-[#F39C12] transition-colors ${
-                    pathname === "/" ? "active" : ""
-                  }`}
-                >
-                  <IoSettings className="text-xl flex-shrink-0" />
-                  <span>Paramètres</span>
-                </Link>
-              </li>
-              <li className="text-lg text-[#2C3E50] font-medium">
-                <Link
-                  href="/"
-                  className={`flex flex-row items-center gap-x-3 hover:text-[#F39C12] transition-colors ${
-                    pathname === "/" ? "active" : ""
-                  }`}
-                >
-                  <IoHelpCircle className="text-xl flex-shrink-0" />
-                  <span>Aides</span>
-                </Link>
-              </li>
               <li className="text-lg text-[#2C3E50] font-medium">
                 <Link
                   href="/"

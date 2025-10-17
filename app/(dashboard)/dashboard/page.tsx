@@ -52,14 +52,6 @@ const dashboard = () => {
             Perspiciatis, reprehenderit.
           </p>
         </div>
-        {/* <div className="flex items-center gap-x-5">
-          <Button className="bg-[#F39C12] cursor-pointer">
-            Nouveau Produit
-          </Button>
-          <Button className="bg-transparent cursor-pointer text-[#F39C12] border border-[#F39C12] hover:bg-[#F39C12] hover:text-white">
-            Modifier un Produit
-          </Button>
-        </div> */}
       </div>
       <div className="w-full flex flex-row flex-wrap items-center justify-between py-8 gap-y-5">
         <div className="w-70 bg-gradient-to-br from-[#F39C12]/70 to-[#F39C12] text-white rounded-xl p-5  shadow-md hover:shadow-xl flex flex-col justify-between cursor-pointer">
