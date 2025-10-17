@@ -11,6 +11,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     "/selling",
     "/stock",
     "/customerCredits",
+    "/spending"
   ]
 
   return (
@@ -47,5 +48,3 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     </div>
   );
 }
-
-/* ${open ? "overl" : ""} */

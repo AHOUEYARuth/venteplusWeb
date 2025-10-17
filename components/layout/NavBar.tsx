@@ -58,14 +58,14 @@ const NavBar = () => {
                 Services
               </Link>
             </li>
-            <li>
+           {/*  <li>
               <Link
                 href="/shop"
                 className={pathname === "/shop" ? "nav_active" : "inactive"}
               >
                 Boutiques
               </Link>
-            </li>
+            </li> */}
             <li>
               <Link
                 href="/pricing"

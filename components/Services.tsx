@@ -2,7 +2,7 @@ import React from 'react';
 import Service1 from "@/assets/images/sec2.jpg"; // sec2.jpg
 import Service2 from "@/assets/images/sec3.svg"; //sec3.svg
 import Service3 from "@/assets/images/sec4.svg"; // sec4.svg
-import Service4 from "@/assets/images/sec1.jpg"; //sec1.jpg
+import Service4 from "@/assets/images/serviceCredit1.jpg"; //sec1.jpg
 import Separate from './Separate';
 import Link from 'next/link';
 import "@/style/style.scss";
@@ -10,7 +10,7 @@ import { FaArrowRight } from 'react-icons/fa';
 const Services = () => {
     return (
       <div>
-        <section className="w-full bg-white pt-[70] sm:px-6 lg:px-8">
+        <section className="w-full bg-white pt-[70] sm:px-6 lg:px-8 mb-10">
           <div className="max-w-[80%] mx-auto">
             <div className="w-full flex flex-col justify-center items-center gap-10 text-center py-10">
               <h2 className="text-3xl font-semibold text-[#1c1c1c]">
@@ -102,12 +102,13 @@ const Services = () => {
                       04
                     </span>
                     <h3 className="text-3xl text-[#2C3E50] font-semibold">
-                      Boutique Virtuelle
+                      Gestion Crédits Clients
                     </h3>
                     <p className="text-xl text-gray-700">
-                      Automatisez vos opérations comptables et gardez une vision
-                      claire de vos finances. Suivez vos dépenses, vos marges et
-                      vos bénéfices en toute simplicité.
+                      Gardez le contrôle sur les paiements différés.
+                      Enregistrez, suivez et relancez vos clients en toute
+                      transparence grâce à un système de gestion des crédits
+                      intégré.
                     </p>
                     <div className=" flex items-center justify-start gap-x-5 text-xl text-[#F39C12] p-px ">
                       <Link href="/services" className="">

@@ -1,19 +1,31 @@
 import { create } from "zustand";
 import { getSpendings } from "../spendingRequest/spendingRequest";
+import axios from "axios";
 
-type State = {
-    name: string,
-    date: Date
+type Spending = {
+  id: number;
+  label: string;
+  amount: number;
+  date: string;
+  description: string;
+};
+
+type DataStore = {
+    spendings: Spending[];
+    fetchData: () => Promise<void>;
 }
 
-type SpendingActions = {
-    showSpendingDetails: (name: string, date: Date) => string
-}
-
-export const spendingStore = create<State & SpendingActions>((set) => ({
-    name: "Achat de deux cartons de petits poids",
-    date: new Date(),
-    showSpendingDetails(name, date) {
-        return `Le ${date.toString()}, ${name}`;
-    },
+export const spendingStore = create<DataStore>((set) => ({
+    spendings: [],
+    fetchData: async () => {
+        try {
+            const response = await axios.get("/fakeData.json");
+            set({
+              spendings: response.data.spending,
+            });
+        } catch (error) {
+            console.log("Erreur de chargement des données", error);
+            
+        }
+    }
 }))

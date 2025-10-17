@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { FaArrowRight } from "react-icons/fa";
 import Service1 from "@/assets/images/serviceCredit1.jpg"; 
-import Service2 from "@/assets/images/serviceFacture.jpg"; 
+import Service2 from "@/assets/images/sec3.svg"; 
 import Service3 from "@/assets/images/serviceStat1.jpg"; 
 import Service4 from "@/assets/images/sec1.jpg"; 
 import "@/style/style.scss";
