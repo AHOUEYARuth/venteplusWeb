@@ -19,7 +19,6 @@ import { TiShoppingCart } from "react-icons/ti";
 import { productStore } from "./productStore/productStore";
 import { IoAccessibility } from "react-icons/io5";
 import { IoMdClose } from "react-icons/io";
-import Image from "next/image";
 
 const Product = () => {
   const container = useRef(null);

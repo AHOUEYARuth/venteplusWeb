@@ -342,7 +342,6 @@ export default function Selling() {
                 <tr className="border-b border-gray-200 text-left">
                   <th className="p-5">Produit</th>
                   <th className="p-5">Quantité</th>
-                  <th className="p-5">Taille</th>
                   <th className="p-5 ">Prix d&apos;achat(FCFA)</th>
                   <th className="p-5 ">Prix vente(FCFA)</th>
                   <th className="p-5 ">Total(FCFA)</th>
@@ -357,7 +356,6 @@ export default function Selling() {
                   >
                     <td className="p-5 font-bold">{vente.product}</td>
                     <td className="p-5">{vente.quantitySold}</td>
-                    <td className="p-5">{vente.taille.toUpperCase()}</td>
                     <td className="p-5">{vente.purchasePrice}</td>
                     <td className="p-5">{vente.unitPrice}</td>
                     <td className="p-5">{vente.totalRevenue}</td>

@@ -113,12 +113,12 @@ const NavBar = () => {
               Commencer
             </Button>
           </Link>
-          <Link href="/cart" className="hidden sm:flex">
+          {/* <Link href="/cart" className="hidden sm:flex">
             <Button className="btn cursor-pointer bg-transparent border border-[#F39C12] text-[#F39C12] hover:bg-[#F39C12] hover:text-white rounded-3xl text-sm md:text-base lg:text-lg py-2 px-4 md:py-3 md:px-6 transition-all">
               Panier
               <FiShoppingCart />
             </Button>
-          </Link>
+          </Link> */}
         </div>
       </div>
 

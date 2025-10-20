@@ -5,10 +5,15 @@ import Link from "next/link";
 import Image from "next/image";
 import LoginP from "@/assets/images/login.jpg";
 import "@/style/style.scss";
-
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 const Login = () => {
-  const { name, showLogin } = loginStore();
-
+const { name, showLogin } = loginStore();
   return (
     <div className="min-h-screen bg-[#F9FAFB] flex items-center justify-center">
       <div className="content w-[55%] bg-white rounded-xl flex items-center justify-between p-5">
@@ -16,7 +21,7 @@ const Login = () => {
           <div className="p-8 center-text">
             <h2 className="text-3xl font-bold mb-2 text-[#F39C12]">Vente+</h2>
             <h2 className="text-2xl font-semibold mb-4 text-black">
-              Heureux de vous revoir 
+              Heureux de vous revoir
             </h2>
             <p className="text-gray-700">
               Connectez-vous pour accéder à votre espace personnel.
@@ -26,13 +31,13 @@ const Login = () => {
           <div className="p-8">
             <div className="mb-6">
               <label className="block text-gray-700 text-sm font-medium mb-2">
-                Adresse e-mail
+                Numéro de téléphone
               </label>
               <div className="relative">
                 <input
-                  type="email"
+                  type="tel"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-                  placeholder="Entrez votre adresse e-mail"
+                  placeholder="Entrez votre numero de téléphone"
                 />
               </div>
             </div>
@@ -50,6 +55,16 @@ const Login = () => {
               </div>
             </div>
 
+            <Select>
+              <SelectTrigger className="w-full py-6 outline-none mb-6">
+                <SelectValue placeholder="Chosissez une boutique " />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="light">Shop1</SelectItem>
+                <SelectItem value="dark">Shop2</SelectItem>
+                <SelectItem value="system">Shop3</SelectItem>
+              </SelectContent>
+            </Select>
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center">
                 <input
