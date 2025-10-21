@@ -1,24 +1,41 @@
 "use client";
-import React, { useState,useEffect } from "react";
-import { useForm } from "react-hook-form";
+import React, { useState, useEffect } from "react";
+import { useForm, useFormContext } from "react-hook-form";
 import { registerStore } from "./registerStore/registerStore";
 import Image from "next/image";
 import Link from "next/link";
 import RegisterP from "@/assets/images/login.jpg";
 import "@/style/style.scss";
+import { PhoneInput } from "@/components/ui/phone-input";
 
 const Register = () => {
-  const { activeForm, setActiveForm } = registerStore();
+  const { activeForm, setActiveForm , registerAction} = registerStore();
   const [logoImg, setLogoImg] = useState(null);
   const [coverImg, setCoverImg] = useState(null);
+  const [loading, setloading] = useState(false)
 
+/*      name,
+      firstName,
+      email,
+      phoneNumber,
+      password,
+      role,
+      identityCardUrl,
+      shopName,
+      shopDescription,
+      shopAddress,
+      avatarUrl,
+      logoUrl,
+      imageShopUrl, */
   const {
-    control,
     register,
     handleSubmit,
     watch,
     formState,
-  } = useForm();
+    trigger
+  } = useForm({
+    mode: "onChange",
+  });
 
   function previewCoverImage(e) {
     if (e.target.files && e.target.files[0]) {
@@ -32,25 +49,30 @@ const Register = () => {
     }
   }
 
-  function submitForm(data) {
-    console.log(data);
+  async function submitForm(data) {
+    setloading(true)
+    const payload = {
+      ...data,
+      role:"TRADER"
+    }
+    await registerAction(payload).then((response) => {
+      setloading(false)
+      console.log(response);
+    }).catch((error) => {
+      setloading(false)
+      console.log(error);
+     })
   }
-  function validatoreStep() {
-    console.log("Validateur Step");
-    console.log(formState.isValid);
-    handleSubmit;
-    
-    //setActiveForm(2);
-    /* setActiveForm(2); */
+  async function validatoreStep() {
+    trigger().then((isValid) => {
+      if (isValid) {
+        setActiveForm(activeForm + 1);
+      }
+    });
+
   }
 
-  useEffect(() => {
-    (function init() {
-     /*  console.log("errors changed:");
-      console.log(formState.errors); */
-    })();
-  }, [formState.errors])
-
+ 
 
   return (
     <div className="min-h-screen bg-[#F9FAFB] flex items-center justify-center">
@@ -73,19 +95,42 @@ const Register = () => {
               <div className="px-8 py-5">
                 <div className="mb-6">
                   <label className="block text-gray-700 text-sm font-medium mb-2">
-                    Nom complet
+                    Nom
                   </label>
                   <input
                     {...register("name", {
-                      required: "Le nom complet est obligatoire",
+                      required: "Le nom  est obligatoire",
                     })}
+                    key={1}
+                    name="name"
                     type="text"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-                    placeholder="Entrez votre nom complet"
+                    placeholder="Entrez votre nom "
                   />
                   {formState.errors.name && (
                     <p className="text-red-500 text-sm mt-1">
                       {formState.errors.name.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="mb-6">
+                  <label className="block text-gray-700 text-sm font-medium mb-2">
+                    Prénoms
+                  </label>
+                  <input
+                    {...register("firstName", {
+                      required: "Le nom complet est obligatoire",
+                    })}
+                    key={1}
+                    name="firstName"
+                    type="text"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                    placeholder="Entrez vos prénoms"
+                  />
+                  {formState.errors.firstName && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {formState.errors.firstName.message}
                     </p>
                   )}
                 </div>
@@ -102,6 +147,8 @@ const Register = () => {
                         message: "Adresse e-mail invalide",
                       },
                     })}
+                    key={2}
+                    name="email"
                     type="email"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
                     placeholder="Entrez votre adresse e-mail"
@@ -117,7 +164,14 @@ const Register = () => {
                   <label className="block text-gray-700 text-sm font-medium mb-2">
                     Téléphone
                   </label>
-                  <input
+                  <PhoneInput
+                    defaultCountry="BJ"
+                    onChange={(e) => console.log(e)}
+                    {...register("phoneNumber", {
+                      required: "Le numéro de téléphone est obligatoire",
+                    })}
+                  />
+                  {/*                   <input
                     {...register("phone", {
                       required: "Le numéro de téléphone est obligatoire",
                       pattern: {
@@ -125,13 +179,15 @@ const Register = () => {
                         message: "Numéro de téléphone invalide",
                       },
                     })}
+                    key={3}
+                    name="phone"
                     type="tel"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
                     placeholder="Entrez votre numéro de téléphone"
-                  />
-                  {formState.errors.phone && (
+                  /> */}
+                  {formState.errors.phoneNumber && (
                     <p className="text-red-500 text-sm mt-1">
-                      {formState.errors.phone.message}
+                      {formState.errors.phoneNumber.message}
                     </p>
                   )}
                 </div>
@@ -149,6 +205,8 @@ const Register = () => {
                           "Le mot de passe doit contenir au moins 6 caractères",
                       },
                     })}
+                    key={4}
+                    name="password"
                     type="password"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
                     placeholder="Créez un mot de passe"
@@ -171,6 +229,8 @@ const Register = () => {
                         value === watch("password") ||
                         "Les mots de passe ne correspondent pas",
                     })}
+                    key={5}
+                    mame="confirmPassword"
                     type="password"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
                     placeholder="Confirmez le mot de passe"
@@ -212,9 +272,9 @@ const Register = () => {
                     {...register("shopName", {
                       required: "Le nom de la boutique est obligatoire",
                     })}
+                    key={6}
                     type="text"
                     name="shopName"
-                
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] outline-none transition-all"
                     placeholder="Entrez le nom de votre boutique"
                   />
@@ -230,7 +290,7 @@ const Register = () => {
                     Description
                   </label>
                   <input
-                    {...register("description", {
+                    {...register("shopDescription", {
                       required: "La description est obligatoire",
                       minLength: {
                         value: 10,
@@ -238,13 +298,15 @@ const Register = () => {
                           "La description doit contenir au moins 10 caractères",
                       },
                     })}
+                    key={7}
+                    name="shopDescription"
                     type="text"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] outline-none transition-all"
                     placeholder="Brève description de votre boutique"
                   />
-                  {formState.errors.description && (
+                  {formState.errors.shopDescription && (
                     <p className="text-red-500 text-sm mt-1">
-                      {formState.errors.description.message}
+                      {formState.errors.shopDescription.message}
                     </p>
                   )}
                 </div>
@@ -254,16 +316,18 @@ const Register = () => {
                     Adresse
                   </label>
                   <input
-                    {...register("address", {
+                    {...register("shopAddress", {
                       required: "L'adresse est obligatoire",
                     })}
+                    key={8}
+                    name="shopAddress"
                     type="text"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] outline-none transition-all"
                     placeholder="Entrez l'adresse de votre boutique"
                   />
-                  {formState.errors.address && (
+                  {formState.errors.shopAddress && (
                     <p className="text-red-500 text-sm mt-1">
-                      {formState.errors.address.message}
+                      {formState.errors.shopAddress.message}
                     </p>
                   )}
                 </div>
@@ -273,16 +337,18 @@ const Register = () => {
                     Domaine d'activité
                   </label>
                   <input
-                    {...register("domain", {
+                    {...register("interventionArea", {
                       required: "Le domaine d'activité est obligatoire",
                     })}
+                    key={9}
+                    name="interventionArea"
                     type="text"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] outline-none transition-all"
                     placeholder="Entrez le domaine d'activité"
                   />
-                  {formState.errors.domain && (
+                  {formState.errors.interventionArea && (
                     <p className="text-red-500 text-sm mt-1">
-                      {formState.errors.domain.message}
+                      {formState.errors.interventionArea.message}
                     </p>
                   )}
                 </div>
@@ -297,7 +363,7 @@ const Register = () => {
                   </button>
                   <button
                     type="button"
-                    onClick={() => setActiveForm(3)}
+                    onClick={() => validatoreStep()}
                     className="flex-1 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] transition-all shadow-lg"
                   >
                     Suivant
@@ -320,6 +386,7 @@ const Register = () => {
                       {...register("logo", {
                         required: "Le logo est obligatoire",
                       })}
+                      name="logo"
                       type="file"
                       accept="image/png, image/jpg, image/jpeg"
                       onChange={previewLogoImage}
@@ -343,16 +410,17 @@ const Register = () => {
                       className="w-full h-[100px] object-contain rounded-xl"
                     />
                     <input
-                      {...register("cover", {
+                      {...register("imageShop", {
                         required: "L'image est obligatoire",
                       })}
                       type="file"
+                      name="imageShop"
                       accept="image/png, image/jpg, image/jpeg"
                       onChange={previewCoverImage}
                     />
-                    {formState.errors.cover && (
+                    {formState.errors.imageShop && (
                       <p className="text-red-500 text-sm mt-1">
-                        {formState.errors.cover.message}
+                        {formState.errors.imageShop.message}
                       </p>
                     )}
                   </div>
@@ -362,6 +430,63 @@ const Register = () => {
                   <button
                     type="button"
                     onClick={() => setActiveForm(2)}
+                    className="flex-1 bg-gray-300 text-gray-700 py-3 px-4 rounded-lg font-semibold hover:bg-gray-400 transition-all shadow-lg"
+                  >
+                    Précédent
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveForm(4)}
+                    className="flex-1 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] transition-all shadow-lg"
+                  >
+                    Suivant
+                  </button>
+                </div>
+              </div>
+            ) : activeForm === 4 ? (
+              <div className="px-8 py-5">
+                <div className="mb-6">
+                  <label className="block text-gray-700 text-sm font-medium mb-2">
+                    Photo de profil
+                  </label>
+                  <input
+                    {...register("avatar", {
+                      required: "Le nom complet est obligatoire",
+                    })}
+                    name="avatar"
+                    type="file"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                    placeholder="Entrez votre nom complet"
+                  />
+                  {formState.errors.avatar && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {formState.errors.avatar.message}
+                    </p>
+                  )}
+                </div>
+                <div className="mb-6">
+                  <label className="block text-gray-700 text-sm font-medium mb-2">
+                    Carte d&apos;Identité
+                  </label>
+                  <input
+                    {...register("identityCard", {
+                      required: "Le nom complet est obligatoire",
+                    })}
+                    name="identityCard"
+                    type="file"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                    placeholder="Entrez votre nom complet"
+                  />
+                  {formState.errors.identityCard && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {formState.errors.identityCard.message}
+                    </p>
+                  )}
+                </div>
+                <div className="flex gap-4">
+                  <button
+                    type="button"
+                    onClick={() => setActiveForm(3)}
                     className="flex-1 bg-gray-300 text-gray-700 py-3 px-4 rounded-lg font-semibold hover:bg-gray-400 transition-all shadow-lg"
                   >
                     Précédent

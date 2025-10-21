@@ -1,26 +1,26 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { create } from "zustand";
-import { getUsers } from "../registerRequest/registerRequest";
-
+import { getUsers, registerUserRequest } from "../registerRequest/registerRequest";
+import { use } from "react";
 
 type State = {
-  nom: string;
-  age: number;
   activeForm: number;
+  user: any;
 };
 
-type RegisterActions = {
-  showUser: (nom: string, age: number) => string;
+type Actions = {
+  registerAction: (userFormData: any) => Promise<void>;
+  setLoggingUser: (isLoggedIn: boolean) => void;
   setActiveForm: (activeForm: string) => void;
 };
 
-export const registerStore = create<State & RegisterActions>((set) => ({
-  nom: "Ruth Amra",
-  age: 10,
+export const registerStore = create<State & Actions>((set) => ({
+  user: null,
   activeForm: 1,
-
-  setActiveForm: (activeForm) => set({ activeForm: parseInt(activeForm) }),
-
-  showUser(nom, age) {
-    return `Je m'appelle ${nom}, j'ai ${age} ans et je suis dev`;
+  registerAction: async (userFormData) => {
+    const response = await registerUserRequest(userFormData);
+    return response;
   },
+  setActiveForm: (activeForm) => set({ activeForm: parseInt(activeForm) }),
+  setLoggingUser: (logginUser) => set({ user: logginUser }),
 }));
