@@ -9,6 +9,7 @@ import "@/style/style.scss"
 import { MdOutlineAdd } from "react-icons/md";
 import { loginStore } from "@/app/login/loginStore/loginStore";
 import { baseURL } from "@/lib/httpClient";
+import Image from "next/image";
 
 
 const DashboardRightSideB = () => {
@@ -28,13 +29,12 @@ const DashboardRightSideB = () => {
           <TabsContent value="alertes" className="w-[100%] py-10">
             <div className="w-full flex flex-col items-center gap-y-4">
               <div className="w-[115px] h-[115px] flex items-center justify-center border border-gray-500 rounded-full cursor-pointer ">
-               
-                <div
+                <Image src={shop?.image ? `http://127.0.0.1:4000/${shop.image}` : UserImg.src} className="max-w-[100px] max-h-[100px] rounded-full" objectFit="cover" width={100} height={100}  alt="" />
+                {/* <div
                   className="w-[100px] h-[100px] rounded-full bg-center bg-cover bg-no-repeat "
-                  style={{ backgroundImage: shop?.image
-                    ? `url("http://localhost:4000/${shop?.image}")`
-                    : `url(${UserImg.src})` }}
-                ></div>
+                  style={{ backgroundImage: `url("http://127.0.0.1:4000/uploads/imageBoutiques/1761075840068-234262470.png")` }}
+                    
+                ></div> */}
               </div>
               <h2 className="font-semibold text-2xl">{shop?.name}</h2>
               <p className="text-lg text-gray-600 text-center">
