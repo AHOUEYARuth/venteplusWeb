@@ -28,14 +28,17 @@ const DashboardRightSideB = () => {
           <TabsContent value="alertes" className="w-[100%] py-10">
             <div className="w-full flex flex-col items-center gap-y-4">
               <div className="w-[115px] h-[115px] flex items-center justify-center border border-gray-500 rounded-full cursor-pointer ">
+               
                 <div
                   className="w-[100px] h-[100px] rounded-full bg-center bg-cover bg-no-repeat "
-                  style={{ backgroundImage: `url(http://127.0.0.1:4000/${shop?.image})` }}
+                  style={{ backgroundImage: shop?.image
+                    ? `url("http://localhost:4000/${shop?.image}")`
+                    : `url(${UserImg.src})` }}
                 ></div>
               </div>
-              <h2 className="font-semibold text-2xl">Hello Amra</h2>
+              <h2 className="font-semibold text-2xl">{shop?.name}</h2>
               <p className="text-lg text-gray-600 text-center">
-                Lorem ipsum dolor sit amet consectetu
+                {shop?.description}
               </p>
               <div className="w-full flex flex-col items-start bg-white rounded-xl p-4 mt-10">
                 <div className="w-full cursor-pointer flex justify-end">
