@@ -1,4 +1,4 @@
-import api from "@/lib/httpclient";
+import api from "@/lib/util";
 
 export const getStocks = async () => {
     const response = await api.get("/stocks");

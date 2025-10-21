@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import api from "@/lib/httpclient";
-import { objectToFormData } from "@/lib/utils";
+import { HttpClient } from "@/lib/httpClient";
+import api from "@/lib/util";
+import { objectToFormData, objectToFormDataWithArray } from "@/lib/utils";
 
 export const getUsers = async () => {
   const response = await api.get("/users");
@@ -8,10 +9,9 @@ export const getUsers = async () => {
 };
 
 export const registerUserRequest = async (userData: any) => {
-  
-  const response = await api.post(
-    "/api/traders/register",
-   userData
-  );
-  return response.data;
+  return HttpClient.makeRequest({
+    method: "POST",
+    url: "traders/register",
+    payload: objectToFormData(userData),
+  });
 };

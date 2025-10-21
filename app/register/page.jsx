@@ -9,31 +9,12 @@ import "@/style/style.scss";
 import { PhoneInput } from "@/components/ui/phone-input";
 
 const Register = () => {
-  const { activeForm, setActiveForm , registerAction} = registerStore();
+  const { activeForm, setActiveForm, registerAction } = registerStore();
   const [logoImg, setLogoImg] = useState(null);
   const [coverImg, setCoverImg] = useState(null);
-  const [loading, setloading] = useState(false)
+  const [loading, setloading] = useState(false);
 
-/*      name,
-      firstName,
-      email,
-      phoneNumber,
-      password,
-      role,
-      identityCardUrl,
-      shopName,
-      shopDescription,
-      shopAddress,
-      avatarUrl,
-      logoUrl,
-      imageShopUrl, */
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState,
-    trigger
-  } = useForm({
+  const { register, handleSubmit, watch, formState, trigger } = useForm({
     mode: "onChange",
   });
 
@@ -50,18 +31,25 @@ const Register = () => {
   }
 
   async function submitForm(data) {
-    setloading(true)
+    setloading(true);
+    console.log()
     const payload = {
       ...data,
-      role:"TRADER"
-    }
-    await registerAction(payload).then((response) => {
-      setloading(false)
-      console.log(response);
-    }).catch((error) => {
-      setloading(false)
-      console.log(error);
-     })
+      role: "TRADER",
+      avatar: data?.avatar[0],
+      logo: data?.logo[0],
+      identityCard: data?.identityCard[0],
+      imageShop: data?.imageShop[0],
+    };
+    await registerAction(payload)
+      .then((response) => {
+        setloading(false);
+        console.log(response);
+      })
+      .catch((error) => {
+        setloading(false);
+        console.log(error);
+      });
   }
   async function validatoreStep() {
     trigger().then((isValid) => {
@@ -69,10 +57,7 @@ const Register = () => {
         setActiveForm(activeForm + 1);
       }
     });
-
   }
-
- 
 
   return (
     <div className="min-h-screen bg-[#F9FAFB] flex items-center justify-center">
@@ -388,6 +373,7 @@ const Register = () => {
                       })}
                       name="logo"
                       type="file"
+                      multiple={false}
                       accept="image/png, image/jpg, image/jpeg"
                       onChange={previewLogoImage}
                     />
@@ -415,6 +401,7 @@ const Register = () => {
                       })}
                       type="file"
                       name="imageShop"
+                      multiple={false}
                       accept="image/png, image/jpg, image/jpeg"
                       onChange={previewCoverImage}
                     />
@@ -455,6 +442,7 @@ const Register = () => {
                     })}
                     name="avatar"
                     type="file"
+                    multiple={false}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
                     placeholder="Entrez votre nom complet"
                   />
@@ -474,6 +462,7 @@ const Register = () => {
                     })}
                     name="identityCard"
                     type="file"
+                    multiple={false}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
                     placeholder="Entrez votre nom complet"
                   />

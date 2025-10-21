@@ -30,3 +30,5 @@ export const objectToFormDataWithArray = (payload: {
   });
   return data;
 };
+
+export type VerbHttpType = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
