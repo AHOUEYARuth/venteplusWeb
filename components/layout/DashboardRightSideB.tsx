@@ -7,9 +7,12 @@ import { FaRegCircleCheck } from "react-icons/fa6";
 import { IoMdClose } from "react-icons/io";
 import "@/style/style.scss"
 import { MdOutlineAdd } from "react-icons/md";
+import { loginStore } from "@/app/login/loginStore/loginStore";
+import { baseURL } from "@/lib/httpClient";
 
 
 const DashboardRightSideB = () => {
+  const { shop } = loginStore()
   return (
     <div className="w-[100%] h-[90vh] bg-gray-50 rounded-xl  overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
       <div className="w-full flex flex-col items-start gap-y-15">
@@ -27,7 +30,7 @@ const DashboardRightSideB = () => {
               <div className="w-[115px] h-[115px] flex items-center justify-center border border-gray-500 rounded-full cursor-pointer ">
                 <div
                   className="w-[100px] h-[100px] rounded-full bg-center bg-cover bg-no-repeat "
-                  style={{ backgroundImage: `url(${UserImg.src})` }}
+                  style={{ backgroundImage: `url(http://127.0.0.1:4000/${shop?.image})` }}
                 ></div>
               </div>
               <h2 className="font-semibold text-2xl">Hello Amra</h2>

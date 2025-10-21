@@ -14,8 +14,11 @@ import {
 } from "@/components/ui/select";
 import { useForm } from "react-hook-form";
 import { PhoneInput } from "@/components/ui/phone-input";
+import { useRouter } from "next/navigation";
+
 const Login = () => {
-  const { name, showLogin, loginActions } = loginStore();
+  const { name, showLogin, loginActions,setToken,setUser,setShop } = loginStore();
+  const router = useRouter();
   const { register, handleSubmit, watch, formState, trigger } = useForm({
     mode: "onChange",
   });
@@ -32,6 +35,11 @@ const Login = () => {
         if (response.data.shops) {
           setIsSelectedShop(true)
           setShops(response.data.shops)
+        }else if(response.data.token){
+          setToken(response.data.token) 
+          setUser(response.data.user)
+          setShop(response.data.shop)
+          router.push('/dashboard')
         }
       })
       .catch((error) => {
