@@ -67,8 +67,9 @@ export default function Selling() {
         <div>
           <h2 className="text-2xl font-bold ">Commandes et Ventes</h2>
           <p className="text-gray-500 text-xl pt-5">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
-            Perspiciatis, reprehenderit.
+            Enregistrez vos ventes et suivez vos commandes clients avec
+            précision. Chaque transaction est tracée pour une meilleure
+            visibilité.
           </p>
         </div>
       </div>

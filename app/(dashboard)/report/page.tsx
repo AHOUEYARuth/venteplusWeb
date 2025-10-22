@@ -43,8 +43,8 @@ const report = () => {
         <div>
           <h2 className="text-2xl font-bold ">Rapport et Statistique</h2>
           <p className="text-gray-500 text-xl pt-5">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
-            Perspiciatis, reprehenderit.
+            Analysez vos performances avec des rapports clairs et automatisés.
+            Prenez de meilleures décisions pour développer votre activité.
           </p>
         </div>
         <Button className="bg-[#F39C12] cursor-pointer">

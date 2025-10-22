@@ -65,8 +65,8 @@ export default function Stock() {
         <div>
           <h2 className="text-2xl font-bold ">Gestion de Stocks</h2>
           <p className="text-gray-500 text-xl pt-3">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
-            Perspiciatis, reprehenderit.
+            Contrôlez vos stocks sans stress. Consultez les niveaux de produits
+            et évitez les ruptures ou surplus grâce à un suivi automatisé.
           </p>
         </div>
       </div>
@@ -199,6 +199,7 @@ export default function Stock() {
                       required: "Le nom du produit est obligatoire",
                     })}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                    defaultValue=""
                   >
                     <option value="" disabled>
                       Sélectionner un produit

@@ -48,8 +48,8 @@ const dashboard = () => {
         <div>
           <h2 className="text-2xl font-bold ">Tableau de bord</h2>
           <p className="text-gray-500 text-xl pt-5">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
-            Perspiciatis, reprehenderit.
+            Suivez en un coup d&apos;œil la performance de votre commerce. Visualisez
+            vos ventes, bénéfices et statistiques clés en temps réel.
           </p>
         </div>
       </div>

@@ -64,8 +64,8 @@ const Customer = () => {
         <div>
           <h2 className="text-2xl font-bold ">Clients</h2>
           <p className="text-gray-500 text-xl pt-3">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
-            Perspiciatis, reprehenderit.
+            Suivez vos clients, consultez leur historique d’achat et renforcez
+            leur fidélité grâce à une gestion simplifiée.
           </p>
         </div>
       </div>

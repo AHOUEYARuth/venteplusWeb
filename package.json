@@ -34,6 +34,7 @@
     "react-hook-form": "^7.65.0",
     "react-icons": "^5.5.0",
     "react-phone-number-input": "^3.4.12",
+    "react-spinners": "^0.17.0",
     "recharts": "^2.15.4",
     "sass": "^1.93.2",
     "tailwind-merge": "^3.3.1",

@@ -29,7 +29,18 @@ const DashboardRightSideB = () => {
           <TabsContent value="alertes" className="w-[100%] py-10">
             <div className="w-full flex flex-col items-center gap-y-4">
               <div className="w-[115px] h-[115px] flex items-center justify-center border border-gray-500 rounded-full cursor-pointer ">
-                <Image src={shop?.image ? `http://127.0.0.1:4000/${shop.image}` : UserImg.src} className="max-w-[100px] max-h-[100px] rounded-full" objectFit="cover" width={100} height={100}  alt="" />
+                <Image
+                  src={
+                    shop?.image
+                      ? `http://127.0.0.1:4000/${shop.image}`
+                      : UserImg.src
+                  }
+                  className="max-w-[100px] max-h-[100px] rounded-full"
+                  objectFit="cover"
+                  width={100}
+                  height={100}
+                  alt=""
+                />
                 {/* <div
                   className="w-[100px] h-[100px] rounded-full bg-center bg-cover bg-no-repeat "
                   style={{ backgroundImage: `url("http://127.0.0.1:4000/uploads/imageBoutiques/1761075840068-234262470.png")` }}
@@ -54,8 +65,9 @@ const DashboardRightSideB = () => {
                         Stock Faible
                       </h2>
                       <p className="text-sm text-gray-600 cursor-pointer">
-                        Lorem ipsum dolor, sit amet consectetur adipisicing
-                        elit.
+                        Certains produits sont bientôt en rupture ! Pensez à
+                        réapprovisionner vos stocks pour éviter les manques lors
+                        des prochaines ventes.
                       </p>
                     </div>
                   </div>

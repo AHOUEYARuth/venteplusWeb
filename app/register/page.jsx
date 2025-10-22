@@ -7,12 +7,16 @@ import Link from "next/link";
 import RegisterP from "@/assets/images/login.jpg";
 import "@/style/style.scss";
 import { PhoneInput } from "@/components/ui/phone-input";
+import { ClipLoader } from "react-spinners";
+import { useRouter } from "next/navigation";
 
 const Register = () => {
   const { activeForm, setActiveForm, registerAction } = registerStore();
   const [logoImg, setLogoImg] = useState(null);
   const [coverImg, setCoverImg] = useState(null);
   const [loading, setloading] = useState(false);
+  
+  const router = useRouter();
 
   const { register, handleSubmit, watch, formState, trigger } = useForm({
     mode: "onChange",
@@ -45,6 +49,7 @@ const Register = () => {
       .then((response) => {
         setloading(false);
         console.log(response);
+        router.push('/login')
       })
       .catch((error) => {
         setloading(false);
@@ -480,11 +485,9 @@ const Register = () => {
                   >
                     Précédent
                   </button>
-                  <button
-                    type="submit"
-                    className="flex-1 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] transition-all shadow-lg"
-                  >
-                    S&apos;inscrire
+                  <button type="submit" className="auth-btn w-[50%] flex flex-row items-center gap-x-2 justify-center bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d6860f] focus:outline-none focus:ring-2 focus:ring-[#F39C12] focus:ring-offset-2 transition-all shadow-lg">
+                    Se connecter{" "}
+                    {loading ? <ClipLoader color="white" size={20} /> : null}
                   </button>
                 </div>
               </div>

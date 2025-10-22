@@ -10,6 +10,7 @@ import {
   FaShoppingBag,
   FaUser,
 } from "react-icons/fa";
+import { ImUsers } from "react-icons/im";
 import { FiChevronDown, FiList, FiDollarSign } from "react-icons/fi";
 import { IoSettings, IoHelpCircle, IoLogOut } from "react-icons/io5";
 import { usePathname } from "next/navigation";
@@ -144,7 +145,7 @@ const DashboardLeftSideBar = () => {
                     pathname === "/employee" ? "active" : ""
                   }`}
                 >
-                  <FaUser className="text-xl flex-shrink-0" />
+                  <ImUsers className="text-xl flex-shrink-0" />
                   <span>Employées</span>
                 </Link>
               </li>

@@ -65,8 +65,8 @@ export default function Spending() {
         <div>
           <h2 className="text-2xl font-bold ">Dépenses</h2>
           <p className="text-gray-500 text-xl pt-5">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
-            Perspiciatis, reprehenderit.
+            Gardez le contrôle sur vos charges et achats. Suivez vos dépenses
+            pour mieux maîtriser votre rentabilité.
           </p>
         </div>
       </div>
@@ -80,7 +80,7 @@ export default function Spending() {
           </div>
 
           <div className="mt-4">
-            <h2 className="text-4xl font-semibold">80 000</h2>
+            <h2 className="text-4xl font-semibold">20 000</h2>
           </div>
 
           <div className="flex items-center gap-2 mt-4">
@@ -94,14 +94,14 @@ export default function Spending() {
 
         <div className="w-90 bg-white text-black rounded-xl p-5 shadow-md hover:shadow-xl flex flex-col justify-between cursor-pointer">
           <div className="flex justify-between items-start">
-            <h2 className="text-2xl font-bold">Bénéfice net(FCFA)</h2>
+            <h2 className="text-2xl font-bold">Bénéfice du mois(FCFA)</h2>
             <div className="bg-[#F39C12] hover:bg-white/30 transition-colors rounded-full p-2">
               <FiArrowUpRight className="text-white" size={16} />
             </div>
           </div>
 
           <div className="mt-4">
-            <h2 className="text-4xl font-semibold">15 000</h2>
+            <h2 className="text-4xl font-semibold">26 000</h2>
           </div>
 
           <div className="flex items-center gap-2 mt-4">
@@ -115,14 +115,14 @@ export default function Spending() {
 
         <div className="w-90 bg-white text-black rounded-xl p-5 shadow-md hover:shadow-xl flex flex-col justify-between cursor-pointer">
           <div className="flex justify-between items-start">
-            <h2 className="text-2xl font-bold">Bénéfice Total(FCFA)</h2>
+            <h2 className="text-2xl font-bold">Dettes (FCFA)</h2>
             <div className="bg-[#F39C12] hover:bg-white/30 transition-colors rounded-full p-2">
               <FiArrowUpRight className="text-white" size={16} />
             </div>
           </div>
 
           <div className="mt-4">
-            <h2 className="text-4xl font-semibold">45 000</h2>
+            <h2 className="text-4xl font-semibold">0</h2>
           </div>
 
           <div className="flex items-center gap-2 mt-4">

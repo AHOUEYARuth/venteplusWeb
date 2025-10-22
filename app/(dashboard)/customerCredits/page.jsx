@@ -62,9 +62,11 @@ export default function CustomerCredits() {
         <div>
           <h2 className="text-2xl font-bold ">Dettes Clients</h2>
           <p className="text-gray-500 text-xl pt-3">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
-            Perspiciatis, reprehenderit.
+            Gérez les crédits accordés à vos clients. Suivez les remboursements
+            et relancez facilement les paiements en attente.
           </p>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Perspiciatis,
+          reprehenderit.
         </div>
       </div>
       <div className="w-full flex flex-col gap-y-5">

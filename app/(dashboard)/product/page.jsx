@@ -77,8 +77,8 @@ const Product = () => {
         <div>
           <h2 className="text-2xl font-bold ">Produits</h2>
           <p className="text-gray-500 text-xl pt-3">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
-            Perspiciatis, reprehenderit.
+            Gérez facilement vos articles : ajoutez, modifiez ou supprimez vos
+            produits et surveillez leur disponibilité à tout moment.
           </p>
         </div>
         <div className="flex items-center gap-x-5">

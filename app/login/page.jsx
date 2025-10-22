@@ -4,6 +4,8 @@ import { loginStore } from "./loginStore/loginStore";
 import Link from "next/link";
 import Image from "next/image";
 import LoginP from "@/assets/images/login.jpg";
+import { ClipLoader } from "react-spinners";
+
 import "@/style/style.scss";
 import {
   Select,
@@ -174,8 +176,8 @@ const Login = () => {
                 </Link>
               </div>
 
-              <button className="auth-btn w-[50%] bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d6860f] focus:outline-none focus:ring-2 focus:ring-[#F39C12] focus:ring-offset-2 transition-all shadow-lg">
-                Se connecter
+              <button className="auth-btn w-[50%] flex flex-row items-center gap-x-2 justify-center bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d6860f] focus:outline-none focus:ring-2 focus:ring-[#F39C12] focus:ring-offset-2 transition-all shadow-lg">
+                Se connecter {loading ? <ClipLoader color="white"  size={20}/> : null}
               </button>
 
               <div className="mt-6 text-center">
