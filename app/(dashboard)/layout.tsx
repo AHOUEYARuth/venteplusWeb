@@ -4,9 +4,10 @@ import DashboardLeftSideBar from "@/components/layout/DashboardLeftSideBar";
 import DashboardNavBar from "@/components/layout/DashboardNavBar";
 import { ReactNode } from "react";
 import { usePathname } from "next/navigation";
+import { useLoginStore } from "../login/loginStore/loginStore";
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-
+ 
   const hidePaths = [
     "/selling",
     "/stock",
@@ -18,6 +19,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="w-full overl h-[100vh] bg-[#FFFFFF] p-5 overflow-hidden">
+      <div className="w-[100vw] h-[100vh] left-0 fixed top-0 bg-[white] flex flx-col items-center justify-center z-50"></div>
       <div className="w-full h-full flex flex-row justify-between gap-x-5">
         <div className="w-[16%] h-full bg-gray-50 rounded-xl p-5 flex flex-col overflow-hidden">
           <DashboardLeftSideBar />

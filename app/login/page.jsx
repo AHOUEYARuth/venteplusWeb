@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import { loginStore } from "./loginStore/loginStore";
 import Link from "next/link";
 import Image from "next/image";
 import LoginP from "@/assets/images/login.jpg";
@@ -17,9 +16,10 @@ import {
 import { useForm } from "react-hook-form";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { useRouter } from "next/navigation";
+import { useLoginStore } from "./loginStore/loginStore";
 
 const Login = () => {
-  const { name, showLogin, loginActions,setToken,setUser,setShop } = loginStore();
+  const { name, showLogin, loginActions,setToken,setUser,setShop } = useLoginStore();
   const router = useRouter();
   const { register, handleSubmit, watch, formState, trigger } = useForm({
     mode: "onChange",

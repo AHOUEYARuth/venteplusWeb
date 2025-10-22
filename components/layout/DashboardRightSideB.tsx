@@ -7,13 +7,15 @@ import { FaRegCircleCheck } from "react-icons/fa6";
 import { IoMdClose } from "react-icons/io";
 import "@/style/style.scss"
 import { MdOutlineAdd } from "react-icons/md";
-import { loginStore } from "@/app/login/loginStore/loginStore";
+
 import { baseURL } from "@/lib/httpClient";
 import Image from "next/image";
+import { useLoginStore } from "@/app/login/loginStore/loginStore";
 
 
 const DashboardRightSideB = () => {
-  const { shop } = loginStore()
+  const { shop } = useLoginStore()
+  
   return (
     <div className="w-[100%] h-[90vh] bg-gray-50 rounded-xl  overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
       <div className="w-full flex flex-col items-start gap-y-15">
