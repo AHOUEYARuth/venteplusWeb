@@ -1,13 +1,29 @@
 "use client";
+import { useState , useEffect} from "react";
 import DashboardRightSideB from "@/components/layout/DashboardRightSideB";
 import DashboardLeftSideBar from "@/components/layout/DashboardLeftSideBar";
 import DashboardNavBar from "@/components/layout/DashboardNavBar";
 import { ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { useLoginStore } from "../login/loginStore/loginStore";
+import { GridLoader } from "react-spinners";
+
+
+
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
- 
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (function init() {
+      if(loading){
+         setTimeout(() => {
+            setLoading(false);
+          }, 5000);
+      }
+       
+    })();
+  }, [])
   const hidePaths = [
     "/selling",
     "/stock",
@@ -19,7 +35,11 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="w-full overl h-[100vh] bg-[#FFFFFF] p-5 overflow-hidden">
-      <div className="w-[100vw] h-[100vh] left-0 fixed top-0 bg-[white] flex flx-col items-center justify-center z-50"></div>
+      {loading == true ? (
+        <div className="w-[100vw] h-[100vh] left-0 fixed top-0 bg-[black] flex flx-col items-center justify-center z-50">
+          <GridLoader size={35} color="orange" />
+        </div>
+      ) : null}
       <div className="w-full h-full flex flex-row justify-between gap-x-5">
         <div className="w-[16%] h-full bg-gray-50 rounded-xl p-5 flex flex-col overflow-hidden">
           <DashboardLeftSideBar />
