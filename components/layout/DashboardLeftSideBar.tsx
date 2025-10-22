@@ -24,7 +24,7 @@ const DashboardLeftSideBar = () => {
         href="/"
         className="text-3xl font-bold text-[#F39C12] mb-8 flex-shrink-0"
       >
-        ShopLogo
+        Vente+
       </Link>
 
       <div className="flex-1 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">

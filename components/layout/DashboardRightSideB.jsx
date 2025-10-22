@@ -5,17 +5,30 @@ import { GoAlert } from "react-icons/go";
 import { TbInfoTriangle } from "react-icons/tb";
 import { FaRegCircleCheck } from "react-icons/fa6";
 import { IoMdClose } from "react-icons/io";
-import "@/style/style.scss"
+import "@/style/style.scss";
 import { MdOutlineAdd } from "react-icons/md";
 
 import { baseURL, baseUrlNotApi } from "@/lib/httpClient";
 import Image from "next/image";
 import { useLoginStore } from "@/app/login/loginStore/loginStore";
-
+import { useForm } from "react-hook-form";
+import { productStore } from "@/app/(dashboard)/product/productStore/productStore";
 
 const DashboardRightSideB = () => {
-  const { shop } = useLoginStore()
-  
+  const { register, handleSubmit, watch, formState, trigger } = useForm({
+    mode: "onChange",
+  });
+  const { categoryAction } = productStore();
+  const submitForm = (data) => {
+   /*  await categoryAction(data).then */
+    trigger().then((isValid) => {
+      if (isValid) {
+        console.log(data);
+      }
+    });
+  };
+  const { shop } = useLoginStore();
+
   return (
     <div className="w-[100%] h-[90vh] bg-gray-50 rounded-xl  overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
       <div className="w-full flex flex-col items-start gap-y-15">
@@ -31,11 +44,10 @@ const DashboardRightSideB = () => {
           <TabsContent value="alertes" className="w-[100%] py-10">
             <div className="w-full flex flex-col items-center gap-y-4">
               <div className="w-[115px] h-[115px] flex items-center justify-center border border-gray-500 rounded-full cursor-pointer ">
-          
                 <div
-                  className="w-[100px] h-[100px] rounded-full bg-center bg-cover bg-no-repeat "
-                  style={{ backgroundImage: `url("${baseUrlNotApi}${shop?.image}")` }}
-                    
+                    className="w-[100px] h-[100px] rounded-full bg-center bg-cover bg-no-repeat "
+                    style={{ backgroundImage: `url("${baseUrlNotApi}${shop?.image}")` }}
+                                    
                 ></div>
               </div>
               <h2 className="font-semibold text-2xl">{shop?.name}</h2>
@@ -125,16 +137,29 @@ const DashboardRightSideB = () => {
               <h3 className="text-base text-gray-600 mb-2">
                 Nom de la catégorie
               </h3>
-              <div className="w-full relative flex items-center justify-between bg-white gap-x-2 rounded-lg">
-                <input
-                  type="text"
-                  placeholder="Ajouter une catégorie"
-                  className="size w-[60%] text-lg py-2 pl-2 outline-hidden rounded-lg focus:outline-none  transition-all"
-                />
-                <button className="py-2 w-[20%] bg-[#F39C12] flex items-center justify-center text-white rounded-tr-lg rounded-br-lg cursor-pointer">
-                  <MdOutlineAdd size={30} />
-                </button>
-              </div>
+              <form action="" onSubmit={handleSubmit(submitForm)}>
+                <div>
+                  <div className="w-full relative flex items-center justify-between bg-white gap-x-2 rounded-lg">
+                    <input
+                      {...register("name", {
+                        required: "Le nom de la catégorie est obligatoire",
+                      })}
+                      type="text"
+                      name="name"
+                      placeholder="Ajouter une catégorie"
+                      className="size w-[60%] text-lg py-2 pl-2 outline-hidden rounded-lg focus:outline-none  transition-all"
+                    />
+                    <button type="submit" className="py-2 w-[20%] bg-[#F39C12] flex items-center justify-center text-white rounded-tr-lg rounded-br-lg cursor-pointer">
+                      <MdOutlineAdd size={30} />
+                    </button>
+                  </div>
+                  {formState.errors.name && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {formState.errors.name.message}
+                    </p>
+                  )}
+                </div>
+              </form>
             </div>
             <div className="w-full bg-white rounded-lg mt-5 p-5 space-y-5">
               <div className="w-full py-3 flex items-center justify-between cursor-pointer">
