@@ -2,12 +2,11 @@
 
 import { create } from "zustand";
 import { createCategoryRequest, createProductRequest, deleteCategoriesRequest, getCategoriesRequest, getPoductsRequest } from "../productRequest/productRequest";
-import shop from "@/app/shop/page";
-
+ 
 type State = {
   open: boolean;
   categories: Array<string>;
-  products: Array<any>
+  products: any;
 };
 
 type ProductActions = {
@@ -21,7 +20,7 @@ type ProductActions = {
   setProducts: (products: any) => void;
 };
 
-export const productStore = create<State & ProductActions>((set) => ({
+export const useProductStore = create<State & ProductActions>((set) => ({
   open: false,
   categories: [],
   products: [],
@@ -49,8 +48,7 @@ export const productStore = create<State & ProductActions>((set) => ({
     const response = await getPoductsRequest(shopId);
     return response;
   },
-  setProducts(products) {
-    set({ products: products });
-  },
+  setProducts: (products) => set((state) => ({ products: products })),
+ 
 }));
 

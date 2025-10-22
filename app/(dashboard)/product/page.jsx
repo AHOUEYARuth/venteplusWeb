@@ -16,40 +16,32 @@ import Product4 from "@/assets/images/product2.png";
 import Product5 from "@/assets/images/product6.png";
 import { GrFavorite } from "react-icons/gr";
 import { TiShoppingCart } from "react-icons/ti";
-import { productStore } from "./productStore/productStore";
+import { useProductStore } from "./productStore/productStore";
 import { IoAccessibility } from "react-icons/io5";
 import { IoMdClose } from "react-icons/io";
 import { useForm } from "react-hook-form";
 import { useLoginStore } from "@/app/login/loginStore/loginStore";
 import { baseUrlNotApi } from "@/lib/httpClient";
 
-const Product = () => {
+export default function Product() {
   const container = useRef(null);
   const timeLineModal = useRef();
   const [coverImg, setcoverImg] = useState(null);
   const [payloadImg, setpayloadImg] = useState(null);
-  const {
-    products,
-    createProductAction,
-    setProducts,
-    getProductsActions,
-    categories,
-  } = productStore();
+  const { products, createProductAction,setProducts,getProductsActions,categories} = useProductStore();
   const { shop } = useLoginStore();
   const [additionalCoast, setadditionalCoast] = useState(0);
   const [productLoading, setproductLoading] = useState(false);
+  const [productsListe, setproductsListe] = useState([])
 
   const { register, handleSubmit, watch, formState, trigger, reset } = useForm({
     mode: "onChange",
   });
-  function applyGetProductAction(shopId) {
-    getProductsActions(shopId).then((response) => {
-      setProducts(response.data);
-      console.log("products data");
-      console.log(response.data);
-       console.log("products liste");
-       console.log(products);
-      /* setproductLoading(false); */
+  async function applyGetProductAction(shopId) {
+   setproductLoading(true);
+    await getProductsActions(shopId).then((response) => {
+          setProducts(response.data);
+          setproductLoading(false);
     });
   }
   async function submitForm(data) {
@@ -83,9 +75,6 @@ const Product = () => {
 
   useEffect(() => {
     (function init() {
-      setproductLoading(true);
-      console.log("shop");
-      console.log(shop);
       if (shop?.id) {
         applyGetProductAction(shop?.id);
       }
@@ -188,7 +177,7 @@ const Product = () => {
         <h2 className="text-2xl font-bold mb-5">Liste des Produits</h2>
         <div className="w-full flex flex-row flex-wrap items-center justify-between gap-y-4">
           {products.map((product, index) => {
-             <div
+            return <div
                key={index}
                className="shop-item w-70 flex flex-col gap-5 bg-white rounded-2xl p-3 relative shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
              >
@@ -612,4 +601,4 @@ const Product = () => {
   );
 };
 
-export default Product;
+

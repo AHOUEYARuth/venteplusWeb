@@ -12,14 +12,14 @@ import { baseURL, baseUrlNotApi } from "@/lib/httpClient";
 import Image from "next/image";
 import { useLoginStore } from "@/app/login/loginStore/loginStore";
 import { useForm } from "react-hook-form";
-import { productStore } from "@/app/(dashboard)/product/productStore/productStore";
+import { useProductStore } from "@/app/(dashboard)/product/productStore/productStore";
 
 const DashboardRightSideB = () => {
   const {shop} = useLoginStore()
   const { register, handleSubmit, watch, formState, trigger ,reset} = useForm({
     mode: "onChange",
   });
-  const { categoryAction, getCategoriesAction, setCategories, categories, deleteCategoriesAction } = productStore();
+  const { categoryAction, getCategoriesAction, setCategories, categories, deleteCategoriesAction } = useProductStore();
   const [catLoading, setCatLoading] = useState(false)
   function applyGetCatAction(shopId) {
     getCategoriesAction(shopId).then((response) => {
