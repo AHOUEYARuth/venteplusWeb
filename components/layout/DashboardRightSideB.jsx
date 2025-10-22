@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import UserImg from "@/assets/images/usrp.png";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GoAlert } from "react-icons/go";
@@ -15,19 +15,58 @@ import { useForm } from "react-hook-form";
 import { productStore } from "@/app/(dashboard)/product/productStore/productStore";
 
 const DashboardRightSideB = () => {
-  const { register, handleSubmit, watch, formState, trigger } = useForm({
+  const {shop} = useLoginStore()
+  const { register, handleSubmit, watch, formState, trigger ,reset} = useForm({
     mode: "onChange",
   });
-  const { categoryAction } = productStore();
-  const submitForm = (data) => {
-   /*  await categoryAction(data).then */
+  const { categoryAction, getCategoriesAction, setCategories, categories, deleteCategoriesAction } = productStore();
+  const [catLoading, setCatLoading] = useState(false)
+  function applyGetCatAction(shopId) {
+    getCategoriesAction(shopId).then((response) => {
+      setCategories(response.data);
+      console.log("data");
+      console.log(response.data);
+
+      setCatLoading(false);
+    });
+  }
+  async function applyDelCatAction(catId) {
+    await deleteCategoriesAction(catId);
+    await  applyGetCatAction(shop?.id); 
+  }
+  async function submitForm(data) {
+    const payload = {
+      ...data,
+      shopId:shop?.id
+    }
+    await categoryAction(payload)
+      .then(async (response) => {
+        console.log(response);
+        await applyGetCatAction(shop?.id);
+        reset()
+      })
+      .catch((error) => {
+        console.log(error);
+      });
     trigger().then((isValid) => {
       if (isValid) {
         console.log(data);
       }
     });
   };
-  const { shop } = useLoginStore();
+
+  
+
+  useEffect(() => {
+    (function init() {
+      setCatLoading(true)
+      console.log("shop");
+      console.log(shop);
+      if (shop?.id) {
+        applyGetCatAction(shop?.id);
+      }
+    })();
+  }, [shop])
 
   return (
     <div className="w-[100%] h-[90vh] bg-gray-50 rounded-xl  overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
@@ -147,7 +186,7 @@ const DashboardRightSideB = () => {
                       type="text"
                       name="name"
                       placeholder="Ajouter une catégorie"
-                      className="size w-[60%] text-lg py-2 pl-2 outline-hidden rounded-lg focus:outline-none  transition-all"
+                      className="size w-[60%] text-lg py-2 pl-2 outline-hidden rounded-lg focus:outline-none  transition-all z-1"
                     />
                     <button type="submit" className="py-2 w-[20%] bg-[#F39C12] flex items-center justify-center text-white rounded-tr-lg rounded-br-lg cursor-pointer">
                       <MdOutlineAdd size={30} />
@@ -162,37 +201,16 @@ const DashboardRightSideB = () => {
               </form>
             </div>
             <div className="w-full bg-white rounded-lg mt-5 p-5 space-y-5">
-              <div className="w-full py-3 flex items-center justify-between cursor-pointer">
-                <p className="text-xl">Coton</p>
-                <IoMdClose />
-              </div>
 
-              <div className="w-full py-3 flex items-center justify-between cursor-pointer">
-                <p className="text-xl">Soie</p>
-                <IoMdClose />
+              {categories.map((category, index) => {
+                return (
+                  <div key={index} className="w-full py-3 flex items-center justify-between cursor-pointer">
+                    <p className="text-xl">{category.name}</p>
+                    <IoMdClose onClick={()=>{ applyDelCatAction(category.id)}}/>
+                  </div>
+                );
+              })}
               </div>
-
-              <div className="w-full flex items-center justify-between cursor-pointer">
-                <p className="text-xl">Coton</p>
-                <IoMdClose />
-              </div>
-
-              <div className="w-full py-3 flex items-center justify-between cursor-pointer">
-                <p className="text-xl">Soie</p>
-                <IoMdClose />
-              </div>
-
-              <div className="w-full py-3 flex items-center justify-between cursor-pointer">
-                <p className="text-xl">Coton</p>
-                <IoMdClose />
-              </div>
-
-              <div className="w-full py-3 flex items-center justify-between cursor-pointer">
-                <p className="text-xl">Soie</p>
-                <IoMdClose />
-              </div>
-              {/* <div className="border border-gray-500 mt-2"></div> */}
-            </div>
           </TabsContent>
         </Tabs>
       </div>

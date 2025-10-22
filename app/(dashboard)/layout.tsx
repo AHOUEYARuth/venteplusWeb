@@ -6,7 +6,7 @@ import DashboardNavBar from "@/components/layout/DashboardNavBar";
 import { ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { useLoginStore } from "../login/loginStore/loginStore";
-import { GridLoader } from "react-spinners";
+import { ClipLoader, PuffLoader } from "react-spinners";
 
 
 
@@ -37,7 +37,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     <div className="w-full overl h-[100vh] bg-[#FFFFFF] p-5 overflow-hidden">
       {loading == true ? (
         <div className="w-[100vw] h-[100vh] left-0 fixed top-0 bg-[black] flex flx-col items-center justify-center z-50">
-          <GridLoader size={35} color="orange" />
+          <PuffLoader size={100} color="orange" />
         </div>
       ) : null}
       <div className="w-full h-full flex flex-row justify-between gap-x-5">

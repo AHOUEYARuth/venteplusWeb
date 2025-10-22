@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -20,24 +20,77 @@ import { productStore } from "./productStore/productStore";
 import { IoAccessibility } from "react-icons/io5";
 import { IoMdClose } from "react-icons/io";
 import { useForm } from "react-hook-form";
+import { useLoginStore } from "@/app/login/loginStore/loginStore";
+import { baseUrlNotApi } from "@/lib/httpClient";
 
 const Product = () => {
   const container = useRef(null);
   const timeLineModal = useRef();
   const [coverImg, setcoverImg] = useState(null);
   const [payloadImg, setpayloadImg] = useState(null);
+  const {
+    products,
+    createProductAction,
+    setProducts,
+    getProductsActions,
+    categories,
+  } = productStore();
+  const { shop } = useLoginStore();
+  const [additionalCoast, setadditionalCoast] = useState(0);
+  const [productLoading, setproductLoading] = useState(false);
 
-  const { register, handleSubmit, watch, formState, trigger } = useForm({
+  const { register, handleSubmit, watch, formState, trigger, reset } = useForm({
     mode: "onChange",
   });
+  function applyGetProductAction(shopId) {
+    getProductsActions(shopId).then((response) => {
+      setProducts(response.data);
+      console.log("products data");
+      console.log(response.data);
+       console.log("products liste");
+       console.log(products);
+      /* setproductLoading(false); */
+    });
+  }
+  async function submitForm(data) {
+    const payload = {
+      ...data,
+      shopId: shop?.id,
+      additionalCosts: parseInt(additionalCoast),
+      purchasePrice: parseInt(data.purchasePrice),
+      salePrice: parseInt(data.salePrice),
+      image: data?.image[0],
+      availableQuantity: parseInt(data.availableQuantity),
+      minimumQuantity: parseInt(data.minimumQuantity),
+    };
+    await createProductAction(payload)
+      .then(async (response) => {
+        console.log("product");
+        console.log(response);
+         await applyGetProductAction(shop?.id);
+        reset()
+      })
+      .catch((error) => {
+        console.log(error);
+      });
 
-  const submitForm = (data) => {
-     trigger().then((isValid) => {
-       if (isValid) {
-         console.log(data);
-       }
-     });
-  };
+    trigger().then((isValid) => {
+      if (isValid) {
+        console.log(data);
+      }
+    });
+  }
+
+  useEffect(() => {
+    (function init() {
+      setproductLoading(true);
+      console.log("shop");
+      console.log(shop);
+      if (shop?.id) {
+        applyGetProductAction(shop?.id);
+      }
+    })();
+  }, [shop]);
 
   useLayoutEffect(() => {
     const context = gsap.context(() => {
@@ -134,47 +187,55 @@ const Product = () => {
       <div className="py-8 mt-10">
         <h2 className="text-2xl font-bold mb-5">Liste des Produits</h2>
         <div className="w-full flex flex-row flex-wrap items-center justify-between gap-y-4">
-          <div className="shop-item w-70 flex flex-col gap-5 bg-white rounded-2xl p-3 relative shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer">
-            <div className="w-full bg-gray-300 flex flex-col gap-5 rounded-tl-xl rounded-2xl">
-              <div
-                className="w-full h-[250px] bg-center bg-cover bg-no-repeat rounded-2xl"
-                style={{ backgroundImage: `url(${Product2.src})` }}
-              >
-                <div>
-                  <div className="w-full flex items-center justify-between pt-2 px-2 ">
-                    <div className="flex flex-row gap-2 text-white items-center justify-between p-2 bg-black rounded-md font-bold">
-                      <TiShoppingCart size={20} />
-                      <span className="text-lg font-black">21</span>
-                    </div>
-                    <button className="w-[40px] h-[40px]  text-xl flex items-center justify-center bg-black text-white rounded-full cursor-pointer ">
-                      <GrFavorite className="text-2xl" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+          {products.map((product, index) => {
+             <div
+               key={index}
+               className="shop-item w-70 flex flex-col gap-5 bg-white rounded-2xl p-3 relative shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
+             >
+               <div className="w-full bg-gray-300 flex flex-col gap-5 rounded-tl-xl rounded-2xl">
+                 <div
+                   className="w-full h-[250px] bg-center bg-cover bg-no-repeat rounded-2xl"
+                   style={{ backgroundImage: `url("${baseUrlNotApi}${product?.image}")` }}
+                 >
+                   <div>
+                     <div className="w-full flex items-center justify-between pt-2 px-2 ">
+                       <div className="flex flex-row gap-2 text-white items-center justify-between p-2 bg-black rounded-md font-bold">
+                         <TiShoppingCart size={20} />
+                         <span className="text-lg font-black">21</span>
+                       </div>
+                       <button className="w-[40px] h-[40px]  text-xl flex items-center justify-center bg-black text-white rounded-full cursor-pointer ">
+                         <GrFavorite className="text-2xl" />
+                       </button>
+                     </div>
+                   </div>
+                 </div>
+               </div>
 
-            <div className="px-2 flex flex-col gap-2">
-              <p className="text-base">
-                <span className="text-[#F39C12] font-semibold text-2xl">
-                  Tee-Shirt
-                </span>
-              </p>
+               <div className="px-2 flex flex-col gap-2">
+                 <p className="text-base">
+                   <span className="text-[#F39C12] font-semibold text-2xl">
+                     {product.name}
+                   </span>
+                 </p>
 
-              <p className="font-medium text-lg text-gray-500">
-                Lorem ipsum dolor sit amet consectetu amet consectetu..
-              </p>
-            </div>
-            <div className="px-2 flex items-center justify-between gap-4 text-sm text-gray-700">
-              <h3 className="text-2xl font-semibold">$10</h3>
-              <button className="bg-[#F39C12] text-white text-xl py-2 px-4 rounded-xl cursor-pointer">
-                <h3>
-                  Prix d&apos;achat : <span className="font-bold">$8</span>
-                </h3>
-              </button>
-            </div>
-          </div>
-          <div className="shop-item w-70 flex flex-col gap-5 bg-white rounded-2xl p-3 relative shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer">
+                 <p className="font-medium text-lg text-gray-500">
+                   {product.description}
+                 </p>
+               </div>
+               <div className="px-2 flex items-center justify-between gap-4 text-sm text-gray-700">
+                 <h3 className="text-2xl font-semibold">
+                   {product.salePrice}fcfa
+                 </h3>
+                 <button className="bg-[#F39C12] text-white text-xl py-2 px-4 rounded-xl cursor-pointer">
+                   <h3>
+                     Prix d&apos;achat :{" "}
+                     <span className="font-bold">{product.purchasePrice}</span>
+                   </h3>
+                 </button>
+               </div>
+             </div>;
+          })}
+          {/* <div className="shop-item w-70 flex flex-col gap-5 bg-white rounded-2xl p-3 relative shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer">
             <div className="w-full bg-gray-300 flex flex-col gap-5 rounded-tl-xl rounded-2xl">
               <div
                 className="w-full h-[250px] bg-center bg-cover bg-no-repeat rounded-2xl"
@@ -333,17 +394,17 @@ const Product = () => {
                 </h3>
               </button>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
 
       <div
         style={{ pointerEvents: "none", opacity: 0 }}
-        className={`modal_container w-full h-full fixed top-0 right-0 bg-black/30`}
+        className={`modal_container z-100 w-full h-full fixed top-0 right-0 bg-black/30`}
       >
         <div
           style={{ transform: "translateX(200%)", pointerEvents: "all" }}
-          className={`form_container flex flex-col items-start gap-y-10 bg-white w-110 p-5 rounded-xl h-[96vh] absolute top-5 right-3 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden `}
+          className={`form_container z-100 flex  flex-col items-start gap-y-10 bg-white w-110 p-5 rounded-xl h-[96vh] absolute top-5 right-3 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden `}
         >
           <button
             onClick={() => {
@@ -366,27 +427,53 @@ const Product = () => {
                     className="w-full h-[80%] object-contain rounded-xl"
                   />
                   <input
+                    {...register("image", {
+                      required: "l'image du produit est obligatoire",
+                    })}
                     type="file"
-                    name="productImg"
+                    name="image"
                     className=""
                     accept="image/png, image/jpg, image/jpeg"
                     onChange={previewCoverImage}
+                    multiple={false}
                   />
+                  {formState.errors.image && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {formState.errors.image.message}
+                    </p>
+                  )}
                 </div>
                 <div className="w-full flex flex-col gap-y-2">
                   <label htmlFor="">Nom du produit</label>
                   <input
-                    {...register("productName", {
+                    {...register("name", {
                       required: "Le nom du produit est obligatoire",
                     })}
                     type="text"
-                    name="productName"
+                    name="name"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
                     placeholder="Entrer le nom du produit"
                   />
-                  {formState.errors.productName && (
+                  {formState.errors.name && (
                     <p className="text-red-500 text-sm mt-1">
-                      {formState.errors.productName.message}
+                      {formState.errors.name.message}
+                    </p>
+                  )}
+                </div>
+                <div className="w-full flex flex-col gap-y-2">
+                  <label htmlFor="">Description du produit</label>
+                  <input
+                    {...register("description", {
+                      required: "Le nom du produit est obligatoire",
+                    })}
+                    type="text"
+                    name="description"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                    placeholder="Entrer une brève description du produit"
+                  />
+                  {formState.errors.description && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {formState.errors.description.message}
                     </p>
                   )}
                 </div>
@@ -426,24 +513,25 @@ const Product = () => {
                 </div>
                 <div className="w-full flex flex-col gap-y-2">
                   <label htmlFor="">Catégorie</label>
-                  <Select
-                    name="category"
-                    {...register("category", {
+                  <select
+                    name="categoryId"
+                    {...register("categoryId", {
                       required: "La catégorie du produit est obligatoire",
                     })}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                    defaultValue=""
                   >
-                    <SelectTrigger className="w-full py-6 outline-none focus:outline-none border border-[#F39C12]">
-                      <SelectValue placeholder="Catégorie" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="coton">Coton</SelectItem>
-                      <SelectItem value="cuir">Cuir</SelectItem>
-                      <SelectItem value="soie">Soie</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {formState.errors.category && (
+                    {categories.map((category, index) => {
+                      return (
+                        <option key={index} value={category.id}>
+                          {category.name}
+                        </option>
+                      );
+                    })}
+                  </select>
+                  {formState.errors.categoryId && (
                     <p className="text-red-500 text-sm mt-1">
-                      {formState.errors.category.message}
+                      {formState.errors.categoryId.message}
                     </p>
                   )}
                 </div>
@@ -465,39 +553,51 @@ const Product = () => {
                   )}
                 </div>
                 <div className="w-full flex flex-col gap-y-2">
-                  <label htmlFor="">Unité de mesure</label>
+                  <label htmlFor="">Quantité Minimale d'alerte</label>
                   <input
-                    {...register("unitMesurement", {
-                      required: "L'unité de mesure du produit est obligatoire",
+                    {...register("minimumQuantity", {
+                      required:
+                        "La quantité minimun du produit est obligatoire",
                     })}
                     type="number"
-                    name="unitMesurement"
+                    name="minimumQuantity"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-                    placeholder="unité de mesure"
+                    placeholder="quantité minimale"
                   />
-                  {formState.errors.unitMesurement && (
+                  {formState.errors.minimumQuantity && (
                     <p className="text-red-500 text-sm mt-1">
-                      {formState.errors.unitMesurement.message}
+                      {formState.errors.minimumQuantity.message}
                     </p>
                   )}
                 </div>
                 <div className="w-full flex flex-col gap-y-2">
+                  <label htmlFor="">Unité de mesure</label>
+                  <select
+                    name="unitMeasurement"
+                    id="unitMeasurement"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                  >
+                    <option value="nbr">Nombre</option>
+                    <option value="kilo">Kilo(Kg)</option>
+                    <option value="litre">Litre(L)</option>
+                  </select>
+                  {/* <input
+                   
+                    type="number"
+                    name="unitMesurement"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                    placeholder="unité de mesure"
+                  /> */}
+                </div>
+                <div className="w-full flex flex-col gap-y-2">
                   <label htmlFor="">Frais supplémentaires</label>
                   <input
-                    {...register("additionalCosts", {
-                      required:
-                        "Les Frais supplémentaires du produit est obligatoire",
-                    })}
                     type="number"
+                    onChange={(e) => setadditionalCoast(e.target.value)}
                     name="additionalCosts"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
                     placeholder="Entrer les frais supplémentaires"
                   />
-                  {formState.errors.additionalCosts && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {formState.errors.additionalCosts.message}
-                    </p>
-                  )}
                 </div>
 
                 <button className="auth-btn w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] focus:ring-offset-2 transition-all shadow-lg">
