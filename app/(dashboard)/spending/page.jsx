@@ -13,11 +13,23 @@ import { MdOutlineMoreVert, MdSearch } from "react-icons/md";
 import { IoMdArrowDropup, IoMdClose } from "react-icons/io";
 import { FiArrowUpRight } from "react-icons/fi";
 import gsap from "gsap";
+import { useForm } from "react-hook-form";
 
 export default function Spending() {
   const { spendings, fetchData } = spendingStore();
   const container = useRef(null);
   const timeLineModal = useRef();
+  const { register, handleSubmit, watch, formState, trigger } = useForm({
+    mode: "onChange",
+  });
+
+  const submitForm = (data) => {
+    trigger().then((isValid) => {
+      if (isValid) {
+        console.log(data);
+      }
+    });
+  };
 
   useLayoutEffect(() => {
     const context = gsap.context(() => {
@@ -229,44 +241,98 @@ export default function Spending() {
             <h3 className="text-xl text-[#F39C12] font-bold text-center">
               Ajouter une nouvelle dépense
             </h3>
-            <div className="w-full space-y-6 py-10">
-              <div className="w-full flex flex-col gap-y-2">
-                <label htmlFor="">Label (Titre)</label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-                  placeholder="Entrer le titre de la dépense"
-                />
-              </div>
-              <div className="w-full flex flex-col gap-y-2">
-                <label htmlFor="">Montant dépensé</label>
-                <input
-                  type="number"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-                  placeholder="Entrer le montant dépensé"
-                />
-              </div>
-              <div className="w-full flex flex-col gap-y-2">
-                <label htmlFor="">Description</label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-                  placeholder="Entrer une brève description"
-                />
-              </div>
-              <div className="w-full flex flex-col gap-y-2">
-                <label htmlFor="">Date de la dépense</label>
-                <input
-                  type="date"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-                  placeholder="Entrer la date de la dépense"
-                />
-              </div>
+            <form onSubmit={handleSubmit(submitForm)}>
+              <div className="w-full space-y-6 py-10">
+                <div className="w-full flex flex-col gap-y-2">
+                  <label htmlFor="label">Label (Titre)</label>
+                  <input
+                    {...register("label", {
+                      required: "Le titre de la dépense est obligatoire",
+                      minLength: {
+                        value: 3,
+                        message: "Le titre doit contenir au moins 3 caractères",
+                      },
+                    })}
+                    type="text"
+                    name="label"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                    placeholder="Entrer le titre de la dépense"
+                  />
+                  {formState.errors.label && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {formState.errors.label.message}
+                    </p>
+                  )}
+                </div>
 
-              <button className="auth-btn w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] focus:ring-offset-2 transition-all shadow-lg">
-                Enrégistrer la dépense
-              </button>
-            </div>
+                <div className="w-full flex flex-col gap-y-2">
+                  <label htmlFor="amount">Montant dépensé</label>
+                  <input
+                    {...register("amount", {
+                      required: "Le montant dépensé est obligatoire",
+                      min: {
+                        value: 1,
+                        message: "Le montant doit être supérieur à 0",
+                      },
+                    })}
+                    type="number"
+                    name="amount"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                    placeholder="Entrer le montant dépensé"
+                  />
+                  {formState.errors.amount && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {formState.errors.amount.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="w-full flex flex-col gap-y-2">
+                  <label htmlFor="description">Description</label>
+                  <input
+                    {...register("description", {
+                      required: "La description est obligatoire",
+                      minLength: {
+                        value: 5,
+                        message:
+                          "La description doit contenir au moins 5 caractères",
+                      },
+                    })}
+                    type="text"
+                    name="description"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                    placeholder="Entrer une brève description"
+                  />
+                  {formState.errors.description && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {formState.errors.description.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="w-full flex flex-col gap-y-2">
+                  <label htmlFor="date">Date de la dépense</label>
+                  <input
+                    {...register("date", {
+                      required: "La date de la dépense est obligatoire",
+                    })}
+                    type="date"
+                    name="date"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                    placeholder="Entrer la date de la dépense"
+                  />
+                  {formState.errors.date && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {formState.errors.date.message}
+                    </p>
+                  )}
+                </div>
+
+                <button className="auth-btn w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] focus:ring-offset-2 transition-all shadow-lg">
+                  Enrégistrer la dépense
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </div>

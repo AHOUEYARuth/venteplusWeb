@@ -22,7 +22,10 @@ const NavBar = () => {
     "/selling",
     "/spending",
     "/stock",
-    "/product"
+    "/product",
+    "/employee",
+    "/customer",
+
   ];
 
 

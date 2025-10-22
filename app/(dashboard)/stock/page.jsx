@@ -13,11 +13,25 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MdOutlineMoreVert, MdSearch } from "react-icons/md";
+import { useForm } from "react-hook-form";
 
 export default function Stock() {
   const { stocks, fetchData } = stockStore();
   const container = useRef(null);
   const timeLineModal = useRef();
+
+  const { register, handleSubmit, watch, formState, trigger } = useForm({
+    mode: "onChange",
+  });
+
+  const submitForm = (data) => {
+    trigger().then((isValid) => {
+      if (isValid) {
+        console.log(data);
+      }
+    });
+  };
+
   useLayoutEffect(() => {
     const context = gsap.context(() => {
       timeLineModal.current = gsap
@@ -157,44 +171,108 @@ export default function Stock() {
             <h3 className="text-xl text-[#F39C12] font-bold text-center">
               Ajouter un nouveau stock
             </h3>
-            <div className="w-full space-y-6 py-10">
-              <div className="w-full flex flex-col gap-y-2">
-                <label htmlFor="">Nom du Stock</label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-                  placeholder="Entrer le nom du stock"
-                />
-              </div>
-              <div className="w-full flex flex-col gap-y-2">
-                <label htmlFor="">Nom du produit</label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-                  placeholder="Entrer le nom du produit"
-                />
-              </div>
-              <div className="w-full flex flex-col gap-y-2">
-                <label htmlFor="">Quantité Disponible</label>
-                <input
-                  type="number"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-                  placeholder="Entrer la quantité de produit disponible"
-                />
-              </div>
-              <div className="w-full flex flex-col gap-y-2">
-                <label htmlFor="">Quantité Minimale</label>
-                <input
-                  type="number"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-                  placeholder="Entrer la quantité de produit minimale"
-                />
-              </div>
+            <form onSubmit={handleSubmit(submitForm)}>
+              <div className="w-full space-y-6 py-10">
+                <div className="w-full flex flex-col gap-y-2">
+                  <label htmlFor="">Nom du Stock</label>
+                  <input
+                    {...register("stockName", {
+                      required: "Le nom du stock est obligatoire",
+                    })}
+                    type="text"
+                    name="stockName"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                    placeholder="Entrer le nom du stock"
+                  />
+                  {formState.errors.stockName && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {formState.errors.stockName.message}
+                    </p>
+                  )}
+                </div>
 
-              <button className="auth-btn w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] focus:ring-offset-2 transition-all shadow-lg">
-                Enrégistrer le stock
-              </button>
-            </div>
+                <div className="w-full flex flex-col gap-y-2">
+                  <label htmlFor="">Nom du produit</label>
+                  <select
+                    name="productName"
+                    {...register("productName", {
+                      required: "Le nom du produit est obligatoire",
+                    })}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                  >
+                    <option value="" disabled>
+                      Sélectionner un produit
+                    </option>
+                    <option value="teeShirt">Tee-Shirt</option>
+                    <option value="pullOver">Pull-over</option>
+                    <option value="jean">Jeans</option>
+                  </select>
+                  {/* <input
+                    {...register("productName", {
+                      required: "Le nom du produit est obligatoire",
+                    })}
+                    type="text"
+                    name="productName"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                    placeholder="Entrer le nom du produit"
+                  /> */}
+                  {formState.errors.productName && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {formState.errors.productName.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="w-full flex flex-col gap-y-2">
+                  <label htmlFor="">Quantité Disponible</label>
+                  <input
+                    {...register("availableQuantity", {
+                      required: "La quantité disponible est obligatoire",
+                      min: {
+                        value: 1,
+                        message:
+                          "La quantité disponible doit être au moins de 1",
+                      },
+                    })}
+                    type="number"
+                    name="availableQuantity"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                    placeholder="Entrer la quantité de produit disponible"
+                  />
+                  {formState.errors.availableQuantity && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {formState.errors.availableQuantity.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="w-full flex flex-col gap-y-2">
+                  <label htmlFor="">Quantité Minimale</label>
+                  <input
+                    {...register("minQuantity", {
+                      required: "La quantité minimale est obligatoire",
+                      min: {
+                        value: 1,
+                        message: "La quantité minimale doit être au moins de 1",
+                      },
+                    })}
+                    type="number"
+                    name="minQuantity"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                    placeholder="Entrer la quantité de produit minimale"
+                  />
+                  {formState.errors.minQuantity && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {formState.errors.minQuantity.message}
+                    </p>
+                  )}
+                </div>
+
+                <button className="auth-btn w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] focus:ring-offset-2 transition-all shadow-lg">
+                  Enrégistrer le stock
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </div>

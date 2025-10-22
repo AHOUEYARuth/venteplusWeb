@@ -227,27 +227,27 @@
       "qteInStock": 50,
       "minQte": 10
     },
-     {
-       "id": 7,
-        "stockName": "stock de Robe ",
-       "product": "Robe",
-       "qteInStock": 50,
-       "minQte": 10
-     },
-      {
-        "id": 8,
-        "stockName": "stock de Jupe ",
-        "product": "Jupe",
-        "qteInStock": 50,
-        "minQte": 10
-      },
-      {
-        "id": 9,
-        "stockName": "stock de Short ",
-        "product": "Short",
-        "qteInStock": 50,
-        "minQte": 10
-      }
+    {
+      "id": 7,
+      "stockName": "stock de Robe ",
+      "product": "Robe",
+      "qteInStock": 50,
+      "minQte": 10
+    },
+    {
+      "id": 8,
+      "stockName": "stock de Jupe ",
+      "product": "Jupe",
+      "qteInStock": 50,
+      "minQte": 10
+    },
+    {
+      "id": 9,
+      "stockName": "stock de Short ",
+      "product": "Short",
+      "qteInStock": 50,
+      "minQte": 10
+    }
   ],
   "dettes": [
     {
@@ -408,6 +408,180 @@
       "amount": 90000,
       "date": "2023-10-28",
       "description": "Paiement des factures d'électricité et d'eau"
+    }
+  ],
+  "customers": [
+    {
+      "id": 1,
+      "name": "Béry",
+      "firstName": "Sterlingramme",
+      "phoneNumber": "94365533",
+      "createdDate": "2023-10-01"
+    },
+    {
+      "id": 2,
+      "name": "Kossi",
+      "firstName": "Marlène",
+      "phoneNumber": "97543321",
+      "createdDate": "2023-10-01"
+    },
+    {
+      "id": 3,
+      "name": "Adjaho",
+      "firstName": "Cyrille",
+      "phoneNumber": "90214578",
+      "createdDate": "2023-10-01"
+    },
+    {
+      "id": 4,
+      "name": "Agossa",
+      "firstName": "Clarisse",
+      "phoneNumber": "61674832",
+      "createdDate": "2023-10-01"
+    },
+    {
+      "id": 5,
+      "name": "Dossou",
+      "firstName": "Fabrice",
+      "phoneNumber": "68201459",
+      "createdDate": "2023-10-01"
+    },
+    {
+      "id": 6,
+      "name": "Hounkpè",
+      "firstName": "Sandra",
+      "phoneNumber": "95873340",
+      "createdDate": "2023-10-01"
+    },
+    {
+      "id": 7,
+      "name": "Ahouansou",
+      "firstName": "Richard",
+      "phoneNumber": "93150426",
+      "createdDate": "2023-10-01"
+    },
+    {
+      "id": 8,
+      "name": "Sossa",
+      "firstName": "Chantal",
+      "phoneNumber": "68329914",
+      "createdDate": "2023-10-01"
+    },
+    {
+      "id": 9,
+      "name": "Tossou",
+      "firstName": "Emmanuel",
+      "phoneNumber": "90551478",
+      "createdDate": "2023-10-01"
+    },
+    {
+      "id": 10,
+      "name": "Houngbédji",
+      "firstName": "Prisca",
+      "phoneNumber": "97423061",
+      "createdDate": "2023-10-01"
+    }
+  ],
+  "employees": [
+    {
+      "id": 1,
+      "name": "Kouassi",
+      "firstName": "Jean",
+      "role": "Manager",
+      "phoneNumber": "97451236",
+      "email": "jean.kouassi@entreprise.com",
+      "salary": 450000,
+      "hireDate": "2022-03-15"
+    },
+    {
+      "id": 2,
+      "name": "Adjovi",
+      "firstName": "Cynthia",
+      "role": "Comptable",
+      "phoneNumber": "98213645",
+      "email": "cynthia.adjovi@entreprise.com",
+      "salary": 350000,
+      "hireDate": "2021-10-10"
+    },
+    {
+      "id": 3,
+      "name": "Tossou",
+      "firstName": "Patrick",
+      "role": "Agent commercial",
+      "phoneNumber": "93125784",
+      "email": "patrick.tossou@entreprise.com",
+      "salary": 280000,
+      "hireDate": "2023-01-20"
+    },
+    {
+      "id": 4,
+      "name": "Agbo",
+      "firstName": "Mireille",
+      "role": "Assistante de direction",
+      "phoneNumber": "95002147",
+      "email": "mireille.agbo@entreprise.com",
+      "salary": 400000,
+      "hireDate": "2020-06-12"
+    },
+    {
+      "id": 5,
+      "name": "Hounkpè",
+      "firstName": "Serge",
+      "role": "Technicien",
+      "phoneNumber": "90114563",
+      "email": "serge.hounkpe@entreprise.com",
+      "salary": 300000,
+      "hireDate": "2022-09-25"
+    },
+    {
+      "id": 6,
+      "name": "Sossa",
+      "firstName": "Amandine",
+      "role": "Chargée de communication",
+      "phoneNumber": "93457822",
+      "email": "amandine.sossa@entreprise.com",
+      "salary": 320000,
+      "hireDate": "2021-05-30"
+    },
+    {
+      "id": 7,
+      "name": "Dossou",
+      "firstName": "Fabrice",
+      "role": "Magasinier",
+      "phoneNumber": "96801452",
+      "email": "fabrice.dossou@entreprise.com",
+      "salary": 250000,
+      "hireDate": "2023-02-17"
+    },
+    {
+      "id": 8,
+      "name": "Gnonlonfoun",
+      "firstName": "Rebecca",
+      "role": "Secrétaire",
+      "phoneNumber": "97234561",
+      "email": "rebecca.gnonlonfoun@entreprise.com",
+      "salary": 270000,
+      "hireDate": "2022-12-01"
+    },
+    {
+      "id": 9,
+      "name": "Ahoueya",
+      "firstName": "Ruth",
+      "role": "Développeuse web",
+      "phoneNumber": "94321156",
+      "email": "ruth.ahoueya@entreprise.com",
+      "salary": 500000,
+      "hireDate": "2024-04-10"
+    },
+    {
+      "id": 10,
+      "name": "Tchibozo",
+      "firstName": "Elie",
+      "role": "Livreur",
+      "phoneNumber": "98412277",
+      "email": "elie.tchibozo@entreprise.com",
+      "salary": 220000,
+      "hireDate": "2023-06-05"
     }
   ]
 }

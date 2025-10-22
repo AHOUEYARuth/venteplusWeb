@@ -76,14 +76,14 @@ const dashboard = () => {
         </div>
         <div className="w-90 bg-white text-black rounded-xl p-5  shadow-md hover:shadow-xl flex flex-col justify-between cursor-pointer">
           <div className="flex justify-between items-start">
-            <h2 className="text-2xl font-bold">Bénéfice net</h2>
+            <h2 className="text-2xl font-bold">Bénéfice net (FCFA)</h2>
             <div className="bg-[#F39C12] hover:bg-white/30 transition-colors rounded-full p-2">
               <FiArrowUpRight className="text-white " size={16} />
             </div>
           </div>
 
           <div className="mt-4">
-            <h2 className="text-4xl font-semibold">10 500 F </h2>
+            <h2 className="text-4xl font-semibold">10 500</h2>
           </div>
 
           <div className="flex items-center gap-2 mt-4">

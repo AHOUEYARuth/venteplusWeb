@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {gsap} from "gsap"
+import { gsap } from "gsap";
 import Product2 from "@/assets/images/product10.jpg";
 import Product3 from "@/assets/images/product3.png";
 import Product1 from "@/assets/images/product9.png";
@@ -19,32 +19,50 @@ import { TiShoppingCart } from "react-icons/ti";
 import { productStore } from "./productStore/productStore";
 import { IoAccessibility } from "react-icons/io5";
 import { IoMdClose } from "react-icons/io";
+import { useForm } from "react-hook-form";
 
 const Product = () => {
   const container = useRef(null);
   const timeLineModal = useRef();
-  const [coverImg, setcoverImg] = useState(null)
-  const [payloadImg, setpayloadImg] = useState(null)
- useLayoutEffect(() => {
-   const context = gsap.context(() => {
-     timeLineModal.current = gsap
-       .timeline()
-       .to(".modal_container", {
-         opacity:1,
-         duration:0.5
-       })
-       .to(".form_container", {
-         xPercent: -200,
-         duration: 0.5,
-       },"-=0.5")
-       .paused(true);
-     }, [container])
+  const [coverImg, setcoverImg] = useState(null);
+  const [payloadImg, setpayloadImg] = useState(null);
 
-   return () => {
-     context.revert();
-   }
- }, [container])
- 
+  const { register, handleSubmit, watch, formState, trigger } = useForm({
+    mode: "onChange",
+  });
+
+  const submitForm = (data) => {
+     trigger().then((isValid) => {
+       if (isValid) {
+         console.log(data);
+       }
+     });
+  };
+
+  useLayoutEffect(() => {
+    const context = gsap.context(() => {
+      timeLineModal.current = gsap
+        .timeline()
+        .to(".modal_container", {
+          opacity: 1,
+          duration: 0.5,
+        })
+        .to(
+          ".form_container",
+          {
+            xPercent: -200,
+            duration: 0.5,
+          },
+          "-=0.5"
+        )
+        .paused(true);
+    }, [container]);
+
+    return () => {
+      context.revert();
+    };
+  }, [container]);
+
   function previewCoverImage(e) {
     setcoverImg(URL.createObjectURL(e.target.files[0]));
     setpayloadImg(e.target.files[0]);
@@ -338,87 +356,155 @@ const Product = () => {
             <h3 className="text-xl text-[#F39C12] font-bold text-center">
               Ajouter un produit
             </h3>
-            <div className="w-full space-y-5 py-10">
-              <div className="w-full h-70 border border-gray-300 flex flex-col justify-between p-5 gap-y-2">
-                <img
-                  id="image"
-                  src={`${coverImg ?? "https://placehold.co/400"}`}
-                  alt="Aperçu de l'image"
-                  className="w-full h-[80%] object-contain rounded-xl"
-                />
-                <input
-                  type="file"
-                  className=""
-                  accept="image/png, image/jpg, image/jpeg"
-                  onChange={previewCoverImage}
-                />
-              </div>
-              <div className="w-full flex flex-col gap-y-2">
-                <label htmlFor="">Nom du produit</label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-                  placeholder="Entrer le nom du produit"
-                />
-              </div>
-              <div className="w-full flex flex-col gap-y-2">
-                <label htmlFor="">Prix d&apos;Achat</label>
-                <input
-                  type="number"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-                  placeholder="Entrer le prix d'achat du produit"
-                />
-              </div>
-              <div className="w-full flex flex-col gap-y-2">
-                <label htmlFor="">Prix de vente</label>
-                <input
-                  type="number"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-                  placeholder="Entrer le prix de vente du produit"
-                />
-              </div>
-              <div className="w-full flex flex-col gap-y-2">
-                <label htmlFor="">Catégorie</label>
-                <Select>
-                  <SelectTrigger className="w-full py-6 outline-none focus:outline-none border border-[#F39C12]">
-                    <SelectValue placeholder="Catégorie" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="coton">Coton</SelectItem>
-                    <SelectItem value="cuir">Cuir</SelectItem>
-                    <SelectItem value="soie">Soie</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="w-full flex flex-col gap-y-2">
-                <label htmlFor="">Nom du stock</label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-                  placeholder="Entrer le nom du stock"
-                />
-              </div>
-              <div className="w-full flex flex-col gap-y-2">
-                <label htmlFor="">Quantité achetée</label>
-                <input
-                  type="number"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-                  placeholder="quantité"
-                />
-              </div>
-              <div className="w-full flex flex-col gap-y-2">
-                <label htmlFor="">Frais supplémentaires</label>
-                <input
-                  type="number"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-                  placeholder="Entrer les frais supplémentaires"
-                />
-              </div>
+            <form action="" onSubmit={handleSubmit(submitForm)}>
+              <div className="w-full space-y-5 py-10">
+                <div className="w-full h-70 border border-gray-300 flex flex-col justify-between p-5 gap-y-2">
+                  <img
+                    id="image"
+                    src={`${coverImg ?? "https://placehold.co/400"}`}
+                    alt="Aperçu de l'image"
+                    className="w-full h-[80%] object-contain rounded-xl"
+                  />
+                  <input
+                    type="file"
+                    name="productImg"
+                    className=""
+                    accept="image/png, image/jpg, image/jpeg"
+                    onChange={previewCoverImage}
+                  />
+                </div>
+                <div className="w-full flex flex-col gap-y-2">
+                  <label htmlFor="">Nom du produit</label>
+                  <input
+                    {...register("productName", {
+                      required: "Le nom du produit est obligatoire",
+                    })}
+                    type="text"
+                    name="productName"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                    placeholder="Entrer le nom du produit"
+                  />
+                  {formState.errors.productName && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {formState.errors.productName.message}
+                    </p>
+                  )}
+                </div>
+                <div className="w-full flex flex-col gap-y-2">
+                  <label htmlFor="">Prix d&apos;Achat</label>
+                  <input
+                    {...register("purchasePrice", {
+                      required: "Le prix d'achat du produit est obligatoire",
+                    })}
+                    type="number"
+                    name="purchasePrice"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                    placeholder="Entrer le prix d'achat du produit"
+                  />
+                  {formState.errors.purchasePrice && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {formState.errors.purchasePrice.message}
+                    </p>
+                  )}
+                </div>
+                <div className="w-full flex flex-col gap-y-2">
+                  <label htmlFor="">Prix de vente</label>
+                  <input
+                    {...register("salePrice", {
+                      required: "Le prix de vente du produit est obligatoire",
+                    })}
+                    type="number"
+                    name="salePrice"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                    placeholder="Entrer le prix de vente du produit"
+                  />
+                  {formState.errors.salePrice && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {formState.errors.salePrice.message}
+                    </p>
+                  )}
+                </div>
+                <div className="w-full flex flex-col gap-y-2">
+                  <label htmlFor="">Catégorie</label>
+                  <Select
+                    name="category"
+                    {...register("category", {
+                      required: "La catégorie du produit est obligatoire",
+                    })}
+                  >
+                    <SelectTrigger className="w-full py-6 outline-none focus:outline-none border border-[#F39C12]">
+                      <SelectValue placeholder="Catégorie" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="coton">Coton</SelectItem>
+                      <SelectItem value="cuir">Cuir</SelectItem>
+                      <SelectItem value="soie">Soie</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {formState.errors.category && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {formState.errors.category.message}
+                    </p>
+                  )}
+                </div>
+                <div className="w-full flex flex-col gap-y-2">
+                  <label htmlFor="">Quantité achetée</label>
+                  <input
+                    {...register("availableQuantity", {
+                      required: "La quantité du produit est obligatoire",
+                    })}
+                    type="number"
+                    name="availableQuantity"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                    placeholder="quantité"
+                  />
+                  {formState.errors.availableQuantity && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {formState.errors.availableQuantity.message}
+                    </p>
+                  )}
+                </div>
+                <div className="w-full flex flex-col gap-y-2">
+                  <label htmlFor="">Unité de mesure</label>
+                  <input
+                    {...register("unitMesurement", {
+                      required: "L'unité de mesure du produit est obligatoire",
+                    })}
+                    type="number"
+                    name="unitMesurement"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                    placeholder="unité de mesure"
+                  />
+                  {formState.errors.unitMesurement && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {formState.errors.unitMesurement.message}
+                    </p>
+                  )}
+                </div>
+                <div className="w-full flex flex-col gap-y-2">
+                  <label htmlFor="">Frais supplémentaires</label>
+                  <input
+                    {...register("additionalCosts", {
+                      required:
+                        "Les Frais supplémentaires du produit est obligatoire",
+                    })}
+                    type="number"
+                    name="additionalCosts"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                    placeholder="Entrer les frais supplémentaires"
+                  />
+                  {formState.errors.additionalCosts && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {formState.errors.additionalCosts.message}
+                    </p>
+                  )}
+                </div>
 
-              <button className="auth-btn w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] focus:ring-offset-2 transition-all shadow-lg">
-                Ajouter
-              </button>
-            </div>
+                <button className="auth-btn w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] focus:ring-offset-2 transition-all shadow-lg">
+                  Ajouter
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </div>

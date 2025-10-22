@@ -134,6 +134,7 @@ const Login = () => {
                     {...register("shopId", {
                       required: "Le mot de passe est obligatoire",
                     })}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
                   >
                     {shops.map((shop, index) => {
                       return (

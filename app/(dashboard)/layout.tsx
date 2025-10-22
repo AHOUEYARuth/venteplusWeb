@@ -11,7 +11,9 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     "/selling",
     "/stock",
     "/customerCredits",
-    "/spending"
+    "/spending",
+    "/customer",
+    "/employee"
   ]
 
   return (

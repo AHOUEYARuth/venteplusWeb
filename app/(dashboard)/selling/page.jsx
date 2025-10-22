@@ -15,13 +15,24 @@ import {
 import { gsap } from "gsap";
 import { IoMdArrowDropup, IoMdClose } from "react-icons/io";
 import { FiArrowUp, FiArrowUpRight } from "react-icons/fi";
+import { useForm } from "react-hook-form";
 
 export default function Selling() {
   const { commandes, ventes, activeMenu, setActiveMenu, fetchData } =
     sellingStore();
   const container = useRef(null);
   const timeLineModal = useRef();
+  const { register, handleSubmit, watch, formState, trigger } = useForm({
+    mode: "onChange",
+  });
 
+  const submitForm = (data) => {
+    trigger().then((isValid) => {
+      if (isValid) {
+        console.log(data);
+      }
+    });
+  };
   useLayoutEffect(() => {
     const context = gsap.context(() => {
       timeLineModal.current = gsap
@@ -387,44 +398,104 @@ export default function Selling() {
             <h3 className="text-xl text-[#F39C12] font-bold text-center">
               Enrégistrer une nouvelle vente
             </h3>
-            <div className="w-full space-y-6 py-10">
-              <div className="w-full flex flex-col gap-y-2">
-                <label htmlFor="">Nom du produit</label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-                  placeholder="Entrer le nom du produit"
-                />
-              </div>
-              <div className="w-full flex flex-col gap-y-2">
-                <label htmlFor="">Quantité achetée</label>
-                <input
-                  type="number"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-                  placeholder="quantité"
-                />
-              </div>
-              <div className="w-full flex flex-col gap-y-2">
-                <label htmlFor="">Prix d&apos;Achat</label>
-                <input
-                  type="number"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-                  placeholder="Entrer le prix d'achat du produit"
-                />
-              </div>
-              <div className="w-full flex flex-col gap-y-2">
-                <label htmlFor="">Prix de vente</label>
-                <input
-                  type="number"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-                  placeholder="Entrer le prix de vente du produit"
-                />
-              </div>
+            <form onSubmit={handleSubmit(submitForm)}>
+              <div className="w-full space-y-6 py-10">
+                <div className="w-full flex flex-col gap-y-2">
+                  <label htmlFor="productName">Nom du produit</label>
+                  <select
+                    {...register("productName", {
+                      required: "Le nom du produit est obligatoire",
+                    })}
+                    name="productName"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                    defaultValue=""
+                  >
+                    <option value="" disabled>
+                      Sélectionner un produit
+                    </option>
+                    <option value="Ciment">Ciment</option>
+                    <option value="Fer à béton">Fer à béton</option>
+                    <option value="Peinture">Peinture</option>
+                    <option value="Carrelage">Carrelage</option>
+                  </select>
+                  {formState.errors.productName && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {formState.errors.productName.message}
+                    </p>
+                  )}
+                </div>
 
-              <button className="auth-btn w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] focus:ring-offset-2 transition-all shadow-lg">
-                Enrégistrer la vente
-              </button>
-            </div>
+                <div className="w-full flex flex-col gap-y-2">
+                  <label htmlFor="quantity">Quantité achetée</label>
+                  <input
+                    {...register("quantity", {
+                      required: "La quantité achetée est obligatoire",
+                      min: {
+                        value: 1,
+                        message: "La quantité doit être au moins de 1",
+                      },
+                    })}
+                    type="number"
+                    name="quantity"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                    placeholder="Quantité"
+                  />
+                  {formState.errors.quantity && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {formState.errors.quantity.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="w-full flex flex-col gap-y-2">
+                  <label htmlFor="purchasePrice">Prix d&apos;achat</label>
+                  <input
+                    {...register("purchasePrice", {
+                      required: "Le prix d'achat est obligatoire",
+                      min: {
+                        value: 1,
+                        message: "Le prix d'achat doit être supérieur à 0",
+                      },
+                    })}
+                    type="number"
+                    name="purchasePrice"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                    placeholder="Entrer le prix d'achat du produit"
+                  />
+                  {formState.errors.purchasePrice && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {formState.errors.purchasePrice.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="w-full flex flex-col gap-y-2">
+                  <label htmlFor="salePrice">Prix de vente</label>
+                  <input
+                    {...register("salePrice", {
+                      required: "Le prix de vente est obligatoire",
+                      min: {
+                        value: 1,
+                        message: "Le prix de vente doit être supérieur à 0",
+                      },
+                    })}
+                    type="number"
+                    name="salePrice"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                    placeholder="Entrer le prix de vente du produit"
+                  />
+                  {formState.errors.salePrice && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {formState.errors.salePrice.message}
+                    </p>
+                  )}
+                </div>
+
+                <button className="auth-btn w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] focus:ring-offset-2 transition-all shadow-lg">
+                  Enrégistrer la vente
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </div>

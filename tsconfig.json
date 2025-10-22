@@ -23,6 +23,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/(dashboard)/product/page.jsx", "app/(dashboard)/selling/page.jsx", "app/(dashboard)/stock/page.jsx", "app/(dashboard)/customerCredits/page.jsx", "app/(dashboard)/spending/page.jsx", "app/register/page.jsx", "app/login/page.jsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/(dashboard)/product/page.jsx", "app/(dashboard)/selling/page.jsx", "app/(dashboard)/stock/page.jsx", "app/(dashboard)/customerCredits/page.jsx", "app/(dashboard)/spending/page.jsx", "app/register/page.jsx", "app/login/page.jsx", "app/(dashboard)/customer/page.jsx", "app/(dashboard)/employee/page.jsx"],
   "exclude": ["node_modules"]
 }

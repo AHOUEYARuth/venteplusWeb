@@ -14,6 +14,8 @@ const Footer = () => {
     "/spending",
     "/stock",
     "/product",
+    "/employee",
+    "/customer",
   ];
 
   if (hidePaths.includes(pathname)) {

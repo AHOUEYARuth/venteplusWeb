@@ -1,8 +1,11 @@
 "use client";
-import React, { useEffect, useLayoutEffect, useRef } from "react";
-import { customerCredits } from "./customerCreditsStore/customerCreditsStore";
+import { Button } from "@/components/ui/button";
+import React, { useLayoutEffect, useRef, useEffect } from "react";
 import { gsap } from "gsap";
+import { IoMdClose } from "react-icons/io";
+import { PhoneInput } from "@/components/ui/phone-input";
 import { MdOutlineMoreVert, MdSearch } from "react-icons/md";
+import { customerStore } from "./customerStore/customerStore";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,24 +14,24 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { IoMdClose } from "react-icons/io";
 import { useForm } from "react-hook-form";
-import { PhoneInput } from "@/components/ui/phone-input";
-export default function CustomerCredits() {
-  const { customersCredits, fetchData } = customerCredits();
+const Customer = () => {
   const container = useRef(null);
   const timeLineModal = useRef();
-  const { register, handleSubmit, watch, formState, trigger } = useForm({
-    mode: "onChange",
-  });
+  const { customers, fetchData } = customerStore();
 
-  const submitForm = (data) => {
-    trigger().then((isValid) => {
-      if (isValid) {
-        console.log(data);
-      }
+   const { register, handleSubmit, watch, formState, trigger } = useForm({
+      mode: "onChange",
     });
-  };
+  
+    const submitForm = (data) => {
+      trigger().then((isValid) => {
+        if (isValid) {
+          console.log(data);
+        }
+      });
+    };
+
   useLayoutEffect(() => {
     const context = gsap.context(() => {
       timeLineModal.current = gsap
@@ -52,7 +55,6 @@ export default function CustomerCredits() {
       context.revert();
     };
   }, [container]);
-
   useEffect(() => {
     fetchData();
   }, []);
@@ -60,7 +62,7 @@ export default function CustomerCredits() {
     <div ref={container} className="w-full h-full p-5 bg-gray-50 rounded-xl">
       <div className="w-full flex flex-row items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold ">Dettes Clients</h2>
+          <h2 className="text-2xl font-bold ">Clients</h2>
           <p className="text-gray-500 text-xl pt-3">
             Lorem ipsum dolor sit amet consectetur adipisicing elit.
             Perspiciatis, reprehenderit.
@@ -69,7 +71,7 @@ export default function CustomerCredits() {
       </div>
       <div className="w-full flex flex-col gap-y-5">
         <div className="w-full flex flex-row items-start justify-between mt-20">
-          <h2 className="text-2xl font-semibold ">Listes des Dettes Clients</h2>
+          <h2 className="text-2xl font-semibold ">Listes des Clients</h2>
           <div className="w-[50%] flex flex-row items-center justify-center gap-x-4">
             <div className="w-[40%] relative flex items-center justify-between bg-white gap-x-2 rounded-lg">
               <input
@@ -94,7 +96,7 @@ export default function CustomerCredits() {
                 }}
                 className="bg-[#F39C12] cursor-pointer py-3 px-4 text-white rounded-lg"
               >
-                Nouvelle Dette
+                Nouveau Client
               </button>
             </div>
           </div>
@@ -103,41 +105,25 @@ export default function CustomerCredits() {
           <table className="min-w-full text-xl">
             <thead className=" text-black bg-gray-100  ">
               <tr className="border-b border-gray-200 text-left">
-                <th className="p-5">Client</th>
+                <th className="p-5">N °</th>
+                <th className="p-5">Nom</th>
+                <th className="p-5">Prénoms</th>
                 <th className="p-5">Téléphone</th>
-                <th className="p-5">Produit</th>
-                <th className="p-5">Quantité</th>
-                <th className="p-5 ">Unité(FCFA)</th>
-                <th className="p-5 ">Total(FCFA)</th>
-                <th className="p-5 ">Status</th>
+                <th className="p-5">Date d&apos;ajout</th>
                 <th className=""></th>
               </tr>
             </thead>
             <tbody>
-              {customersCredits.map((credit) => (
+              {customers.map((customer) => (
                 <tr
-                  key={credit.id}
+                  key={customer.id}
                   className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
                 >
-                  <td className="px-5 py-5 font-bold">{credit.client}</td>
-                  <td className="px-5 py-5 text-black">{credit.phoneNumber}</td>
-                  <td className="px-5 py-5">{credit.product}</td>
-                  <td className="px-5 py-5">{credit.quantity}</td>
-                  <td className="px-5 py-5 font-medium text-gray-700">
-                    {credit.unitPrice}
-                  </td>
-                  <td className="px-5 py-5 font-medium text-gray-700">
-                    {credit.totalPrice}
-                  </td>
-                  <td
-                    className={`px-5 py-5 font-medium text-gray-700 ${
-                      credit.status.toLocaleLowerCase() === "non payée"
-                        ? "text-red-500"
-                        : "text-green-500"
-                    }`}
-                  >
-                    {credit.status}
-                  </td>
+                  <td className="px-5 py-5 font-bold">{customer.id}</td>
+                  <td className="px-5 py-5 text-black">{customer.name}</td>
+                  <td className="px-5 py-5">{customer.firstName}</td>
+                  <td className="px-5 py-5">{customer.phoneNumber}</td>
+                  <td className="px-5 py-5">{customer.createdDate}</td>
                   <td className="pr-5">
                     {" "}
                     <DropdownMenu>
@@ -150,13 +136,7 @@ export default function CustomerCredits() {
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem className="text-lg">
-                          Recouvrements
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="text-lg">
                           Modifier
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="text-lg">
-                          Valider
                         </DropdownMenuItem>
                         <DropdownMenuItem className="text-lg">
                           Supprimer
@@ -188,120 +168,65 @@ export default function CustomerCredits() {
           </button>
           <div className="w-full">
             <h3 className="text-xl text-[#F39C12] font-bold text-center">
-              Ajouter une nouvelle dette
+              Ajouter un client
             </h3>
-            <form onSubmit={handleSubmit(submitForm)}>
-              <div className="w-full space-y-6 py-10">
+            <form action="" onSubmit={handleSubmit(submitForm)}>
+              <div className="w-full space-y-5 py-10">
                 <div className="w-full flex flex-col gap-y-2">
-                  <label htmlFor="clientName">Nom du client</label>
+                  <label>Nom du client</label>
                   <input
-                    {...register("clientName", {
-                      required: "Le nom du client est obligatoire",
-                      minLength: {
-                        value: 2,
-                        message:
-                          "Le nom du client doit contenir au moins 2 caractères",
-                      },
-                    })}
                     type="text"
-                    name="clientName"
+                    {...register("lastName", {
+                      required: "Le nom du client est obligatoire",
+                    })}
+                    name="lastName"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
                     placeholder="Entrer le nom du client"
                   />
-                  {formState.errors.clientName && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {formState.errors.clientName.message}
+                  {formState.errors.lastName && (
+                    <p className="text-red-500 text-sm">
+                      {formState.errors.lastName.message}
                     </p>
                   )}
                 </div>
 
                 <div className="w-full flex flex-col gap-y-2">
-                  <label htmlFor="phone">Téléphone</label>
+                  <label>Prénom du client</label>
+                  <input
+                    type="text"
+                    {...register("firstName", {
+                      required: "Le prénom du client est obligatoire",
+                    })}
+                    name="firstName"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                    placeholder="Entrer le prénom du client"
+                  />
+                  {formState.errors.firstName && (
+                    <p className="text-red-500 text-sm">
+                      {formState.errors.firstName.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="w-full flex flex-col gap-y-2">
+                  <label>Numéro de téléphone</label>
                   <PhoneInput
-                    defaultCountry="BJ"
                     {...register("phoneNumber", {
                       required: "Le numéro de téléphone est obligatoire",
                     })}
+                    defaultCountry="BJ"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                    placeholder="Entrer le numéro du client"
                   />
                   {formState.errors.phoneNumber && (
-                    <p className="text-red-500 text-sm mt-1">
+                    <p className="text-red-500 text-sm">
                       {formState.errors.phoneNumber.message}
                     </p>
                   )}
                 </div>
 
-                <div className="w-full flex flex-col gap-y-2">
-                  <label htmlFor="product">Produit acheté</label>
-                  <select
-                    {...register("product", {
-                      required: "Le produit acheté est obligatoire",
-                    })}
-                    name="product"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-                    defaultValue=""
-                  >
-                    <option value="" disabled>
-                      Sélectionner un produit
-                    </option>
-                    <option value="Ciment">Ciment</option>
-                    <option value="Fer à béton">Fer à béton</option>
-                    <option value="Peinture">Peinture</option>
-                    <option value="Carrelage">Carrelage</option>
-                    <option value="Plâtre">Plâtre</option>
-                  </select>
-                  {formState.errors.product && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {formState.errors.product.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="w-full flex flex-col gap-y-2">
-                  <label htmlFor="quantity">Quantité</label>
-                  <input
-                    {...register("quantity", {
-                      required: "La quantité est obligatoire",
-                      min: {
-                        value: 1,
-                        message: "La quantité doit être au moins de 1",
-                      },
-                    })}
-                    type="number"
-                    name="quantity"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-                    placeholder="Quantité achetée"
-                  />
-                  {formState.errors.quantity && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {formState.errors.quantity.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="w-full flex flex-col gap-y-2">
-                  <label htmlFor="unitPrice">Prix Unitaire</label>
-                  <input
-                    {...register("unitPrice", {
-                      required: "Le prix unitaire est obligatoire",
-                      min: {
-                        value: 1,
-                        message: "Le prix unitaire doit être supérieur à 0",
-                      },
-                    })}
-                    type="number"
-                    name="unitPrice"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-                    placeholder="Prix unitaire"
-                  />
-                  {formState.errors.unitPrice && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {formState.errors.unitPrice.message}
-                    </p>
-                  )}
-                </div>
-
                 <button className="auth-btn w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] focus:ring-offset-2 transition-all shadow-lg">
-                  Enrégistrer la dette
+                  Ajouter
                 </button>
               </div>
             </form>
@@ -310,4 +235,6 @@ export default function CustomerCredits() {
       </div>
     </div>
   );
-}
+};
+
+export default Customer;

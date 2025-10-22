@@ -8,6 +8,7 @@ import {
   FaShoppingCart,
   FaCreditCard,
   FaShoppingBag,
+  FaUser,
 } from "react-icons/fa";
 import { FiChevronDown, FiList, FiDollarSign } from "react-icons/fi";
 import { IoSettings, IoHelpCircle, IoLogOut } from "react-icons/io5";
@@ -123,6 +124,28 @@ const DashboardLeftSideBar = () => {
                 >
                   <FaChartBar className="text-xl flex-shrink-0" />
                   <span>Rapports & Statistiques</span>
+                </Link>
+              </li>
+              <li className="text-lg text-[#2C3E50] font-medium">
+                <Link
+                  href="/customer"
+                  className={`flex flex-row items-center gap-x-3 hover:text-[#F39C12] transition-colors ${
+                    pathname === "/customer" ? "active" : ""
+                  }`}
+                >
+                  <FaUser className="text-xl flex-shrink-0" />
+                  <span>Clients</span>
+                </Link>
+              </li>
+              <li className="text-lg text-[#2C3E50] font-medium">
+                <Link
+                  href="/employee"
+                  className={`flex flex-row items-center gap-x-3 hover:text-[#F39C12] transition-colors ${
+                    pathname === "/employee" ? "active" : ""
+                  }`}
+                >
+                  <FaUser className="text-xl flex-shrink-0" />
+                  <span>Employées</span>
                 </Link>
               </li>
             </ul>
