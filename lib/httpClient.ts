@@ -5,7 +5,7 @@ export const baseURL = {
     local: 'http://127.0.0.1:4000/api/',
     serverTest: 'https://preprod.ylomi.bj/api/',
 }
-
+export const baseUrlNotApi = "http://127.0.0.1:4000/"
 const httpRequest = ky.extend({
   prefixUrl: baseURL.local,
   timeout: false,
