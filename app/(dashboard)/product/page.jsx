@@ -24,7 +24,7 @@ import { useLoginStore } from "@/app/login/loginStore/loginStore";
 import { baseUrlNotApi } from "@/lib/httpClient";
 import { ClipLoader } from "react-spinners";
 import toast, { Toaster } from "react-hot-toast";
-
+import { RiDeleteBin6Line } from "react-icons/ri";
 export default function Product() {
   const container = useRef(null);
   const timeLineModal = useRef();
@@ -148,9 +148,6 @@ export default function Product() {
           >
             Nouveau Produit
           </Button>
-          <Button className="bg-transparent cursor-pointer text-[#F39C12] border border-[#F39C12] hover:bg-[#F39C12] hover:text-white">
-            Modifier un Produit
-          </Button>
         </div>
       </div>
       <div className="w-full mt-8 flex items-center justify-between">
@@ -223,12 +220,17 @@ export default function Product() {
                       >
                         <div>
                           <div className="w-full flex items-center justify-between pt-2 px-2 ">
-                            <div className="flex flex-row gap-2 text-white items-center justify-between p-2 bg-black rounded-md font-bold">
-                              <TiShoppingCart size={20} />
-                              <span className="text-lg font-black">21</span>
+                            {/* <button className="w-[40px] h-[40px]  text-xl flex items-center justify-center bg-black text-white rounded-full cursor-pointer ">
+                              <FaRegEdit className="text-2xl" />
+                              Modifier
+                            </button> */}
+                            <div className="flex flex-row gap-2 text-black items-center justify-between p-2 bg-white rounded-md font-bold">
+                              Modifier
                             </div>
-                            <button className="w-[40px] h-[40px]  text-xl flex items-center justify-center bg-black text-white rounded-full cursor-pointer ">
-                              <GrFavorite className="text-2xl" />
+
+                            <button className="w-[40px] h-[40px]  text-xl flex items-center justify-center bg-red-100 text-red-500 rounded-full cursor-pointer ">
+                              <RiDeleteBin6Line />
+                              
                             </button>
                           </div>
                         </div>
