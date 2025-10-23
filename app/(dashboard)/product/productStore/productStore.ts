@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { create } from "zustand";
-import { createCategoryRequest, createProductRequest, deleteCategoriesRequest, getCategoriesRequest, getPoductsRequest } from "../productRequest/productRequest";
+import { createCategoryRequest, createProductRequest, deleteCategoriesRequest, deleteProductRequest, getCategoriesRequest, getPoductsRequest } from "../productRequest/productRequest";
  
 type State = {
   open: boolean;
@@ -15,10 +15,11 @@ type ProductActions = {
   categoryAction: (categoryFormData: any) => Promise<void>;
   getCategoriesAction: (shopId: string) => Promise<void>;
   setCategories: (categories: any) => void;
-  deleteCategoriesAction: (catId: string) => Promise<void>;
+  deleteCategoryAction: (catId: string) => Promise<void>;
   createProductAction: (productFormData: any) => Promise<void>;
   getProductsActions: (shopId: string) => Promise<void>;
   setProducts: (products: any) => void;
+  deleteProductAction: (productId: string) => Promise<void>;
 };
 
 export const useProductStore = create<State & ProductActions>((set) => ({
@@ -37,19 +38,23 @@ export const useProductStore = create<State & ProductActions>((set) => ({
   setCategories(categories) {
     set({ categories: categories });
   },
-  deleteCategoriesAction: async (catId) => {
+  deleteCategoryAction: async (catId) => {
     const response = await deleteCategoriesRequest(catId);
     return response;
   },
   createProductAction: async (productFormData) => {
     const response = await createProductRequest(productFormData);
-    return response
+    return response;
   },
-  getProductsActions: async(shopId) => {
+  getProductsActions: async (shopId) => {
     const response = await getPoductsRequest(shopId);
     return response;
   },
   setProducts: (products) => set((state) => ({ products: products })),
- 
+  
+  deleteProductAction: async (productId) => {
+    const response = await deleteProductRequest(productId);
+    return response;
+  },
 }));
 

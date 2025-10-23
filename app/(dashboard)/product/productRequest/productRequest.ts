@@ -37,3 +37,10 @@ export const getPoductsRequest = async (shopId) => {
     url: `products/shop/${shopId}`,
   });
 };
+
+export const deleteProductRequest = async (productId) => {
+  return HttpClient.makeRequest({
+    method: "DELETE",
+    url: `products/${productId}`,
+  });
+};

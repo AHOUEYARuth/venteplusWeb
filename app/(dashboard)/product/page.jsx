@@ -10,14 +10,7 @@ import {
 } from "@/components/ui/select";
 import { gsap } from "gsap";
 import Product2 from "@/assets/images/emptyPro.png";
-import Product3 from "@/assets/images/product3.png";
-import Product1 from "@/assets/images/product9.png";
-import Product4 from "@/assets/images/product2.png";
-import Product5 from "@/assets/images/product6.png";
-import { GrFavorite } from "react-icons/gr";
-import { TiShoppingCart } from "react-icons/ti";
 import { useProductStore } from "./productStore/productStore";
-import { IoAccessibility } from "react-icons/io5";
 import { IoMdClose } from "react-icons/io";
 import { useForm } from "react-hook-form";
 import { useLoginStore } from "@/app/login/loginStore/loginStore";
@@ -25,6 +18,15 @@ import { baseUrlNotApi } from "@/lib/httpClient";
 import { ClipLoader } from "react-spinners";
 import toast, { Toaster } from "react-hot-toast";
 import { RiDeleteBin6Line } from "react-icons/ri";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
 export default function Product() {
   const container = useRef(null);
   const timeLineModal = useRef();
@@ -36,6 +38,7 @@ export default function Product() {
     setProducts,
     getProductsActions,
     categories,
+    deleteProductAction,
   } = useProductStore();
   const { shop } = useLoginStore();
   const [additionalCoast, setadditionalCoast] = useState(0);
@@ -49,6 +52,10 @@ export default function Product() {
     await getProductsActions(shopId).then((response) => {
       setProducts(response.data);
     });
+  }
+  async function applyDeleteProdAction(productId) {
+    await deleteProductAction(productId)
+    await applyGetProductAction(shop?.id)
   }
   async function submitForm(data) {
     const payload = {
@@ -209,7 +216,7 @@ export default function Product() {
                 return (
                   <div
                     key={index}
-                    className="shop-item min-w-90 flex flex-col gap-5 bg-white rounded-2xl p-3 relative shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
+                    className="shop-item min-w-93 flex flex-col gap-5 bg-white rounded-2xl p-3 relative shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
                   >
                     <div className="w-full bg-gray-300 flex flex-col gap-5 rounded-tl-xl rounded-2xl">
                       <div
@@ -228,10 +235,41 @@ export default function Product() {
                               Modifier
                             </div>
 
-                            <button className="w-[40px] h-[40px]  text-xl flex items-center justify-center bg-red-100 text-red-500 rounded-full cursor-pointer ">
+                            {/* <button
+                              onClick={() => applyDeleteProdAction(product.id)}
+                              className="w-[40px] h-[40px]  text-xl flex items-center justify-center bg-red-100 text-red-500 rounded-full cursor-pointer "
+                            >
                               <RiDeleteBin6Line />
-                              
-                            </button>
+                            </button> */}
+                            <Dialog>
+                              <DialogTrigger>
+                                <div
+                                  /* onClick={() =>
+                                    applyDeleteProdAction(product.id)
+                                  } */
+                                  className="w-[40px] h-[40px]  text-xl flex items-center justify-center bg-red-100 text-red-500 rounded-full cursor-pointer "
+                                >
+                                  <RiDeleteBin6Line />
+                                </div>
+                              </DialogTrigger>
+                              <DialogContent className="w-[450px]">
+                                <DialogHeader>
+                                  <DialogTitle className="text-center">
+                                    Voulez-vous vraiment supprimer ce produit?
+                                  </DialogTitle>
+                                  <DialogDescription className="w-full flex flex-row gap-x-5 justify-center mt-5">
+                                    <button onClick={() => {
+                                      applyDeleteProdAction(product.id)
+                                    }} className="p-1 bg-green-500 text-white text-lg rounded-sm  cursor-pointer">
+                                      Oui
+                                    </button>
+                                    <button className="p-1 bg-red-500 text-white text-lg rounded-sm cursor-pointer">
+                                      Non
+                                    </button>
+                                  </DialogDescription>
+                                </DialogHeader>
+                              </DialogContent>
+                            </Dialog>
                           </div>
                         </div>
                       </div>

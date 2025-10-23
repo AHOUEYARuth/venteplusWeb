@@ -19,7 +19,7 @@ const DashboardRightSideB = () => {
   const { register, handleSubmit, watch, formState, trigger ,reset} = useForm({
     mode: "onChange",
   });
-  const { categoryAction, getCategoriesAction, setCategories, categories, deleteCategoriesAction } = useProductStore();
+  const { categoryAction, getCategoriesAction, setCategories, categories, deleteCategoryAction } = useProductStore();
   const [catLoading, setCatLoading] = useState(false)
   function applyGetCatAction(shopId) {
     getCategoriesAction(shopId).then((response) => {
@@ -31,7 +31,7 @@ const DashboardRightSideB = () => {
     });
   }
   async function applyDelCatAction(catId) {
-    await deleteCategoriesAction(catId);
+    await deleteCategoryAction(catId);
     await  applyGetCatAction(shop?.id); 
   }
   async function submitForm(data) {
