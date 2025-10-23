@@ -5,8 +5,9 @@ import { createCategoryRequest, createProductRequest, deleteCategoriesRequest, g
  
 type State = {
   open: boolean;
-  categories: Array<string>;
-  products: any;
+  categories: Array<any>;
+  products: Array<any>;
+
 };
 
 type ProductActions = {
