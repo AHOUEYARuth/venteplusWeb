@@ -9,7 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { gsap } from "gsap";
-import Product2 from "@/assets/images/product10.jpg";
+import Product2 from "@/assets/images/emptyPro.png";
 import Product3 from "@/assets/images/product3.png";
 import Product1 from "@/assets/images/product9.png";
 import Product4 from "@/assets/images/product2.png";
@@ -22,26 +22,32 @@ import { IoMdClose } from "react-icons/io";
 import { useForm } from "react-hook-form";
 import { useLoginStore } from "@/app/login/loginStore/loginStore";
 import { baseUrlNotApi } from "@/lib/httpClient";
+import { ClipLoader } from "react-spinners";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function Product() {
   const container = useRef(null);
   const timeLineModal = useRef();
   const [coverImg, setcoverImg] = useState(null);
   const [payloadImg, setpayloadImg] = useState(null);
-  const { products, createProductAction,setProducts,getProductsActions,categories} = useProductStore();
+  const {
+    products,
+    createProductAction,
+    setProducts,
+    getProductsActions,
+    categories,
+  } = useProductStore();
   const { shop } = useLoginStore();
   const [additionalCoast, setadditionalCoast] = useState(0);
   const [productLoading, setproductLoading] = useState(false);
-  const [productsListe, setproductsListe] = useState([])
+ 
 
   const { register, handleSubmit, watch, formState, trigger, reset } = useForm({
     mode: "onChange",
   });
   async function applyGetProductAction(shopId) {
-   setproductLoading(true);
     await getProductsActions(shopId).then((response) => {
-          setProducts(response.data);
-          setproductLoading(false);
+      setProducts(response.data);
     });
   }
   async function submitForm(data) {
@@ -55,16 +61,26 @@ export default function Product() {
       availableQuantity: parseInt(data.availableQuantity),
       minimumQuantity: parseInt(data.minimumQuantity),
     };
+    setproductLoading(true);
     await createProductAction(payload)
       .then(async (response) => {
         console.log("product");
         console.log(response);
-         await applyGetProductAction(shop?.id);
-        reset()
+        await applyGetProductAction(shop?.id);
+        toast.success('Produit ajouté avec succès')
+        setcoverImg(null)
+        reset();
       })
       .catch((error) => {
         console.log(error);
-      });
+        if (error.message) {
+          toast.error(error.message);
+        } else {
+         toast.error("Produit non ajouté ");
+        }
+      }).finally(() => {
+        setproductLoading(false);
+      })
 
     trigger().then((isValid) => {
       if (isValid) {
@@ -175,215 +191,79 @@ export default function Product() {
 
       <div className="py-8 mt-10">
         <h2 className="text-2xl font-bold mb-5">Liste des Produits</h2>
-        <div className="w-full flex flex-row flex-wrap items-center justify-between gap-y-4">
-          {products.map((product, index) => {
-            return <div
-               key={index}
-               className="shop-item w-70 flex flex-col gap-5 bg-white rounded-2xl p-3 relative shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
-             >
-               <div className="w-full bg-gray-300 flex flex-col gap-5 rounded-tl-xl rounded-2xl">
-                 <div
-                   className="w-full h-[250px] bg-center bg-cover bg-no-repeat rounded-2xl"
-                   style={{ backgroundImage: `url("${baseUrlNotApi}${product?.image}")` }}
-                 >
-                   <div>
-                     <div className="w-full flex items-center justify-between pt-2 px-2 ">
-                       <div className="flex flex-row gap-2 text-white items-center justify-between p-2 bg-black rounded-md font-bold">
-                         <TiShoppingCart size={20} />
-                         <span className="text-lg font-black">21</span>
-                       </div>
-                       <button className="w-[40px] h-[40px]  text-xl flex items-center justify-center bg-black text-white rounded-full cursor-pointer ">
-                         <GrFavorite className="text-2xl" />
-                       </button>
-                     </div>
-                   </div>
-                 </div>
-               </div>
-
-               <div className="px-2 flex flex-col gap-2">
-                 <p className="text-base">
-                   <span className="text-[#F39C12] font-semibold text-2xl">
-                     {product.name}
-                   </span>
-                 </p>
-
-                 <p className="font-medium text-lg text-gray-500">
-                   {product.description}
-                 </p>
-               </div>
-               <div className="px-2 flex items-center justify-between gap-4 text-sm text-gray-700">
-                 <h3 className="text-2xl font-semibold">
-                   {product.salePrice}fcfa
-                 </h3>
-                 <button className="bg-[#F39C12] text-white text-xl py-2 px-4 rounded-xl cursor-pointer">
-                   <h3>
-                     Prix d&apos;achat :{" "}
-                     <span className="font-bold">{product.purchasePrice}</span>
-                   </h3>
-                 </button>
-               </div>
-             </div>;
-          })}
-          {/* <div className="shop-item w-70 flex flex-col gap-5 bg-white rounded-2xl p-3 relative shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer">
-            <div className="w-full bg-gray-300 flex flex-col gap-5 rounded-tl-xl rounded-2xl">
+        <div className="flex flex-row flex-wrap items-center  gap-4">
+          {products.length === 0 ? (
+            <div className="w-full flex flex-col items-center gap-y-2 text-center ">
               <div
-                className="w-full h-[250px] bg-center bg-cover bg-no-repeat rounded-2xl"
-                style={{ backgroundImage: `url(${Product3.src})` }}
-              >
-                <div>
-                  <div className="w-full flex items-center justify-between pt-2 px-2 ">
-                    <div className="flex flex-row gap-2 text-white items-center justify-between p-2 bg-black rounded-md font-bold">
-                      <TiShoppingCart size={20} />
-                      <span className="text-lg font-black">21</span>
-                    </div>
-                    <button className="w-[40px] h-[40px]  text-xl flex items-center justify-center bg-black text-white rounded-full cursor-pointer ">
-                      <GrFavorite className="text-2xl" />
-                    </button>
-                  </div>
-                </div>
+                className="w-[50%] sm:w-[100%] lg:w-[32%] h-[200px] relative overflow-hidden bg-contain bg-center bg-no-repeat cursor-pointer"
+                style={{ backgroundImage: `url(${Product2.src})` }}
+              ></div>
+              <div>
+                <p className="text-2xl font-bold">Aucun produit disponible</p>
+                <p className="">
+                  Veuillez ajouter un produit dans votre stock de produit
+                </p>
               </div>
             </div>
-
-            <div className="px-2 flex flex-col gap-2">
-              <p className="text-base">
-                <span className="text-[#F39C12] font-semibold text-2xl">
-                  Pull-over
-                </span>
-              </p>
-
-              <p className="font-medium text-lg text-gray-500">
-                Lorem ipsum dolor sit amet consectetu amet consectetu..
-              </p>
-            </div>
-            <div className="px-2 flex items-center justify-between gap-4 text-sm text-gray-700">
-              <h3 className="text-2xl font-semibold">$10</h3>
-              <button className="bg-[#F39C12] text-white text-xl py-2 px-4 rounded-xl cursor-pointer">
-                <h3>
-                  Prix d&apos;achat : <span className="font-bold">$8</span>
-                </h3>
-              </button>
-            </div>
-          </div>
-          <div className="shop-item w-70 flex flex-col gap-5 bg-white rounded-2xl p-3 relative shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer">
-            <div className="w-full bg-gray-300 flex flex-col gap-5 rounded-tl-xl rounded-2xl">
-              <div
-                className="w-full h-[250px] bg-center bg-cover bg-no-repeat rounded-2xl"
-                style={{ backgroundImage: `url(${Product1.src})` }}
-              >
-                <div>
-                  <div className="w-full flex items-center justify-between pt-2 px-2 ">
-                    <div className="flex flex-row gap-2 text-white items-center justify-between p-2 bg-black rounded-md font-bold">
-                      <TiShoppingCart size={20} />
-                      <span className="text-lg font-black">21</span>
+          ) : (
+            <>
+              {" "}
+              {products.map((product, index) => {
+                return (
+                  <div
+                    key={index}
+                    className="shop-item min-w-90 flex flex-col gap-5 bg-white rounded-2xl p-3 relative shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
+                  >
+                    <div className="w-full bg-gray-300 flex flex-col gap-5 rounded-tl-xl rounded-2xl">
+                      <div
+                        className="w-full h-[250px] bg-center bg-cover bg-no-repeat rounded-2xl"
+                        style={{
+                          backgroundImage: `url("${baseUrlNotApi}${product?.image}")`,
+                        }}
+                      >
+                        <div>
+                          <div className="w-full flex items-center justify-between pt-2 px-2 ">
+                            <div className="flex flex-row gap-2 text-white items-center justify-between p-2 bg-black rounded-md font-bold">
+                              <TiShoppingCart size={20} />
+                              <span className="text-lg font-black">21</span>
+                            </div>
+                            <button className="w-[40px] h-[40px]  text-xl flex items-center justify-center bg-black text-white rounded-full cursor-pointer ">
+                              <GrFavorite className="text-2xl" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <button className="w-[40px] h-[40px]  text-xl flex items-center justify-center bg-black text-white rounded-full cursor-pointer ">
-                      <GrFavorite className="text-2xl" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
 
-            <div className="px-2 flex flex-col gap-2">
-              <p className="text-base">
-                <span className="text-[#F39C12] font-semibold text-2xl">
-                  Tee-Shirt
-                </span>
-              </p>
+                    <div className="px-2 flex flex-col gap-2">
+                      <p className="text-base">
+                        <span className="text-[#F39C12] font-semibold text-2xl">
+                          {product.name}
+                        </span>
+                      </p>
 
-              <p className="font-medium text-lg text-gray-500">
-                Lorem ipsum dolor sit amet consectetu amet consectetu..
-              </p>
-            </div>
-            <div className="px-2 flex items-center justify-between gap-4 text-sm text-gray-700">
-              <h3 className="text-2xl font-semibold">$10</h3>
-              <button className="bg-[#F39C12] text-white text-xl py-2 px-4 rounded-xl cursor-pointer">
-                <h3>
-                  Prix d&apos;achat : <span className="font-bold">$8</span>
-                </h3>
-              </button>
-            </div>
-          </div>
-          <div className="shop-item w-70 flex flex-col gap-5 bg-white rounded-2xl p-3 relative shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer">
-            <div className="w-full bg-gray-300 flex flex-col gap-5 rounded-tl-xl rounded-2xl">
-              <div
-                className="w-full h-[250px] bg-center bg-cover bg-no-repeat rounded-2xl"
-                style={{ backgroundImage: `url(${Product4.src})` }}
-              >
-                <div>
-                  <div className="w-full flex items-center justify-between pt-2 px-2 ">
-                    <div className="flex flex-row gap-2 text-white items-center justify-between p-2 bg-black rounded-md font-bold">
-                      <TiShoppingCart size={20} />
-                      <span className="text-lg font-black">21</span>
+                      <p className="font-medium text-lg text-gray-500">
+                        {product.description}
+                      </p>
                     </div>
-                    <button className="w-[40px] h-[40px]  text-xl flex items-center justify-center bg-black text-white rounded-full cursor-pointer ">
-                      <GrFavorite className="text-2xl" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="px-2 flex flex-col gap-2">
-              <p className="text-base">
-                <span className="text-[#F39C12] font-semibold text-2xl">
-                  Pull-Over
-                </span>
-              </p>
-
-              <p className="font-medium text-lg text-gray-500">
-                Lorem ipsum dolor sit amet consectetu amet consectetu..
-              </p>
-            </div>
-            <div className="px-2 flex items-center justify-between gap-4 text-sm text-gray-700">
-              <h3 className="text-2xl font-semibold">$10</h3>
-              <button className="bg-[#F39C12] text-white text-xl py-2 px-4 rounded-xl cursor-pointer">
-                <h3>
-                  Prix d&apos;achat : <span className="font-bold">$8</span>
-                </h3>
-              </button>
-            </div>
-          </div>
-          <div className="shop-item w-70 flex flex-col gap-5 bg-white rounded-2xl p-3 relative shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer">
-            <div className="w-full bg-gray-300 flex flex-col gap-5 rounded-tl-xl rounded-2xl">
-              <div
-                className="w-full h-[250px] bg-center bg-cover bg-no-repeat rounded-2xl"
-                style={{ backgroundImage: `url(${Product5.src})` }}
-              >
-                <div>
-                  <div className="w-full flex items-center justify-between pt-2 px-2 ">
-                    <div className="flex flex-row gap-2 text-white items-center justify-between p-2 bg-black rounded-md font-bold">
-                      <TiShoppingCart size={20} />
-                      <span className="text-lg font-black">21</span>
+                    <div className="px-2 flex items-center justify-between gap-4 text-sm text-gray-700">
+                      <h3 className="text-2xl font-semibold">
+                        {product.salePrice} F
+                      </h3>
+                      <button className="bg-[#F39C12] text-white text-xl py-2 px-4 rounded-xl cursor-pointer">
+                        <h3>
+                          Prix d&apos;achat :{" "}
+                          <span className="font-bold">
+                            {product.purchasePrice}
+                          </span>
+                        </h3>
+                      </button>
                     </div>
-                    <button className="w-[40px] h-[40px]  text-xl flex items-center justify-center bg-black text-white rounded-full cursor-pointer ">
-                      <GrFavorite className="text-2xl" />
-                    </button>
                   </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="px-2 flex flex-col gap-2">
-              <p className="text-base">
-                <span className="text-[#F39C12] font-semibold text-2xl">
-                  Tee-Shirt
-                </span>
-              </p>
-
-              <p className="font-medium text-lg text-gray-500">
-                Lorem ipsum dolor sit amet consectetu amet consectetu..
-              </p>
-            </div>
-            <div className="px-2 flex items-center justify-between gap-4 text-sm text-gray-700">
-              <h3 className="text-2xl font-semibold">$10</h3>
-              <button className="bg-[#F39C12] text-white text-xl py-2 px-4 rounded-xl cursor-pointer">
-                <h3>
-                  Prix d&apos;achat : <span className="font-bold">$8</span>
-                </h3>
-              </button>
-            </div>
-          </div> */}
+                );
+              })}
+            </>
+          )}
         </div>
       </div>
 
@@ -589,16 +469,21 @@ export default function Product() {
                   />
                 </div>
 
-                <button className="auth-btn w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] focus:ring-offset-2 transition-all shadow-lg">
-                  Ajouter
+                <button
+                  disabled={productLoading}
+                  className="auth-btn w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] focus:ring-offset-2 transition-all shadow-lg"
+                >
+                  Ajouter{" "}
+                  {productLoading ? (
+                    <ClipLoader color="white" size={20} />
+                  ) : null}
                 </button>
               </div>
             </form>
           </div>
         </div>
       </div>
+      <Toaster/>
     </div>
   );
-};
-
-
+}
