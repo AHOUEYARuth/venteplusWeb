@@ -27,7 +27,7 @@ export const createProductRequest = async (productData) => {
   return HttpClient.makeRequest({
     method: "POST",
     url: "products",
-    payload: productData,
+    payload: objectToFormData(productData),
   });
 };
 
