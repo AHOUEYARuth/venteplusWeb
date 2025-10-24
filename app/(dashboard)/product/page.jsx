@@ -43,14 +43,30 @@ export default function Product() {
     clearCategoryFilter,
     selectedCategory,
     filteredProducts,
-    setSelectedCategory,
+    editedProduct,
+    editedProductAction,
+    setEditingProduct,
   } = useProductStore();
   const { shop } = useLoginStore();
   const [additionalCoast, setadditionalCoast] = useState(0);
   const [productLoading, setproductLoading] = useState(false);
   const [filterLoading, setFilterLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
-  const { register, handleSubmit, watch, formState, trigger, reset } = useForm({
+  const [updateLoading, setupdateLoading] = useState(false);
+  const [productName, setproductName] = useState("");
+  const [productInfos, setproductInfos] = useState({});
+  const [productImg, setproductImg] = useState("");
+  const [description, setdescription] = useState("")
+  const [availableQuantity, setavailableQuantity] = useState("")
+  const [minimumQuantity, setminimumQuantity] = useState("")
+  const [purchasePrice, setpurchasePrice] = useState("")
+  const [salePrice, setsalePrice] = useState("")
+  const [unitMeasurement, setunitMeasurement] = useState("")
+  const [additionalCosts, setadditionalCosts] = useState("")
+  const [categorieId, setcategorieId] = useState("")
+  const [shopId, setshopId] = useState("")
+
+  const { register, handleSubmit, formState, trigger, reset } = useForm({
     mode: "onChange",
   });
   const handleCategoryFilter = async (categoryId) => {
@@ -69,6 +85,23 @@ export default function Product() {
     }
   };
   const productsToDisplay = selectedCategory ? filteredProducts : products;
+  async function applyUpdateProductAction(productId) {
+    await editedProductAction(productId)
+      .then(async () => {
+        setproductLoading(true);
+        await applyGetProductAction(shop?.id);
+        toast.success("Produit modifier avec succès");
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error(
+          error.message || "Erreur lors de la modification du produit"
+        );
+      })
+      .finally(() => {
+        setproductLoading(false);
+      });
+  }
   async function applyGetProductAction(shopId) {
     await getProductsActions(shopId).then((response) => {
       setProducts(response.data);
@@ -76,7 +109,7 @@ export default function Product() {
     });
   }
   async function applyDeleteProdAction(productId) {
-    setDeleteLoading(true); 
+    setDeleteLoading(true);
     await deleteProductAction(productId)
       .then(async () => {
         await applyGetProductAction(shop?.id);
@@ -87,9 +120,8 @@ export default function Product() {
         toast.error(error.message || "Erreur lors de la suppression");
       })
       .finally(() => {
-        setDeleteLoading(false); 
+        setDeleteLoading(false);
       });
-
   }
   async function submitForm(data) {
     const payload = {
@@ -215,25 +247,25 @@ export default function Product() {
               className="border border-[#F39C12] py-2 px-4 rounded-lg"
             />
           </div>
-            <Select
-              value={selectedCategory || "all"}
-              onValueChange={handleCategoryFilter}
-              disabled={filterLoading}
-            >
-              <SelectTrigger className="w-[200px] py-5 outline-none focus:outline-none border border-[#F39C12]">
-                <SelectValue placeholder="Catégorie">
-                  {filterLoading ? "Chargement..." : "Catégorie"}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Toutes les catégories</SelectItem>
-                {categories.map((category, index) => (
-                  <SelectItem key={index} value={category.id}>
-                    {category.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <Select
+            value={selectedCategory || "all"}
+            onValueChange={handleCategoryFilter}
+            disabled={filterLoading}
+          >
+            <SelectTrigger className="w-[200px] py-5 outline-none focus:outline-none border border-[#F39C12]">
+              <SelectValue placeholder="Catégorie">
+                {filterLoading ? "Chargement..." : "Catégorie"}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Toutes les catégories</SelectItem>
+              {categories.map((category, index) => (
+                <SelectItem key={index} value={category.id}>
+                  {category.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
@@ -292,7 +324,21 @@ export default function Product() {
                       >
                         <div>
                           <div className="w-full flex items-center justify-between pt-2 px-2">
-                            <div className="flex flex-row gap-2 text-black items-center justify-between p-2 bg-gray-100 rounded-md font-bold">
+                            <div
+                              onClick={() => {
+                                setEditingProduct(product);
+                                setproductInfos({
+                                  ...product,
+                                });
+                                setcoverImg(
+                                  `${baseUrlNotApi}${product?.image}`
+                                );
+                                setadditionalCosts(product?.additionalCosts);
+                                setavailableQuantity(product.availableQuantity);
+                                timeLineModal.current.play();
+                              }}
+                              className="flex flex-row gap-2 text-black items-center justify-between p-2 bg-gray-100 rounded-md font-bold"
+                            >
                               Modifier
                             </div>
 
@@ -416,6 +462,10 @@ export default function Product() {
                     })}
                     type="text"
                     name="name"
+                    value={productInfos?.name ?? ""}
+                    onChange={(e) =>
+                      setproductInfos({ ...productInfos, name: e.target.value })
+                    }
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
                     placeholder="Entrer le nom du produit"
                   />
@@ -433,6 +483,13 @@ export default function Product() {
                     })}
                     type="text"
                     name="description"
+                    value={productInfos?.description ?? ""}
+                    onChange={(e) =>
+                      setproductInfos({
+                        ...productInfos,
+                        description: e.target.value,
+                      })
+                    }
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
                     placeholder="Entrer une brève description du produit"
                   />
@@ -450,6 +507,13 @@ export default function Product() {
                     })}
                     type="number"
                     name="purchasePrice"
+                    value={productInfos?.purchasePrice ?? ""}
+                    onChange={(e) =>
+                      setproductInfos({
+                        ...productInfos,
+                        purchasePrice: e.target.value,
+                      })
+                    }
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
                     placeholder="Entrer le prix d'achat du produit"
                   />
@@ -467,6 +531,13 @@ export default function Product() {
                     })}
                     type="number"
                     name="salePrice"
+                    value={productInfos?.salePrice ?? ""}
+                    onChange={(e) =>
+                      setproductInfos({
+                        ...productInfos,
+                        salePrice: e.target.value,
+                      })
+                    }
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
                     placeholder="Entrer le prix de vente du produit"
                   />
@@ -483,6 +554,13 @@ export default function Product() {
                     {...register("categoryId", {
                       required: "La catégorie du produit est obligatoire",
                     })}
+                    value={productInfos?.categoryId ?? ""}
+                    onChange={(e) =>
+                      setproductInfos({
+                        ...productInfos,
+                        categoryId: e.target.value,
+                      })
+                    }
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
                     defaultValue=""
                   >
@@ -508,6 +586,13 @@ export default function Product() {
                     })}
                     type="number"
                     name="availableQuantity"
+                    value={productInfos?.availableQuantity ?? ""}
+                    onChange={(e) =>
+                      setproductInfos({
+                        ...productInfos,
+                        availableQuantity: e.target.value,
+                      })
+                    }
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
                     placeholder="quantité"
                   />
@@ -526,6 +611,13 @@ export default function Product() {
                     })}
                     type="number"
                     name="minimumQuantity"
+                    value={productInfos?.minimumQuantity ?? ""}
+                    onChange={(e) =>
+                      setproductInfos({
+                        ...productInfos,
+                        minimumQuantity: e.target.value,
+                      })
+                    }
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
                     placeholder="quantité minimale"
                   />
@@ -540,6 +632,13 @@ export default function Product() {
                   <select
                     name="unitMeasurement"
                     id="unitMeasurement"
+                    value={productInfos?.unitMeasurement ?? ""}
+                    onChange={(e) =>
+                      setproductInfos({
+                        ...productInfos,
+                        unitMeasurement: e.target.value,
+                      })
+                    }
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
                   >
                     <option value="nbr">Nombre</option>
@@ -558,6 +657,7 @@ export default function Product() {
                   <label htmlFor="">Frais supplémentaires</label>
                   <input
                     type="number"
+                    value={additionalCoast}
                     onChange={(e) => setadditionalCoast(e.target.value)}
                     name="additionalCosts"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
@@ -569,7 +669,7 @@ export default function Product() {
                   disabled={productLoading}
                   className="auth-btn w-full flex flex-row items-center gap-x-2 justify-center mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] focus:ring-offset-2 transition-all shadow-lg"
                 >
-                  Ajouter{" "}
+                 {editedProduct != null ? " Modifier" : " Ajouter" }
                   {productLoading ? (
                     <ClipLoader color="white" size={20} />
                   ) : null}

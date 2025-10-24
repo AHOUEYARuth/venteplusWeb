@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { create } from "zustand";
-import { createCategoryRequest, createProductRequest, deleteCategoriesRequest, deleteProductRequest, getCategoriesRequest, getPoductsRequest, getProductsByCategoryRequest } from "../productRequest/productRequest";
+import { createCategoryRequest, createProductRequest, deleteCategoriesRequest, deleteProductRequest, getCategoriesRequest, getPoductsRequest, getProductsByCategoryRequest, updateProductRequest } from "../productRequest/productRequest";
  
 type State = {
   open: boolean;
@@ -9,6 +9,7 @@ type State = {
   products: Array<any>;
   selectedCategory: string; 
   filteredProducts: Array<any>;
+  editedProduct: any;
 };
 
 type ProductActions = {
@@ -23,7 +24,8 @@ type ProductActions = {
   deleteProductAction: (productId: string) => Promise<void>;
   filterProductsByCategory: (categoryId: string) => Promise<void>;
   clearCategoryFilter: () => void;
-  setSelectedCategory: (categoryId: string) => void;
+  editedProductAction: (productId: string) => Promise<void>;
+  setEditingProduct: (editedProduct: any) => void;
 };
 
 export const useProductStore = create<State & ProductActions>((set) => ({
@@ -32,6 +34,7 @@ export const useProductStore = create<State & ProductActions>((set) => ({
   products: [],
   selectedCategory: "",
   filteredProducts: [],
+  editedProduct: null,
   setOpen: () => set((state) => ({ open: !state.open })),
   categoryAction: async (categoryFormData) => {
     const response = await createCategoryRequest(categoryFormData);
@@ -86,7 +89,10 @@ export const useProductStore = create<State & ProductActions>((set) => ({
       selectedCategory: "",
     });
   },
-
-  setSelectedCategory: (categoryId) => set({ selectedCategory: categoryId }),
+  editedProductAction: async (productId) => {
+    const response = await updateProductRequest(productId);
+    return response;
+  },
+  setEditingProduct: (editedProduct) => set({ editedProduct: editedProduct }),
 }));
 

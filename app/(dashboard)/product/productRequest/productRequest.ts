@@ -51,3 +51,10 @@ export const getProductsByCategoryRequest = async (categoryId) => {
     url: `products/category/${categoryId}`,
   });
 };
+
+export const updateProductRequest = async (productId) => {
+  return HttpClient.makeRequest({
+    method: "PUT",
+    url: `products/${productId}`,
+  });
+};

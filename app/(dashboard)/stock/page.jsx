@@ -16,9 +16,9 @@ import { useForm } from "react-hook-form";
 import { useProductStore } from "../product/productStore/productStore";
 import { useLoginStore } from "@/app/login/loginStore/loginStore";
 export default function Stock() {
-  const { products, getProductsActions } = useProductStore();
+  const { products, getProductsActions, setProducts } = useProductStore();
   const { shop } = useLoginStore();
-
+  const { stocks, fetchData } = stockStore();
   const container = useRef(null);
   const timeLineModal = useRef();
 
@@ -36,7 +36,11 @@ export default function Stock() {
 
   console.log("produits");
   console.log(products);
-
+async function applyGetProductAction(shopId) {
+  await getProductsActions(shopId).then((response) => {
+    setProducts(response.data);
+  });
+}
   useLayoutEffect(() => {
     const context = gsap.context(() => {
       timeLineModal.current = gsap
@@ -61,11 +65,13 @@ export default function Stock() {
     };
   }, [container]);
 
-  useEffect(() => {
-    if (shop?.id) {
-      getProductsActions(shop.id);
-    }
-  }, [shop?.id]);
+   useEffect(() => {
+      (function init() {
+        if (shop?.id) {
+          applyGetProductAction(shop?.id);
+        }
+      })();
+    }, [shop]);
   return (
     <div ref={container} className="w-full h-full p-5 bg-gray-50 rounded-xl">
       <div className="w-full flex flex-row items-center justify-between">
@@ -102,29 +108,29 @@ export default function Stock() {
           </div>
         </div>
         <div className="w-[95%] overflow-x-auto pb-10 mt-5 bg-white">
-          <table className="min-w-full text-xl  ">
-            <thead className=" text-black bg-gray-100">
-              <tr className="border-b border-gray-200 text-left">
-                <th className="p-5">N°</th>
-                <th className="p-5">Nom du stock</th>
-                <th className="p-5">Quantité disponible</th>
-                <th className="p-5 ">Quantité Minimale</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {products.length === 0 ? (
-                <div className=" w-full text-end">Aucun produit n&apos;est disponible en stock</div>
-              ) : (
-                <>
-                  {" "}
-                  {products.map((product) => (
+          {products.length === 0 ? (
+            <div>Aucun produit disponible dans votre stock</div>
+          ) : (
+            <table className="min-w-full text-xl  ">
+              <thead className=" text-black bg-gray-100">
+                <tr className="border-b border-gray-200 text-left">
+                  <th className="p-5">N°</th>
+                  <th className="p-5">Nom du stock</th>
+                  <th className="p-5">Quantité disponible</th>
+                  <th className="p-5 ">Quantité Minimale</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {products.map((product, index) => {
+                  return (
                     <tr
                       key={product.id}
                       className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
                     >
-                      <td className="p-5">{product.id}</td>
-                      <td className="p-5 font-bold">{product.name}</td>
+                      <td className="p-5">{index + 1}</td>
+                      <td className="p-5 font-bold">Stock de {product.name}</td>
+                      {/* <td className="p-5">{stock.product}</td> */}
                       <td className="p-5">{product.availableQuantity}</td>
                       <td className="p-5">{product.minimumQuantity}</td>
                       <td className="pr-5">
@@ -148,11 +154,11 @@ export default function Stock() {
                         </DropdownMenu>
                       </td>
                     </tr>
-                  ))}
-                </>
-              )}
-            </tbody>
-          </table>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
 

@@ -165,8 +165,8 @@ const dashboard = () => {
       </div>
       <div className="py-8">
         <h2 className="text-2xl font-bold mb-5">Top Produits</h2>
-        <div className="w-full flex flex-row flex-wrap items-center justify-between gap-y-4">
-          <div className="shop-item w-70 flex flex-col gap-5 bg-white rounded-2xl p-3 relative shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer">
+        <div className="w-full flex flex-row flex-wrap items-center justify-between gap-4 ">
+          <div className="shop-item w-93 flex flex-col gap-5 bg-white rounded-2xl p-3 relative shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer">
             <div className="w-full bg-gray-300 flex flex-col gap-5 rounded-tl-xl rounded-2xl">
               <div
                 className="w-full h-[250px] bg-center bg-cover bg-no-repeat rounded-2xl"
@@ -196,7 +196,7 @@ const dashboard = () => {
               </button>
             </div>
           </div>
-          <div className="shop-item w-70 flex flex-col gap-5 bg-white rounded-2xl p-3 relative shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer">
+          <div className="shop-item w-93 flex flex-col gap-5 bg-white rounded-2xl p-3 relative shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer">
             <div className="w-full bg-gray-300 flex flex-col gap-5 rounded-tl-xl rounded-2xl">
               <div
                 className="w-full h-[250px] bg-center bg-cover bg-no-repeat rounded-2xl"
@@ -226,7 +226,7 @@ const dashboard = () => {
               </button>
             </div>
           </div>
-          <div className="shop-item w-70 flex flex-col gap-5 bg-white rounded-2xl p-3 relative shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer">
+          <div className="shop-item w-93 flex flex-col gap-5 bg-white rounded-2xl p-3 relative shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer">
             <div className="w-full bg-gray-300 flex flex-col gap-5 rounded-tl-xl rounded-2xl">
               <div
                 className="w-full h-[250px] bg-center bg-cover bg-no-repeat rounded-2xl"
@@ -256,7 +256,7 @@ const dashboard = () => {
               </button>
             </div>
           </div>
-          <div className="shop-item w-70 flex flex-col gap-5 bg-white rounded-2xl p-3 relative shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer">
+          <div className="shop-item w-93 flex flex-col gap-5 bg-white rounded-2xl p-3 relative shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer">
             <div className="w-full bg-gray-300 flex flex-col gap-5 rounded-tl-xl rounded-2xl">
               <div
                 className="w-full h-[250px] bg-center bg-cover bg-no-repeat rounded-2xl"
