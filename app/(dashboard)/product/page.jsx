@@ -18,6 +18,7 @@ import { baseUrlNotApi } from "@/lib/httpClient";
 import { ClipLoader } from "react-spinners";
 import toast, { Toaster } from "react-hot-toast";
 import { RiDeleteBin6Line } from "react-icons/ri";
+import moment from "moment"
 import {
   Dialog,
   DialogContent,
@@ -34,6 +35,7 @@ export default function Product() {
   const timeLineModal = useRef();
   const [coverImg, setcoverImg] = useState(null);
   const [payloadImg, setpayloadImg] = useState(null);
+  
   const {
     products,
     createProductAction,
@@ -41,7 +43,7 @@ export default function Product() {
     getProductsActions,
     categories,
     deleteProductAction,
-    filterProductsByCategory,
+    filterProducts,
     clearCategoryFilter,
     selectedCategory,
     filteredProducts,
@@ -54,38 +56,24 @@ export default function Product() {
   const [productLoading, setproductLoading] = useState(false);
   const [filterLoading, setFilterLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
-  const [updateLoading, setupdateLoading] = useState(false);
-  const [productName, setproductName] = useState("");
+
+  const [categorieFilter, setCategorieFilter] = useState("")
+  const [nameFilter, setnameFilter] = useState("")
+  const [rangeDate, setRangeDate] = useState(null);
+
   const [productInfos, setproductInfos] = useState({});
-  const [productImg, setproductImg] = useState("");
-  const [description, setdescription] = useState("");
   const [availableQuantity, setavailableQuantity] = useState("");
-  const [minimumQuantity, setminimumQuantity] = useState("");
-  const [purchasePrice, setpurchasePrice] = useState("");
-  const [salePrice, setsalePrice] = useState("");
-  const [unitMeasurement, setunitMeasurement] = useState("");
   const [additionalCosts, setadditionalCosts] = useState("");
-  const [categorieId, setcategorieId] = useState("");
-  const [shopId, setshopId] = useState("");
+
 
   const { register, handleSubmit, formState, trigger, reset } = useForm({
     mode: "onChange",
   });
-  const handleCategoryFilter = async (categoryId) => {
-    setFilterLoading(true);
-    try {
-      if (categoryId === "all" || !categoryId) {
-        await clearCategoryFilter();
-      } else {
-        await filterProductsByCategory(categoryId);
-      }
-    } catch (error) {
-      console.error("Erreur lors du filtrage:", error);
-      toast.error("Erreur lors du filtrage par catégorie");
-    } finally {
-      setFilterLoading(false);
-    }
-  };
+
+
+  
+
+
   const productsToDisplay = selectedCategory ? filteredProducts : products;
   async function applyUpdateProductAction(productId, payload) {
     await editedProductAction(productId, payload)
@@ -204,6 +192,26 @@ export default function Product() {
   }
 
   useEffect(() => {
+    (async function handleFilter() {
+      if (categorieFilter != "" || nameFilter != "" || rangeDate != null) {
+        console.log("range init")
+        console.log(categorieFilter);
+        const dateFrom = rangeDate?.from;
+        const dateTo = rangeDate?.to;
+        await filterProducts(
+          shop?.id,
+          nameFilter,
+          categorieFilter,
+          moment(dateFrom).format("dd-mm-yyy"),
+          moment(dateTo).format("dd-mm-yyy")
+        ).then((response) => {
+          setProducts(response.data);
+        });
+      }
+    })();
+  }, [categorieFilter, nameFilter, rangeDate])
+  
+  useEffect(() => {
     (function init() {
       if (shop?.id) {
         applyGetProductAction(shop?.id);
@@ -275,9 +283,9 @@ export default function Product() {
             Rechercher
           </button>
         </div>
-        <div className="w-[50%] flex items-center justify-between">
+        <div className="w-[50%] flex items-center gap-3">
           <div className="flex flex-row gap-x-5 items-center ">
-            <DatePicker/>
+            <DatePicker onDateChange={(range) => setRangeDate(range)} />
             {/* <label htmlFor="" className="text-lg">
               Filtrer par date :{" "}
             </label>
@@ -289,8 +297,8 @@ export default function Product() {
             /> */}
           </div>
           <Select
-            value={selectedCategory || "all"}
-            onValueChange={handleCategoryFilter}
+            value={categorieFilter || "all"}
+            onValueChange={setCategorieFilter}
             disabled={filterLoading}
           >
             <SelectTrigger className="w-[200px] py-5 outline-none focus:outline-none border border-[#F39C12]">
@@ -312,45 +320,33 @@ export default function Product() {
 
       <div className="py-8 mt-10">
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-2xl font-bold">
-            {selectedCategory
-              ? `Produits de la catégorie (${filteredProducts.length})`
-              : `Liste des Produits`}
-          </h2>
-          {selectedCategory && (
-            <Button
-              onClick={() => handleCategoryFilter("all")}
-              variant="outline"
-              className="border-[#F39C12] text-[#F39C12] hover:bg-[#F39C12] hover:text-white"
-            >
-              Effacer le filtre
-            </Button>
-          )}
+          <h2 className="text-2xl font-bold">Liste des Produits</h2>
+          <Button
+            onClick={() => handleClearFilter()}
+            variant="outline"
+            className="border-[#F39C12] text-[#F39C12] hover:bg-[#F39C12] hover:text-white"
+          >
+            Effacer le filtre
+          </Button>
         </div>
 
         <div className="flex flex-row flex-wrap items-center gap-4">
-          {productsToDisplay.length === 0 ? (
+          {products.length === 0 ? (
             <div className="w-full flex flex-col items-center gap-y-2 text-center">
               <div
                 className="w-[50%] sm:w-[100%] lg:w-[32%] h-[200px] relative overflow-hidden bg-contain bg-center bg-no-repeat cursor-pointer"
                 style={{ backgroundImage: `url(${Product2.src})` }}
               ></div>
               <div>
-                <p className="text-2xl font-bold">
-                  {selectedCategory
-                    ? "Aucun produit dans cette catégorie"
-                    : "Aucun produit disponible"}
-                </p>
+                <p className="text-2xl font-bold">Aucun produit trouvé</p>
                 <p className="">
-                  {selectedCategory
-                    ? "Aucun produit ne correspond à cette catégorie"
-                    : "Veuillez ajouter un produit dans votre stock de produit"}
+                  La liste des produit enrégistrer s'affiche ici
                 </p>
               </div>
             </div>
           ) : (
             <>
-              {productsToDisplay.map((product, index) => {
+              {products.map((product, index) => {
                 return (
                   <div
                     key={index}

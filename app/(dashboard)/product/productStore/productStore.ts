@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { create } from "zustand";
-import { createCategoryRequest, createProductRequest, deleteCategoriesRequest, deleteProductRequest, getCategoriesRequest, getPoductsRequest, getProductsByCategoryRequest, updateProductRequest } from "../productRequest/productRequest";
+import { createCategoryRequest, createProductRequest, deleteCategoriesRequest, deleteProductRequest, filterProductsRequest, getCategoriesRequest, getPoductsRequest, updateProductRequest } from "../productRequest/productRequest";
  
 type State = {
   open: boolean;
@@ -22,7 +22,13 @@ type ProductActions = {
   getProductsActions: (shopId: string) => Promise<void>;
   setProducts: (products: any) => void;
   deleteProductAction: (productId: string) => Promise<void>;
-  filterProductsByCategory: (categoryId: string) => Promise<void>;
+  filterProducts: (
+    shopId: string,
+    name: string,
+    categoryId: string,
+    dateFrom: string,
+    dateTo: string
+  ) => Promise<void>;
   clearCategoryFilter: () => void;
   editedProductAction: (productId: string, payload: any) => Promise<void>;
   setEditingProduct: (editedProduct: any) => void;
@@ -65,22 +71,19 @@ export const useProductStore = create<State & ProductActions>((set) => ({
     const response = await deleteProductRequest(productId);
     return response;
   },
-  filterProductsByCategory: async (categoryId) => {
-    if (!categoryId) {
-      set({ filteredProducts: [], selectedCategory: "" });
+  filterProducts: async (shopId, name, categoryId, dateFrom, dateTo) => {
+    if (!shopId) {
       return;
     }
 
-    try {
-      const response = await getProductsByCategoryRequest(categoryId);
-      set({
-        filteredProducts: response.data,
-        selectedCategory: categoryId,
-      });
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
+    const response = await filterProductsRequest(
+      shopId,
+      name,
+      categoryId,
+      dateFrom,
+      dateTo
+    );
+    return response;
   },
 
   clearCategoryFilter: () => {
@@ -89,8 +92,8 @@ export const useProductStore = create<State & ProductActions>((set) => ({
       selectedCategory: "",
     });
   },
-  editedProductAction: async (productId,payload) => {
-    const response = await updateProductRequest(productId,payload);
+  editedProductAction: async (productId, payload) => {
+    const response = await updateProductRequest(productId, payload);
     return response;
   },
   setEditingProduct: (editedProduct) => set({ editedProduct: editedProduct }),

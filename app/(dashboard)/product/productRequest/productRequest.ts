@@ -2,7 +2,6 @@ import { HttpClient } from "@/lib/httpClient";
 import api from "@/lib/util";
 import { objectToFormData } from "@/lib/utils";
 
-
 export const createCategoryRequest = async (categoryData) => {
   return HttpClient.makeRequest({
     method: "POST",
@@ -45,10 +44,23 @@ export const deleteProductRequest = async (productId) => {
   });
 };
 
-export const getProductsByCategoryRequest = async (categoryId) => {
+export const filterProductsRequest = async (
+  shopId,
+  name,
+  categoryId,
+  dateFrom,
+  dateTo
+) => {
+  const params = new URLSearchParams("");
+  if(name != "") params.append("name", name);
+  if(categoryId != "") params.append("categoryId", categoryId);
+  if(dateFrom) params.append("dateFrom", dateFrom);
+  if(dateTo) params.append("dateTo", dateTo);
+  
   return HttpClient.makeRequest({
     method: "GET",
-    url: `products/category/${categoryId}`,
+    url: `products/shop/${shopId}`,
+    searchParams:params
   });
 };
 
