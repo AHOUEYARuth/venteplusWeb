@@ -56,6 +56,6 @@ export const updateProductRequest = async (productId, payload) => {
   return HttpClient.makeRequest({
     method: "PUT",
     url: `products/${productId}`,
-    payload: objectToFormData(payload),
+    payload: payload,
   });
 };

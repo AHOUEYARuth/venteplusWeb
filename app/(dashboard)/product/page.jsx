@@ -27,6 +27,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { cleanPayload } from "@/lib/utils";
+import { DatePicker } from "@/components/ui/date-picker";
 
 export default function Product() {
   const container = useRef(null);
@@ -57,15 +58,15 @@ export default function Product() {
   const [productName, setproductName] = useState("");
   const [productInfos, setproductInfos] = useState({});
   const [productImg, setproductImg] = useState("");
-  const [description, setdescription] = useState("")
-  const [availableQuantity, setavailableQuantity] = useState("")
-  const [minimumQuantity, setminimumQuantity] = useState("")
-  const [purchasePrice, setpurchasePrice] = useState("")
-  const [salePrice, setsalePrice] = useState("")
-  const [unitMeasurement, setunitMeasurement] = useState("")
-  const [additionalCosts, setadditionalCosts] = useState("")
-  const [categorieId, setcategorieId] = useState("")
-  const [shopId, setshopId] = useState("")
+  const [description, setdescription] = useState("");
+  const [availableQuantity, setavailableQuantity] = useState("");
+  const [minimumQuantity, setminimumQuantity] = useState("");
+  const [purchasePrice, setpurchasePrice] = useState("");
+  const [salePrice, setsalePrice] = useState("");
+  const [unitMeasurement, setunitMeasurement] = useState("");
+  const [additionalCosts, setadditionalCosts] = useState("");
+  const [categorieId, setcategorieId] = useState("");
+  const [shopId, setshopId] = useState("");
 
   const { register, handleSubmit, formState, trigger, reset } = useForm({
     mode: "onChange",
@@ -86,11 +87,12 @@ export default function Product() {
     }
   };
   const productsToDisplay = selectedCategory ? filteredProducts : products;
-  async function applyUpdateProductAction(productId,payload) {
-    await editedProductAction(productId,payload)
+  async function applyUpdateProductAction(productId, payload) {
+    await editedProductAction(productId, payload)
       .then(async () => {
         setproductLoading(true);
         await applyGetProductAction(shop?.id);
+        timeLineModal.current.reversed(true);
         toast.success("Produit modifier avec succès");
       })
       .catch((error) => {
@@ -126,7 +128,7 @@ export default function Product() {
   }
   async function submitForm(data) {
     console.log("simple payload");
-    console.log(data)
+    console.log(data);
     data = cleanPayload(data);
     const payload = {
       ...data,
@@ -135,65 +137,70 @@ export default function Product() {
       purchasePrice: data.purchasePrice ? parseInt(data.purchasePrice) : null,
       salePrice: data.salePrice ? parseInt(data.salePrice) : null,
       image: data?.image[0] ? data?.image[0] : null,
-      availableQuantity: data.availableQuantity ? parseInt(data.availableQuantity) : null,
-      minimumQuantity: data.minimumQuantity ? parseInt(data.minimumQuantity) : null,
+      availableQuantity: data.availableQuantity
+        ? parseInt(data.availableQuantity)
+        : null,
+      minimumQuantity: data.minimumQuantity
+        ? parseInt(data.minimumQuantity)
+        : null,
     };
-    
+
     console.log("simple payload");
-    console.log(data)
-    
-    if(Object.entries(cleanPayload(payload)).length == 2 && editedProduct != null){
+    console.log(data);
+
+    if (
+      Object.entries(cleanPayload(payload)).length == 2 &&
+      editedProduct != null
+    ) {
       toast.error("Aucune modification apportée au produit");
       return;
     }
-       
+
     setproductLoading(true);
-    if(editedProduct != null){
+    if (editedProduct != null) {
       console.log("payload clean");
       console.log(cleanPayload(payload));
-       await applyUpdateProductAction(editedProduct.id, cleanPayload(payload))
-      .then(async (response) => {
-        
-        await applyGetProductAction(shop?.id);
-        toast.success("Produit modifié avec succès");
-        setcoverImg(null);
-        setEditingProduct(null);
-        reset();
-      })
-      .catch((error) => {
-        console.log(error);
-        if (error.message) {
-          toast.error(error.message);
-        } else {
-          toast.error("Produit non modifié ");
-        }
-      })
-      .finally(() => {
-        setproductLoading(false);
-      });
-    }else{
-       await createProductAction(payload)
-      .then(async (response) => {
-        console.log("product");
-        console.log(response);
-        await applyGetProductAction(shop?.id);
-        toast.success("Produit ajouté avec succès");
-        setcoverImg(null);
-        reset();
-      })
-      .catch((error) => {
-        console.log(error);
-        if (error.message) {
-          toast.error(error.message);
-        } else {
-          toast.error("Produit non ajouté ");
-        }
-      })
-      .finally(() => {
-        setproductLoading(false);
-      });
+      await applyUpdateProductAction(editedProduct.id, cleanPayload(payload))
+        .then(async (response) => {
+          await applyGetProductAction(shop?.id);
+          toast.success("Produit modifié avec succès");
+          setcoverImg(null);
+          setEditingProduct(null);
+          reset();
+        })
+        .catch((error) => {
+          console.log(error);
+          if (error.message) {
+            toast.error(error.message);
+          } else {
+            toast.error("Produit non modifié ");
+          }
+        })
+        .finally(() => {
+          setproductLoading(false);
+        });
+    } else {
+      await createProductAction(payload)
+        .then(async (response) => {
+          console.log("product");
+          console.log(response);
+          await applyGetProductAction(shop?.id);
+          toast.success("Produit ajouté avec succès");
+          setcoverImg(null);
+          reset();
+        })
+        .catch((error) => {
+          console.log(error);
+          if (error.message) {
+            toast.error(error.message);
+          } else {
+            toast.error("Produit non ajouté ");
+          }
+        })
+        .finally(() => {
+          setproductLoading(false);
+        });
     }
-
   }
 
   useEffect(() => {
@@ -270,7 +277,8 @@ export default function Product() {
         </div>
         <div className="w-[50%] flex items-center justify-between">
           <div className="flex flex-row gap-x-5 items-center ">
-            <label htmlFor="" className="text-lg">
+            <DatePicker/>
+            {/* <label htmlFor="" className="text-lg">
               Filtrer par date :{" "}
             </label>
             <input
@@ -278,7 +286,7 @@ export default function Product() {
               name=""
               id=""
               className="border border-[#F39C12] py-2 px-4 rounded-lg"
-            />
+            /> */}
           </div>
           <Select
             value={selectedCategory || "all"}
@@ -472,7 +480,10 @@ export default function Product() {
                   />
                   <input
                     {...register("image", {
-                      required: editedProduct == null ? "l'image du produit est obligatoire" : false,
+                      required:
+                        editedProduct == null
+                          ? "l'image du produit est obligatoire"
+                          : false,
                     })}
                     type="file"
                     name="image"
@@ -491,9 +502,11 @@ export default function Product() {
                   <label htmlFor="">Nom du produit</label>
                   <input
                     {...register("name", {
-                      required: editedProduct == null ? "Le nom du produit est obligatoire" : false,
+                      required:
+                        editedProduct == null
+                          ? "Le nom du produit est obligatoire"
+                          : false,
                     })}
-                    
                     type="text"
                     name="name"
                     value={productInfos?.name ?? ""}
@@ -512,10 +525,12 @@ export default function Product() {
                 <div className="w-full flex flex-col gap-y-2">
                   <label htmlFor="">Description du produit</label>
                   <input
-                  {...register("description", {
-                      required: editedProduct == null ? "La description du produit est obligatoire" : false,
+                    {...register("description", {
+                      required:
+                        editedProduct == null
+                          ? "La description du produit est obligatoire"
+                          : false,
                     })}
-                    
                     type="text"
                     name="description"
                     value={productInfos?.description ?? ""}
@@ -537,10 +552,12 @@ export default function Product() {
                 <div className="w-full flex flex-col gap-y-2">
                   <label htmlFor="">Prix d&apos;Achat</label>
                   <input
-                  {...register("purchasePrice", {
-                      required: editedProduct == null ? "Le prix d'achat du produit est obligatoire" : false,
+                    {...register("purchasePrice", {
+                      required:
+                        editedProduct == null
+                          ? "Le prix d'achat du produit est obligatoire"
+                          : false,
                     })}
-                     
                     type="number"
                     name="purchasePrice"
                     value={productInfos?.purchasePrice ?? ""}
@@ -562,8 +579,11 @@ export default function Product() {
                 <div className="w-full flex flex-col gap-y-2">
                   <label htmlFor="">Prix de vente</label>
                   <input
-                     {...register("salePrice", {
-                      required: editedProduct == null ? "Le prix de vente est obligatoire" : false,
+                    {...register("salePrice", {
+                      required:
+                        editedProduct == null
+                          ? "Le prix de vente est obligatoire"
+                          : false,
                     })}
                     type="number"
                     name="salePrice"
@@ -588,9 +608,11 @@ export default function Product() {
                   <select
                     name="categoryId"
                     {...register("categoryId", {
-                      required: editedProduct == null ? "La catégorie du produit est obligatoire" : false,
+                      required:
+                        editedProduct == null
+                          ? "La catégorie du produit est obligatoire"
+                          : false,
                     })}
-                     
                     value={productInfos?.categoryId ?? ""}
                     onChange={(e) =>
                       setproductInfos({
@@ -599,7 +621,6 @@ export default function Product() {
                       })
                     }
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-                     
                   >
                     {categories.map((category, index) => {
                       return (
@@ -618,10 +639,12 @@ export default function Product() {
                 <div className="w-full flex flex-col gap-y-2">
                   <label htmlFor="">Quantité achetée</label>
                   <input
-                   {...register("availableQuantity", {
-                      required: editedProduct == null ? "La quantité du produit est obligatoire" : false,
+                    {...register("availableQuantity", {
+                      required:
+                        editedProduct == null
+                          ? "La quantité du produit est obligatoire"
+                          : false,
                     })}
-                     
                     type="number"
                     name="availableQuantity"
                     value={productInfos?.availableQuantity ?? ""}
@@ -644,9 +667,11 @@ export default function Product() {
                   <label htmlFor="">Quantité Minimale d'alerte</label>
                   <input
                     {...register("minimumQuantity", {
-                      required: editedProduct == null ? "La quantité minimum du produit est obligatoire" : false,
+                      required:
+                        editedProduct == null
+                          ? "La quantité minimum du produit est obligatoire"
+                          : false,
                     })}
-                     
                     type="number"
                     name="minimumQuantity"
                     value={productInfos?.minimumQuantity ?? ""}
@@ -668,10 +693,12 @@ export default function Product() {
                 <div className="w-full flex flex-col gap-y-2">
                   <label htmlFor="">Unité de mesure</label>
                   <select
-                     {...register("unitMeasurement", {
-                      required: editedProduct == null ? "L'unité de mesure du produit est obligatoire" : false,
+                    {...register("unitMeasurement", {
+                      required:
+                        editedProduct == null
+                          ? "L'unité de mesure du produit est obligatoire"
+                          : false,
                     })}
-                     
                     name="unitMeasurement"
                     id="unitMeasurement"
                     value={productInfos?.unitMeasurement ?? ""}
@@ -698,7 +725,6 @@ export default function Product() {
                 <div className="w-full flex flex-col gap-y-2">
                   <label htmlFor="">Frais supplémentaires</label>
                   <input
-                  
                     type="number"
                     value={additionalCoast}
                     onChange={(e) => setadditionalCoast(e.target.value)}
@@ -712,7 +738,7 @@ export default function Product() {
                   disabled={productLoading}
                   className="auth-btn w-full flex flex-row items-center gap-x-2 justify-center mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] focus:ring-offset-2 transition-all shadow-lg"
                 >
-                 {editedProduct != null ? " Modifier" : " Ajouter" }
+                  {editedProduct != null ? " Modifier" : " Ajouter"}
                   {productLoading ? (
                     <ClipLoader color="white" size={20} />
                   ) : null}
