@@ -26,6 +26,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { cleanPayload } from "@/lib/utils";
 
 export default function Product() {
   const container = useRef(null);
@@ -85,8 +86,8 @@ export default function Product() {
     }
   };
   const productsToDisplay = selectedCategory ? filteredProducts : products;
-  async function applyUpdateProductAction(productId) {
-    await editedProductAction(productId)
+  async function applyUpdateProductAction(productId,payload) {
+    await editedProductAction(productId,payload)
       .then(async () => {
         setproductLoading(true);
         await applyGetProductAction(shop?.id);
@@ -124,18 +125,54 @@ export default function Product() {
       });
   }
   async function submitForm(data) {
+    console.log("simple payload");
+    console.log(data)
+    data = cleanPayload(data);
     const payload = {
       ...data,
       shopId: shop?.id,
-      additionalCosts: parseInt(additionalCoast),
-      purchasePrice: parseInt(data.purchasePrice),
-      salePrice: parseInt(data.salePrice),
-      image: data?.image[0],
-      availableQuantity: parseInt(data.availableQuantity),
-      minimumQuantity: parseInt(data.minimumQuantity),
+      additionalCosts: additionalCoast != 0 ? parseInt(additionalCoast) : null,
+      purchasePrice: data.purchasePrice ? parseInt(data.purchasePrice) : null,
+      salePrice: data.salePrice ? parseInt(data.salePrice) : null,
+      image: data?.image[0] ? data?.image[0] : null,
+      availableQuantity: data.availableQuantity ? parseInt(data.availableQuantity) : null,
+      minimumQuantity: data.minimumQuantity ? parseInt(data.minimumQuantity) : null,
     };
+    
+    console.log("simple payload");
+    console.log(data)
+    
+    if(Object.entries(cleanPayload(payload)).length == 2 && editedProduct != null){
+      toast.error("Aucune modification apportée au produit");
+      return;
+    }
+       
     setproductLoading(true);
-    await createProductAction(payload)
+    if(editedProduct != null){
+      console.log("payload clean");
+      console.log(cleanPayload(payload));
+       await applyUpdateProductAction(editedProduct.id, cleanPayload(payload))
+      .then(async (response) => {
+        
+        await applyGetProductAction(shop?.id);
+        toast.success("Produit modifié avec succès");
+        setcoverImg(null);
+        setEditingProduct(null);
+        reset();
+      })
+      .catch((error) => {
+        console.log(error);
+        if (error.message) {
+          toast.error(error.message);
+        } else {
+          toast.error("Produit non modifié ");
+        }
+      })
+      .finally(() => {
+        setproductLoading(false);
+      });
+    }else{
+       await createProductAction(payload)
       .then(async (response) => {
         console.log("product");
         console.log(response);
@@ -155,12 +192,8 @@ export default function Product() {
       .finally(() => {
         setproductLoading(false);
       });
+    }
 
-    trigger().then((isValid) => {
-      if (isValid) {
-        console.log(data);
-      }
-    });
   }
 
   useEffect(() => {
@@ -439,7 +472,7 @@ export default function Product() {
                   />
                   <input
                     {...register("image", {
-                      required: "l'image du produit est obligatoire",
+                      required: editedProduct == null ? "l'image du produit est obligatoire" : false,
                     })}
                     type="file"
                     name="image"
@@ -458,8 +491,9 @@ export default function Product() {
                   <label htmlFor="">Nom du produit</label>
                   <input
                     {...register("name", {
-                      required: "Le nom du produit est obligatoire",
+                      required: editedProduct == null ? "Le nom du produit est obligatoire" : false,
                     })}
+                    
                     type="text"
                     name="name"
                     value={productInfos?.name ?? ""}
@@ -478,9 +512,10 @@ export default function Product() {
                 <div className="w-full flex flex-col gap-y-2">
                   <label htmlFor="">Description du produit</label>
                   <input
-                    {...register("description", {
-                      required: "Le nom du produit est obligatoire",
+                  {...register("description", {
+                      required: editedProduct == null ? "La description du produit est obligatoire" : false,
                     })}
+                    
                     type="text"
                     name="description"
                     value={productInfos?.description ?? ""}
@@ -502,9 +537,10 @@ export default function Product() {
                 <div className="w-full flex flex-col gap-y-2">
                   <label htmlFor="">Prix d&apos;Achat</label>
                   <input
-                    {...register("purchasePrice", {
-                      required: "Le prix d'achat du produit est obligatoire",
+                  {...register("purchasePrice", {
+                      required: editedProduct == null ? "Le prix d'achat du produit est obligatoire" : false,
                     })}
+                     
                     type="number"
                     name="purchasePrice"
                     value={productInfos?.purchasePrice ?? ""}
@@ -526,8 +562,8 @@ export default function Product() {
                 <div className="w-full flex flex-col gap-y-2">
                   <label htmlFor="">Prix de vente</label>
                   <input
-                    {...register("salePrice", {
-                      required: "Le prix de vente du produit est obligatoire",
+                     {...register("salePrice", {
+                      required: editedProduct == null ? "Le prix de vente est obligatoire" : false,
                     })}
                     type="number"
                     name="salePrice"
@@ -552,8 +588,9 @@ export default function Product() {
                   <select
                     name="categoryId"
                     {...register("categoryId", {
-                      required: "La catégorie du produit est obligatoire",
+                      required: editedProduct == null ? "La catégorie du produit est obligatoire" : false,
                     })}
+                     
                     value={productInfos?.categoryId ?? ""}
                     onChange={(e) =>
                       setproductInfos({
@@ -562,7 +599,7 @@ export default function Product() {
                       })
                     }
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-                    defaultValue=""
+                     
                   >
                     {categories.map((category, index) => {
                       return (
@@ -581,9 +618,10 @@ export default function Product() {
                 <div className="w-full flex flex-col gap-y-2">
                   <label htmlFor="">Quantité achetée</label>
                   <input
-                    {...register("availableQuantity", {
-                      required: "La quantité du produit est obligatoire",
+                   {...register("availableQuantity", {
+                      required: editedProduct == null ? "La quantité du produit est obligatoire" : false,
                     })}
+                     
                     type="number"
                     name="availableQuantity"
                     value={productInfos?.availableQuantity ?? ""}
@@ -606,9 +644,9 @@ export default function Product() {
                   <label htmlFor="">Quantité Minimale d'alerte</label>
                   <input
                     {...register("minimumQuantity", {
-                      required:
-                        "La quantité minimun du produit est obligatoire",
+                      required: editedProduct == null ? "La quantité minimum du produit est obligatoire" : false,
                     })}
+                     
                     type="number"
                     name="minimumQuantity"
                     value={productInfos?.minimumQuantity ?? ""}
@@ -630,6 +668,10 @@ export default function Product() {
                 <div className="w-full flex flex-col gap-y-2">
                   <label htmlFor="">Unité de mesure</label>
                   <select
+                     {...register("unitMeasurement", {
+                      required: editedProduct == null ? "L'unité de mesure du produit est obligatoire" : false,
+                    })}
+                     
                     name="unitMeasurement"
                     id="unitMeasurement"
                     value={productInfos?.unitMeasurement ?? ""}
@@ -656,6 +698,7 @@ export default function Product() {
                 <div className="w-full flex flex-col gap-y-2">
                   <label htmlFor="">Frais supplémentaires</label>
                   <input
+                  
                     type="number"
                     value={additionalCoast}
                     onChange={(e) => setadditionalCoast(e.target.value)}

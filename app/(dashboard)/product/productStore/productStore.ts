@@ -24,7 +24,7 @@ type ProductActions = {
   deleteProductAction: (productId: string) => Promise<void>;
   filterProductsByCategory: (categoryId: string) => Promise<void>;
   clearCategoryFilter: () => void;
-  editedProductAction: (productId: string) => Promise<void>;
+  editedProductAction: (productId: string, payload: any) => Promise<void>;
   setEditingProduct: (editedProduct: any) => void;
 };
 
@@ -89,8 +89,8 @@ export const useProductStore = create<State & ProductActions>((set) => ({
       selectedCategory: "",
     });
   },
-  editedProductAction: async (productId) => {
-    const response = await updateProductRequest(productId);
+  editedProductAction: async (productId,payload) => {
+    const response = await updateProductRequest(productId,payload);
     return response;
   },
   setEditingProduct: (editedProduct) => set({ editedProduct: editedProduct }),

@@ -52,9 +52,10 @@ export const getProductsByCategoryRequest = async (categoryId) => {
   });
 };
 
-export const updateProductRequest = async (productId) => {
+export const updateProductRequest = async (productId, payload) => {
   return HttpClient.makeRequest({
     method: "PUT",
     url: `products/${productId}`,
+    payload: objectToFormData(payload),
   });
 };

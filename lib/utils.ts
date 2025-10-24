@@ -31,4 +31,16 @@ export const objectToFormDataWithArray = (payload: {
   return data;
 };
 
+
+export const cleanPayload = (payload: Record<string, any>) => {
+        const cleaned: Record<string, any> = {};
+          for (const key in payload) {
+            const value = payload[key];
+            if (value !== null && value !== "" && value !== undefined) {
+              cleaned[key] = value;
+            }
+          }
+          return cleaned;
+}
+
 export type VerbHttpType = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
