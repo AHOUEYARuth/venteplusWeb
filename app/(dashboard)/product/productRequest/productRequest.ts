@@ -44,3 +44,10 @@ export const deleteProductRequest = async (productId) => {
     url: `products/${productId}`,
   });
 };
+
+export const getProductsByCategoryRequest = async (categoryId) => {
+  return HttpClient.makeRequest({
+    method: "GET",
+    url: `products/category/${categoryId}`,
+  });
+};

@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { create } from "zustand";
-import { createCategoryRequest, createProductRequest, deleteCategoriesRequest, deleteProductRequest, getCategoriesRequest, getPoductsRequest } from "../productRequest/productRequest";
+import { createCategoryRequest, createProductRequest, deleteCategoriesRequest, deleteProductRequest, getCategoriesRequest, getPoductsRequest, getProductsByCategoryRequest } from "../productRequest/productRequest";
  
 type State = {
   open: boolean;
   categories: Array<any>;
   products: Array<any>;
-
+  selectedCategory: string; 
+  filteredProducts: Array<any>;
 };
 
 type ProductActions = {
@@ -20,12 +21,17 @@ type ProductActions = {
   getProductsActions: (shopId: string) => Promise<void>;
   setProducts: (products: any) => void;
   deleteProductAction: (productId: string) => Promise<void>;
+  filterProductsByCategory: (categoryId: string) => Promise<void>;
+  clearCategoryFilter: () => void;
+  setSelectedCategory: (categoryId: string) => void;
 };
 
 export const useProductStore = create<State & ProductActions>((set) => ({
   open: false,
   categories: [],
   products: [],
+  selectedCategory: "",
+  filteredProducts: [],
   setOpen: () => set((state) => ({ open: !state.open })),
   categoryAction: async (categoryFormData) => {
     const response = await createCategoryRequest(categoryFormData);
@@ -51,10 +57,36 @@ export const useProductStore = create<State & ProductActions>((set) => ({
     return response;
   },
   setProducts: (products) => set((state) => ({ products: products })),
-  
+
   deleteProductAction: async (productId) => {
     const response = await deleteProductRequest(productId);
     return response;
   },
+  filterProductsByCategory: async (categoryId) => {
+    if (!categoryId) {
+      set({ filteredProducts: [], selectedCategory: "" });
+      return;
+    }
+
+    try {
+      const response = await getProductsByCategoryRequest(categoryId);
+      set({
+        filteredProducts: response.data,
+        selectedCategory: categoryId,
+      });
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  },
+
+  clearCategoryFilter: () => {
+    set({
+      filteredProducts: [],
+      selectedCategory: "",
+    });
+  },
+
+  setSelectedCategory: (categoryId) => set({ selectedCategory: categoryId }),
 }));
 

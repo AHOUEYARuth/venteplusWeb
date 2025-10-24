@@ -39,23 +39,57 @@ export default function Product() {
     getProductsActions,
     categories,
     deleteProductAction,
+    filterProductsByCategory,
+    clearCategoryFilter,
+    selectedCategory,
+    filteredProducts,
+    setSelectedCategory,
   } = useProductStore();
   const { shop } = useLoginStore();
   const [additionalCoast, setadditionalCoast] = useState(0);
   const [productLoading, setproductLoading] = useState(false);
- 
-
+  const [filterLoading, setFilterLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const { register, handleSubmit, watch, formState, trigger, reset } = useForm({
     mode: "onChange",
   });
+  const handleCategoryFilter = async (categoryId) => {
+    setFilterLoading(true);
+    try {
+      if (categoryId === "all" || !categoryId) {
+        await clearCategoryFilter();
+      } else {
+        await filterProductsByCategory(categoryId);
+      }
+    } catch (error) {
+      console.error("Erreur lors du filtrage:", error);
+      toast.error("Erreur lors du filtrage par catégorie");
+    } finally {
+      setFilterLoading(false);
+    }
+  };
+  const productsToDisplay = selectedCategory ? filteredProducts : products;
   async function applyGetProductAction(shopId) {
     await getProductsActions(shopId).then((response) => {
       setProducts(response.data);
+      clearCategoryFilter();
     });
   }
   async function applyDeleteProdAction(productId) {
+    setDeleteLoading(true); 
     await deleteProductAction(productId)
-    await applyGetProductAction(shop?.id)
+      .then(async () => {
+        await applyGetProductAction(shop?.id);
+        toast.success("Produit supprimé avec succès");
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error(error.message || "Erreur lors de la suppression");
+      })
+      .finally(() => {
+        setDeleteLoading(false); 
+      });
+
   }
   async function submitForm(data) {
     const payload = {
@@ -74,8 +108,8 @@ export default function Product() {
         console.log("product");
         console.log(response);
         await applyGetProductAction(shop?.id);
-        toast.success('Produit ajouté avec succès')
-        setcoverImg(null)
+        toast.success("Produit ajouté avec succès");
+        setcoverImg(null);
         reset();
       })
       .catch((error) => {
@@ -83,11 +117,12 @@ export default function Product() {
         if (error.message) {
           toast.error(error.message);
         } else {
-         toast.error("Produit non ajouté ");
+          toast.error("Produit non ajouté ");
         }
-      }).finally(() => {
-        setproductLoading(false);
       })
+      .finally(() => {
+        setproductLoading(false);
+      });
 
     trigger().then((isValid) => {
       if (isValid) {
@@ -180,39 +215,69 @@ export default function Product() {
               className="border border-[#F39C12] py-2 px-4 rounded-lg"
             />
           </div>
-          <Select>
-            <SelectTrigger className="w-[200px] py-5 outline-none focus:outline-none border border-[#F39C12]">
-              <SelectValue placeholder="Catégorie" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="coton">Coton</SelectItem>
-              <SelectItem value="cuir">Cuir</SelectItem>
-              <SelectItem value="soie">Soie</SelectItem>
-            </SelectContent>
-          </Select>
+            <Select
+              value={selectedCategory || "all"}
+              onValueChange={handleCategoryFilter}
+              disabled={filterLoading}
+            >
+              <SelectTrigger className="w-[200px] py-5 outline-none focus:outline-none border border-[#F39C12]">
+                <SelectValue placeholder="Catégorie">
+                  {filterLoading ? "Chargement..." : "Catégorie"}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Toutes les catégories</SelectItem>
+                {categories.map((category, index) => (
+                  <SelectItem key={index} value={category.id}>
+                    {category.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
         </div>
       </div>
 
       <div className="py-8 mt-10">
-        <h2 className="text-2xl font-bold mb-5">Liste des Produits</h2>
-        <div className="flex flex-row flex-wrap items-center  gap-4">
-          {products.length === 0 ? (
-            <div className="w-full flex flex-col items-center gap-y-2 text-center ">
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="text-2xl font-bold">
+            {selectedCategory
+              ? `Produits de la catégorie (${filteredProducts.length})`
+              : `Liste des Produits`}
+          </h2>
+          {selectedCategory && (
+            <Button
+              onClick={() => handleCategoryFilter("all")}
+              variant="outline"
+              className="border-[#F39C12] text-[#F39C12] hover:bg-[#F39C12] hover:text-white"
+            >
+              Effacer le filtre
+            </Button>
+          )}
+        </div>
+
+        <div className="flex flex-row flex-wrap items-center gap-4">
+          {productsToDisplay.length === 0 ? (
+            <div className="w-full flex flex-col items-center gap-y-2 text-center">
               <div
                 className="w-[50%] sm:w-[100%] lg:w-[32%] h-[200px] relative overflow-hidden bg-contain bg-center bg-no-repeat cursor-pointer"
                 style={{ backgroundImage: `url(${Product2.src})` }}
               ></div>
               <div>
-                <p className="text-2xl font-bold">Aucun produit disponible</p>
+                <p className="text-2xl font-bold">
+                  {selectedCategory
+                    ? "Aucun produit dans cette catégorie"
+                    : "Aucun produit disponible"}
+                </p>
                 <p className="">
-                  Veuillez ajouter un produit dans votre stock de produit
+                  {selectedCategory
+                    ? "Aucun produit ne correspond à cette catégorie"
+                    : "Veuillez ajouter un produit dans votre stock de produit"}
                 </p>
               </div>
             </div>
           ) : (
             <>
-              {" "}
-              {products.map((product, index) => {
+              {productsToDisplay.map((product, index) => {
                 return (
                   <div
                     key={index}
@@ -220,35 +285,20 @@ export default function Product() {
                   >
                     <div className="w-full bg-gray-300 flex flex-col gap-5 rounded-tl-xl rounded-2xl">
                       <div
-                        className="w-full h-[250px] bg-center bg-cover bg-no-repeat rounded-2xl"
+                        className="w-full h-[300px] bg-center bg-cover bg-no-repeat rounded-2xl"
                         style={{
                           backgroundImage: `url("${baseUrlNotApi}${product?.image}")`,
                         }}
                       >
                         <div>
-                          <div className="w-full flex items-center justify-between pt-2 px-2 ">
-                            {/* <button className="w-[40px] h-[40px]  text-xl flex items-center justify-center bg-black text-white rounded-full cursor-pointer ">
-                              <FaRegEdit className="text-2xl" />
-                              Modifier
-                            </button> */}
-                            <div className="flex flex-row gap-2 text-black items-center justify-between p-2 bg-white rounded-md font-bold">
+                          <div className="w-full flex items-center justify-between pt-2 px-2">
+                            <div className="flex flex-row gap-2 text-black items-center justify-between p-2 bg-gray-100 rounded-md font-bold">
                               Modifier
                             </div>
 
-                            {/* <button
-                              onClick={() => applyDeleteProdAction(product.id)}
-                              className="w-[40px] h-[40px]  text-xl flex items-center justify-center bg-red-100 text-red-500 rounded-full cursor-pointer "
-                            >
-                              <RiDeleteBin6Line />
-                            </button> */}
                             <Dialog>
                               <DialogTrigger>
-                                <div
-                                  /* onClick={() =>
-                                    applyDeleteProdAction(product.id)
-                                  } */
-                                  className="w-[40px] h-[40px]  text-xl flex items-center justify-center bg-red-100 text-red-500 rounded-full cursor-pointer "
-                                >
+                                <div className="w-[40px] h-[40px]  text-xl flex items-center justify-center bg-red-100 text-red-500 rounded-full cursor-pointer ">
                                   <RiDeleteBin6Line />
                                 </div>
                               </DialogTrigger>
@@ -258,10 +308,17 @@ export default function Product() {
                                     Voulez-vous vraiment supprimer ce produit?
                                   </DialogTitle>
                                   <DialogDescription className="w-full flex flex-row gap-x-5 justify-center mt-5">
-                                    <button onClick={() => {
-                                      applyDeleteProdAction(product.id)
-                                    }} className="p-1 bg-green-500 text-white text-lg rounded-sm  cursor-pointer">
-                                      Oui
+                                    <button
+                                      onClick={() => {
+                                        applyDeleteProdAction(product.id);
+                                      }}
+                                      disabled={deleteLoading}
+                                      className="p-1 flex flex-row items-center jeustify-center gap-x-2 bg-green-500 text-white text-lg rounded-sm  cursor-pointer"
+                                    >
+                                      Oui{" "}
+                                      {deleteLoading ? (
+                                        <ClipLoader color="white" size={20} />
+                                      ) : null}
                                     </button>
                                     <button className="p-1 bg-red-500 text-white text-lg rounded-sm cursor-pointer">
                                       Non
@@ -281,7 +338,6 @@ export default function Product() {
                           {product.name}
                         </span>
                       </p>
-
                       <p className="font-medium text-lg text-gray-500">
                         {product.description}
                       </p>
@@ -292,7 +348,7 @@ export default function Product() {
                       </h3>
                       <button className="bg-[#F39C12] text-white text-xl py-2 px-4 rounded-xl cursor-pointer">
                         <h3>
-                          Prix d&apos;achat :{" "}
+                          Prix d'achat :{" "}
                           <span className="font-bold">
                             {product.purchasePrice}
                           </span>
@@ -511,7 +567,7 @@ export default function Product() {
 
                 <button
                   disabled={productLoading}
-                  className="auth-btn w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] focus:ring-offset-2 transition-all shadow-lg"
+                  className="auth-btn w-full flex flex-row items-center gap-x-2 justify-center mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] focus:ring-offset-2 transition-all shadow-lg"
                 >
                   Ajouter{" "}
                   {productLoading ? (
@@ -523,7 +579,7 @@ export default function Product() {
           </div>
         </div>
       </div>
-      <Toaster/>
+      <Toaster />
     </div>
   );
 }

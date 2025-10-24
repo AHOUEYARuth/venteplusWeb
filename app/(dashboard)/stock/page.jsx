@@ -3,7 +3,6 @@ import React, { useEffect, useLayoutEffect, useRef } from "react";
 import { stockStore } from "./stockStore/stockStore";
 import { gsap } from "gsap";
 import { IoMdClose } from "react-icons/io";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,9 +13,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MdOutlineMoreVert, MdSearch } from "react-icons/md";
 import { useForm } from "react-hook-form";
-
+import { useProductStore } from "../product/productStore/productStore";
+import { useLoginStore } from "@/app/login/loginStore/loginStore";
 export default function Stock() {
-  const { stocks, fetchData } = stockStore();
+  const { products, getProductsActions } = useProductStore();
+  const { shop } = useLoginStore();
+
   const container = useRef(null);
   const timeLineModal = useRef();
 
@@ -31,6 +33,9 @@ export default function Stock() {
       }
     });
   };
+
+  console.log("produits");
+  console.log(products);
 
   useLayoutEffect(() => {
     const context = gsap.context(() => {
@@ -57,8 +62,10 @@ export default function Stock() {
   }, [container]);
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (shop?.id) {
+      getProductsActions(shop.id);
+    }
+  }, [shop?.id]);
   return (
     <div ref={container} className="w-full h-full p-5 bg-gray-50 rounded-xl">
       <div className="w-full flex flex-row items-center justify-between">
@@ -91,14 +98,6 @@ export default function Stock() {
                 id=""
                 className="border border-[#F39C12] py-3 px-4 rounded-lg"
               />
-              <button
-                onClick={() => {
-                  timeLineModal.current.play();
-                }}
-                className="bg-[#F39C12] cursor-pointer py-3 px-4 text-white rounded-lg"
-              >
-                Nouveau Stock
-              </button>
             </div>
           </div>
         </div>
@@ -108,51 +107,56 @@ export default function Stock() {
               <tr className="border-b border-gray-200 text-left">
                 <th className="p-5">N°</th>
                 <th className="p-5">Nom du stock</th>
-                <th className="p-5">Produit</th>
                 <th className="p-5">Quantité disponible</th>
                 <th className="p-5 ">Quantité Minimale</th>
                 <th></th>
               </tr>
             </thead>
             <tbody>
-              {stocks.map((stock) => (
-                <tr
-                  key={stock.id}
-                  className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
-                >
-                  <td className="p-5">{stock.id}</td>
-                  <td className="p-5 font-bold">{stock.stockName}</td>
-                  <td className="p-5">{stock.product}</td>
-                  <td className="p-5">{stock.qteInStock}</td>
-                  <td className="p-5">{stock.minQte}</td>
-                  <td className="pr-5">
-                    {" "}
-                    <DropdownMenu>
-                      <DropdownMenuTrigger className="border border-transparent focus:border focus:border-transparent active:border active:border-transparent">
-                        <MdOutlineMoreVert />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent className="w-40 border border-transparent">
-                        <DropdownMenuLabel className="text-xl">
-                          Actions
-                        </DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-lg">
-                          Modifier
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="text-lg">
-                          Supprimer
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </td>
-                </tr>
-              ))}
+              {products.length === 0 ? (
+                <div className=" w-full text-end">Aucun produit n&apos;est disponible en stock</div>
+              ) : (
+                <>
+                  {" "}
+                  {products.map((product) => (
+                    <tr
+                      key={product.id}
+                      className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
+                    >
+                      <td className="p-5">{product.id}</td>
+                      <td className="p-5 font-bold">{product.name}</td>
+                      <td className="p-5">{product.availableQuantity}</td>
+                      <td className="p-5">{product.minimumQuantity}</td>
+                      <td className="pr-5">
+                        {" "}
+                        <DropdownMenu>
+                          <DropdownMenuTrigger className="border border-transparent focus:border focus:border-transparent active:border active:border-transparent">
+                            <MdOutlineMoreVert />
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent className="w-40 border border-transparent">
+                            <DropdownMenuLabel className="text-xl">
+                              Actions
+                            </DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem className="text-lg">
+                              Modifier
+                            </DropdownMenuItem>
+                            <DropdownMenuItem className="text-lg">
+                              Supprimer
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </td>
+                    </tr>
+                  ))}
+                </>
+              )}
             </tbody>
           </table>
         </div>
       </div>
 
-      <div
+      {/*  <div
         style={{ pointerEvents: "none", opacity: 0 }}
         className={`modal_container w-full h-full fixed top-0 right-0 bg-black/30`}
       >
@@ -208,15 +212,6 @@ export default function Stock() {
                     <option value="pullOver">Pull-over</option>
                     <option value="jean">Jeans</option>
                   </select>
-                  {/* <input
-                    {...register("productName", {
-                      required: "Le nom du produit est obligatoire",
-                    })}
-                    type="text"
-                    name="productName"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-                    placeholder="Entrer le nom du produit"
-                  /> */}
                   {formState.errors.productName && (
                     <p className="text-red-500 text-sm mt-1">
                       {formState.errors.productName.message}
@@ -276,7 +271,7 @@ export default function Stock() {
             </form>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }
