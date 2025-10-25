@@ -11,12 +11,12 @@ const Header = () => {
 
       <div className="container md:justify-center  lg:justify-end mx-auto px-4 relative z-10 flex flex-col items-end gap-4 text-white">
         <div className="lg:w-[50%] md:w-full sm:w-[100%]">
-          <h1 className="lg:text-5xl md:text-5xl text-sm font-bold drop-shadow-lg">
+          <h1 className="lg:text-5xl md:text-5xl text-sm font-bold drop-shadow-lg text-[#000000]">
             Digitalisez votre marché en
-            <span className="text-[#000000]"> un clic</span>
+            <span className="text-[#F39C12]"> un clic</span>
           </h1>
 
-          <p className="p  md:text-2xl text-gray-100 drop-shadow text-white">
+          <p className="p  md:text-2xl  drop-shadow text-[#000000]">
             Remplacez le cahier par une solution simple, visuelle et adaptée à
             votre quotidien
           </p>

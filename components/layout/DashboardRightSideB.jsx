@@ -34,6 +34,7 @@ const DashboardRightSideB = () => {
     await deleteCategoryAction(catId);
     await  applyGetCatAction(shop?.id); 
   }
+  
   async function submitForm(data) {
     const payload = {
       ...data,

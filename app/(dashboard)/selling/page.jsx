@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useLayoutEffect, useRef } from "react";
 import { MdClose, MdOutlineMoreVert, MdSearch } from "react-icons/md";
-import { sellingStore } from "./sellingStore/sellingStore";
+import { sellingStore, useSellingStore } from "./sellingStore/sellingStore";
 import { FaCheckCircle } from "react-icons/fa";
 import { RiProgress2Fill } from "react-icons/ri";
 import {
@@ -18,8 +18,8 @@ import { FiArrowUp, FiArrowUpRight } from "react-icons/fi";
 import { useForm } from "react-hook-form";
 
 export default function Selling() {
-  const { commandes, ventes, activeMenu, setActiveMenu, fetchData } =
-    sellingStore();
+  const { orders, sellings, activeMenu, setActiveMenu } =
+    useSellingStore();
   const container = useRef(null);
   const timeLineModal = useRef();
   const { register, handleSubmit, watch, formState, trigger } = useForm({
@@ -57,9 +57,9 @@ export default function Selling() {
     };
   }, [container]);
 
-  useEffect(() => {
+ /*  useEffect(() => {
     fetchData();
-  }, []);
+  }, []); */
 
   return (
     <div ref={container} className="w-full h-full p-5 bg-gray-50 rounded-xl">
@@ -278,47 +278,47 @@ export default function Selling() {
               </thead>
 
               <tbody>
-                {commandes.map((commande) => (
+                {orders.map((order) => (
                   <tr
-                    key={commande.id}
+                    key={order.id}
                     className="border-b hover:bg-gray-50 transition-colors"
                   >
-                    <td className="px-5 py-5 font-bold">{commande.client}</td>
-                    <td className="px-5 py-5">{commande.phoneNumber}</td>
-                    <td className="px-5 py-5">{commande.product}</td>
-                    <td className="px-5 py-5">{commande.quantity}</td>
+                    <td className="px-5 py-5 font-bold">{order.client}</td>
+                    <td className="px-5 py-5">{order.phoneNumber}</td>
+                    <td className="px-5 py-5">{order.product}</td>
+                    <td className="px-5 py-5">{order.quantity}</td>
                     <td className="px-5 py-5 font-medium text-gray-700">
-                      {commande.unitPrice}
+                      {order.unitPrice}
                     </td>
                     <td className="px-5 py-5 font-medium text-green-600">
-                      {commande.totalPrice}
+                      {order.totalPrice}
                     </td>
                     <td className="px-5 py-5 text-gray-700">
-                      {commande.deliveryAddress}
+                      {order.deliveryAddress}
                     </td>
                     <td className="px-5 py-5">
                       <span
                         className={`w-[110px] flex gap-x-2 items-center justify-center text-base  rounded-sm ${
-                          commande.status === "livrée"
+                          order.status === "livrée"
                             ? "bg-green-50"
-                            : commande.status === "en cours"
+                            : order.status === "en cours"
                             ? "bg-blue-50"
-                            : commande.status === "annulée"
+                            : order.status === "annulée"
                             ? "bg-red-50"
                             : "text-gray-600"
                         }`}
                       >
-                        {commande.status === "Livrée" ? (
+                        {order.status === "Livrée" ? (
                           <FaCheckCircle size={14} className="text-green-600" />
-                        ) : commande.status === "En cours" ? (
+                        ) : order.status === "En cours" ? (
                           <RiProgress2Fill
                             size={15}
                             className="text-blue-600"
                           />
-                        ) : commande.status === "Annulée" ? (
+                        ) : order.status === "Annulée" ? (
                           <MdClose size={15} className="text-red-600" />
                         ) : null}
-                        {commande.status}
+                        {order.status}
                       </span>
                     </td>
                     <td className="pr-5">
@@ -361,17 +361,17 @@ export default function Selling() {
                 </tr>
               </thead>
               <tbody>
-                {ventes.map((vente) => (
+                {sellings.map((selling) => (
                   <tr
-                    key={vente.id}
+                    key={selling.id}
                     className="border-b hover:bg-gray-50 transition-colors"
                   >
-                    <td className="p-5 font-bold">{vente.product}</td>
-                    <td className="p-5">{vente.quantitySold}</td>
-                    <td className="p-5">{vente.purchasePrice}</td>
-                    <td className="p-5">{vente.unitPrice}</td>
-                    <td className="p-5">{vente.totalRevenue}</td>
-                    <td className="p-5 text-green-600">{vente.totalProfit}</td>
+                    <td className="p-5 font-bold">{selling.product}</td>
+                    <td className="p-5">{selling.quantitySold}</td>
+                    <td className="p-5">{selling.purchasePrice}</td>
+                    <td className="p-5">{selling.unitPrice}</td>
+                    <td className="p-5">{selling.totalRevenue}</td>
+                    <td className="p-5 text-green-600">{selling.totalProfit}</td>
                   </tr>
                 ))}
               </tbody>

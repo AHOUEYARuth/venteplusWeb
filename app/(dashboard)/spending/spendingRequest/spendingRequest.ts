@@ -1,6 +1,24 @@
-import api from "@/lib/util";
+import { HttpClient } from "@/lib/httpClient";
 
-export const getSpendings = async () => {
-    const response = await api.get('/spendings');
-    return response.data;
+export const createExpenseRequest = async (expenseData) => {
+  return HttpClient.makeRequest({
+    method: "POST",
+    url: "expenses",
+    payload: expenseData,
+  });
+};
+
+export const deleteExpenseRequest = async (expenseId) => {
+  return HttpClient.makeRequest({
+    method: "DELETE",
+    url: `expenses/${expenseId}`,
+  });
+};
+
+export const getExpensesRequest = async (shopId) => {
+  return HttpClient.makeRequest({
+    method: "GET",
+    url: `expenses/shop/${shopId}`,
+  });
 }
+

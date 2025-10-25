@@ -25,7 +25,7 @@ const NavBar = () => {
     "/product",
     "/employee",
     "/customer",
-
+    "/register-employee",
   ];
 
 

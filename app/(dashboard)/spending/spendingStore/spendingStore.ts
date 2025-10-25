@@ -1,31 +1,30 @@
-import { create } from "zustand";
-import { getSpendings } from "../spendingRequest/spendingRequest";
-import axios from "axios";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
-type Spending = {
-  id: number;
-  label: string;
-  amount: number;
-  date: string;
-  description: string;
+import { create } from "zustand";
+import axios from "axios";
+import { createExpenseRequest, getExpensesRequest } from "../spendingRequest/spendingRequest";
+
+type Sate = {
+  spendings: Array<any> ;
 };
 
-type DataStore = {
-    spendings: Spending[];
-    fetchData: () => Promise<void>;
-}
+type ExpenseAction = {
+  expenseActions: (expenseFormData: any) => Promise<void>;
+  getExpenseAction: (shopId: string) => Promise<void>;
+  setExpenses: (spendings: any) => void;
+};
 
-export const spendingStore = create<DataStore>((set) => ({
-    spendings: [],
-    fetchData: async () => {
-        try {
-            const response = await axios.get("/fakeData.json");
-            set({
-              spendings: response.data.spending,
-            });
-        } catch (error) {
-            console.log("Erreur de chargement des données", error);
-            
-        }
-    }
-}))
+export const spendingStore = create<Sate & ExpenseAction>((set) => ({
+  spendings: [],
+  expenseActions: async (expenseFormData) => {
+    const response = await createExpenseRequest(expenseFormData);
+    return response;
+  },
+  getExpenseAction: async (shopId) => {
+    const response = await getExpensesRequest(shopId);
+    return response;
+  },
+  setExpenses(spendings) {
+    set({ spendings: spendings });
+  },
+}));

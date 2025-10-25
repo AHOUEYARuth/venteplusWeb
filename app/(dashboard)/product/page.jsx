@@ -155,6 +155,7 @@ export default function Product() {
           setcoverImg(null);
           setEditingProduct(null);
           reset();
+          timeLineModal.current.reversed(true);
         })
         .catch((error) => {
           console.log(error);
@@ -176,6 +177,7 @@ export default function Product() {
           toast.success("Produit ajouté avec succès");
           setcoverImg(null);
           reset();
+          timeLineModal.current.reversed(true);
         })
         .catch((error) => {
           console.log(error);

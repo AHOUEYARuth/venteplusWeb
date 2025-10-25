@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useLayoutEffect, useRef } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { spendingStore } from "./spendingStore/spendingStore";
 import {
   DropdownMenu,
@@ -14,22 +14,67 @@ import { IoMdArrowDropup, IoMdClose } from "react-icons/io";
 import { FiArrowUpRight } from "react-icons/fi";
 import gsap from "gsap";
 import { useForm } from "react-hook-form";
+import { useLoginStore } from "@/app/login/loginStore/loginStore";
+import toast, { Toaster } from "react-hot-toast";
+import { ClipLoader } from "react-spinners";
+import moment from "moment";
 
 export default function Spending() {
-  const { spendings, fetchData } = spendingStore();
   const container = useRef(null);
   const timeLineModal = useRef();
-  const { register, handleSubmit, watch, formState, trigger } = useForm({
+  const [expenseLoadind, setexpenseLoadind] = useState(false);
+  const {
+    spendings,
+    fetchData,
+    expenseActions,
+    getExpenseAction,
+    setExpenses,
+  } = spendingStore();
+  const { shop } = useLoginStore();
+
+  const { register, handleSubmit, watch, formState, trigger, reset } = useForm({
     mode: "onChange",
   });
 
-  const submitForm = (data) => {
-    trigger().then((isValid) => {
-      if (isValid) {
-        console.log(data);
-      }
+  async function applyGetExpenseAction(shopId) {
+    setexpenseLoadind(true);
+    await getExpenseAction(shopId).then((response) => {
+      console.log("data");
+      console.log(response.data);
+      setExpenses(response.data);
+      setexpenseLoadind(false);
     });
-  };
+  }
+
+  async function submitForm(data) {
+    setexpenseLoadind(true);
+    const payload = {
+      ...data,
+      shopId: shop?.id,
+      spendAmount: parseInt(data.spendAmount),
+      date: new Date(data.date),
+    };
+    await expenseActions(payload)
+      .then((response) => {
+        console.log("data");
+        console.log(response);
+        toast.success("Dépense ajouté avec succès");
+        applyGetExpenseAction(shop?.id);
+        reset();
+        timeLineModal.current.reversed(true);
+      })
+      .catch((error) => {
+        console.log(error);
+        if (error.message) {
+          toast.error(error.message);
+        } else {
+          toast.error("Dépense non ajouté ");
+        }
+      })
+      .finally(() => {
+        setexpenseLoadind(false);
+      });
+  }
 
   useLayoutEffect(() => {
     const context = gsap.context(() => {
@@ -56,9 +101,15 @@ export default function Spending() {
   }, [container]);
 
   useEffect(() => {
-    fetchData();
-  }, []);
-
+    (function init() {
+      setexpenseLoadind(true);
+      console.log("shop");
+      console.log(shop);
+      if (shop?.id) {
+        applyGetExpenseAction(shop?.id);
+      }
+    })();
+  }, [shop]);
   return (
     <div ref={container} className="w-full h-full p-5 bg-gray-50 rounded-xl">
       <div className="w-full flex flex-row items-center justify-between">
@@ -179,44 +230,42 @@ export default function Spending() {
               </tr>
             </thead>
             <tbody>
-              {spendings.map((Spending) => (
-                <tr
-                  key={Spending.id}
-                  className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
-                >
-                  <td className="px-5 py-5">{Spending.id}</td>
-                  <td className="px-5 py-5 font-bold">{Spending.label}</td>
-                  <td className="px-5 py-5 text-black">{Spending.amount}</td>
-                  <td className="px-5 py-5 text-black">
-                    {Spending.description}
-                  </td>
-                  <td className="px-5 py-5 text-black">{Spending.date}</td>
+              {spendings.map((Spending, index) => {
+                return (
+                  <tr
+                    key={Spending.id}
+                    className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
+                  >
+                    <td className="px-5 py-5">{index + 1}</td>
+                    <td className="px-5 py-5 font-bold">{Spending.label}</td>
+                    <td className="px-5 py-5 text-black">{Spending.spendAmount}</td>
+                    <td className="px-5 py-5 text-black">
+                      {Spending.description}
+                    </td>
+                    <td className="px-5 py-5 text-black">
+                      {moment(Spending.date).format('DD-mm-yyyy')}
+                    </td>
 
-                  <td className="pr-5">
-                    {" "}
-                    <DropdownMenu>
-                      <DropdownMenuTrigger className="border border-transparent focus:border focus:border-transparent active:border active:border-transparent">
-                        <MdOutlineMoreVert />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent className="w-40 border border-transparent">
-                        <DropdownMenuLabel className="text-xl">
-                          Actions
-                        </DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-lg">
-                          Modifier
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="text-lg">
-                          Valider
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="text-lg">
-                          Supprimer
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </td>
-                </tr>
-              ))}
+                    <td className="pr-5">
+                      {" "}
+                      <DropdownMenu>
+                        <DropdownMenuTrigger className="border border-transparent focus:border focus:border-transparent active:border active:border-transparent">
+                          <MdOutlineMoreVert />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-40 border border-transparent">
+                          <DropdownMenuLabel className="text-xl">
+                            Actions
+                          </DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem className="text-lg">
+                            Modifier
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -266,9 +315,9 @@ export default function Spending() {
                 </div>
 
                 <div className="w-full flex flex-col gap-y-2">
-                  <label htmlFor="amount">Montant dépensé</label>
+                  <label htmlFor="spendAmount">Montant dépensé</label>
                   <input
-                    {...register("amount", {
+                    {...register("spendAmount", {
                       required: "Le montant dépensé est obligatoire",
                       min: {
                         value: 1,
@@ -276,13 +325,13 @@ export default function Spending() {
                       },
                     })}
                     type="number"
-                    name="amount"
+                    name="spendAmount"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
                     placeholder="Entrer le montant dépensé"
                   />
-                  {formState.errors.amount && (
+                  {formState.errors.spendAmount && (
                     <p className="text-red-500 text-sm mt-1">
-                      {formState.errors.amount.message}
+                      {formState.errors.spendAmount.message}
                     </p>
                   )}
                 </div>
@@ -328,14 +377,18 @@ export default function Spending() {
                   )}
                 </div>
 
-                <button className="auth-btn w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] focus:ring-offset-2 transition-all shadow-lg">
-                  Enrégistrer la dépense
+                <button className="auth-btn w-full flex flex-row items-center justify-center gap-x-2 mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] focus:ring-offset-2 transition-all shadow-lg">
+                  Enrégistrer la dépense{" "}
+                  {expenseLoadind ? (
+                    <ClipLoader color="white" size={20} />
+                  ) : null}
                 </button>
               </div>
             </form>
           </div>
         </div>
       </div>
+      <Toaster />
     </div>
   );
 }

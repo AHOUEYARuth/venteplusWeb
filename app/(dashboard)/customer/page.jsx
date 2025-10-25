@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import React, { useLayoutEffect, useRef, useEffect } from "react";
+import React, { useLayoutEffect, useRef, useEffect, useState } from "react";
 import { gsap } from "gsap";
 import { IoMdClose } from "react-icons/io";
 import { PhoneInput } from "@/components/ui/phone-input";
@@ -15,22 +15,78 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useForm } from "react-hook-form";
+import toast, { Toaster } from "react-hot-toast";
+import { ClipLoader } from "react-spinners";
+import { useLoginStore } from "@/app/login/loginStore/loginStore";
+import moment from "moment";
 const Customer = () => {
   const container = useRef(null);
   const timeLineModal = useRef();
-  const { customers, fetchData } = customerStore();
+  const [loadingClient, setloadingClient] = useState(false);
+  const {
+    customers,
+    customerAction,
+    getCustomersAction,
+    setCustomers,
+    deleteCustomersAction
+  } = customerStore();
+  const { shop } = useLoginStore();
+  const { register, handleSubmit, watch, formState, trigger, reset } = useForm({
+    mode: "onChange",
+  });
 
-   const { register, handleSubmit, watch, formState, trigger } = useForm({
-      mode: "onChange",
+  async function applyGetCustomersAction(shopId) {
+    setloadingClient(true);
+    await getCustomersAction(shopId).then((response) => {
+      console.log("data");
+      console.log(response.data);
+      setCustomers(response.data);
+      setloadingClient(false);
     });
-  
-    const submitForm = (data) => {
-      trigger().then((isValid) => {
-        if (isValid) {
-          console.log(data);
-        }
-      });
+  }
+
+  async function applyDelCustomersAction(customerId) {
+    await deleteCustomersAction(customerId).then((response) => {
+      toast.success(response?.message);
+    }).catch((error) => {
+      toast.error(error.message ? error.message : "Un problème est survenu lors de la suppression")
+    });
+    await applyGetCustomersAction(shop?.id);
+  }
+
+  async function submitForm(data) {
+    setloadingClient(true);
+    const payload = {
+      ...data,
+      shopId: shop?.id,
     };
+    await customerAction(payload)
+      .then((response) => {
+        console.log("data");
+        console.log(response);
+        toast.success("Client ajouté avec succès");
+        applyGetCustomersAction(shop?.id);
+        reset();
+        timeLineModal.current.reversed(true);
+      })
+      .catch((error) => {
+        console.log(error);
+        if (error.message) {
+          toast.error(error.message);
+        } else {
+          toast.error("Client non ajouté ");
+        }
+      })
+      .finally(() => {
+        setloadingClient(false);
+      });
+
+    /* trigger().then((isValid) => {
+      if (isValid) {
+        console.log(data);
+      }
+    }); */
+  }
 
   useLayoutEffect(() => {
     const context = gsap.context(() => {
@@ -56,8 +112,15 @@ const Customer = () => {
     };
   }, [container]);
   useEffect(() => {
-    fetchData();
-  }, []);
+    (function init() {
+      setloadingClient(true);
+      console.log("shop");
+      console.log(shop);
+      if (shop?.id) {
+        applyGetCustomersAction(shop?.id);
+      }
+    })();
+  }, [shop]);
   return (
     <div ref={container} className="w-full h-full p-5 bg-gray-50 rounded-xl">
       <div className="w-full flex flex-row items-center justify-between">
@@ -114,38 +177,45 @@ const Customer = () => {
               </tr>
             </thead>
             <tbody>
-              {customers.map((customer) => (
-                <tr
-                  key={customer.id}
-                  className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
-                >
-                  <td className="px-5 py-5 font-bold">{customer.id}</td>
-                  <td className="px-5 py-5 text-black">{customer.name}</td>
-                  <td className="px-5 py-5">{customer.firstName}</td>
-                  <td className="px-5 py-5">{customer.phoneNumber}</td>
-                  <td className="px-5 py-5">{customer.createdDate}</td>
-                  <td className="pr-5">
-                    {" "}
-                    <DropdownMenu>
-                      <DropdownMenuTrigger className="border border-transparent focus:border focus:border-transparent active:border active:border-transparent">
-                        <MdOutlineMoreVert />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent className="w-40 border border-transparent">
-                        <DropdownMenuLabel className="text-xl">
-                          Actions
-                        </DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-lg">
-                          Modifier
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="text-lg">
-                          Supprimer
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </td>
-                </tr>
-              ))}
+              {customers.map((customer, index) => {
+                return (
+                  <tr
+                    key={index}
+                    className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
+                  >
+                    <td className="px-5 py-5 font-bold">{index + 1}</td>
+                    <td className="px-5 py-5 text-black">{customer.name}</td>
+                    <td className="px-5 py-5">{customer.firstName}</td>
+                    <td className="px-5 py-5">{customer.phoneNumber}</td>
+                    <td className="px-5 py-5">
+                      {moment(customer.createdAt).format("DD-mm-yyyy")}
+                    </td>
+                    <td className="pr-5">
+                      {" "}
+                      <DropdownMenu>
+                        <DropdownMenuTrigger className="border border-transparent focus:border focus:border-transparent active:border active:border-transparent">
+                          <MdOutlineMoreVert />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-40 border border-transparent">
+                          <DropdownMenuLabel className="text-xl">
+                            Actions
+                          </DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem className="text-lg">
+                            Modifier
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="text-lg"
+                            onClick={() => applyDelCustomersAction(customer.id)}
+                          >
+                            Supprimer
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -176,16 +246,16 @@ const Customer = () => {
                   <label>Nom du client</label>
                   <input
                     type="text"
-                    {...register("lastName", {
+                    {...register("name", {
                       required: "Le nom du client est obligatoire",
                     })}
-                    name="lastName"
+                    name="name"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
                     placeholder="Entrer le nom du client"
                   />
-                  {formState.errors.lastName && (
+                  {formState.errors.name && (
                     <p className="text-red-500 text-sm">
-                      {formState.errors.lastName.message}
+                      {formState.errors.name.message}
                     </p>
                   )}
                 </div>
@@ -225,14 +295,18 @@ const Customer = () => {
                   )}
                 </div>
 
-                <button className="auth-btn w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] focus:ring-offset-2 transition-all shadow-lg">
-                  Ajouter
+                <button className="auth-btn flex flex-row items-center justify-center gap-x-2 w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] focus:ring-offset-2 transition-all shadow-lg">
+                  Ajouter{" "}
+                  {loadingClient ? (
+                    <ClipLoader color="white" size={20} />
+                  ) : null}
                 </button>
               </div>
             </form>
           </div>
         </div>
       </div>
+      <Toaster />
     </div>
   );
 };
