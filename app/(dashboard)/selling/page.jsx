@@ -384,7 +384,7 @@ export default function Selling() {
                 }}
                 className="bg-[#F39C12] cursor-pointer py-3 px-4 text-white rounded-lg"
               >
-                Nouvelle Vente
+                Nouvelle Commande
               </button>
             </div>
           </div>
@@ -419,7 +419,7 @@ export default function Selling() {
                     <td className="px-5 py-5 font-medium text-gray-700">
                       {order.toOrders[0].product.salePrice}
                     </td>
-                    <td className="px-5 py-5 font-medium text-green-600">
+                    <td className={`px-5 py-5 font-medium ${order.customerCredit ? "text-red-600" : "text-green-600"}`}>
                       {order.totalAmount}
                     </td>
                     <td className="px-5 py-5 text-gray-700">

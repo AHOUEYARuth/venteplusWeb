@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useLayoutEffect, useRef } from "react";
+import React, { useEffect, useLayoutEffect, useRef , useState} from "react";
 import { customerCredits, useCustomerCreditsStore } from "./customerCreditsStore/customerCreditsStore";
 import { gsap } from "gsap";
 import { MdOutlineMoreVert, MdSearch } from "react-icons/md";
@@ -11,27 +11,61 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog.tsx"
 import { IoMdClose } from "react-icons/io";
 import { useForm } from "react-hook-form";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { useLoginStore } from "@/app/login/loginStore/loginStore";
+import { Button } from "@/components/ui/button";
+import { ClipLoader } from "react-spinners";
+import toast,{ Toaster } from "react-hot-toast";
 
 
 export default function CustomerCredits() {
-  const { customersCredits,setCustomersCredits, getCustomersCreditsAction} = useCustomerCreditsStore();
-  const {shop} = useLoginStore()
+  const { customersCredits, recoveries, setRecoveries, setCustomersCredits,getRecoveryCreditAction,createRecoveryAction, getCustomersCreditsAction } = useCustomerCreditsStore();
+  const { shop } = useLoginStore()
   const container = useRef(null);
   const timeLineModal = useRef();
-  const { register, handleSubmit, watch, formState, trigger } = useForm({
+  const [customerCreditsId, setcustomerCreditsId] = useState("")
+  const [loadingRecovery, setloadingRecovery] = useState(false)
+  const [isModalOpen, setisModalOpen] = useState(false)
+  const { register, handleSubmit, reset, formState : {errors}, trigger } = useForm({
     mode: "onChange",
   });
 
-  const submitForm = (data) => {
-    trigger().then((isValid) => {
-      if (isValid) {
-        console.log(data);
-      }
-    });
+  const submitForm = async (data) => {
+    setloadingRecovery(true);
+    const payload = {
+        ...data,
+        customerCreditId: customerCreditsId,
+    };
+          await createRecoveryAction(payload)
+            .then((response) => {
+              toast.success("Recouvrement effectué avec succès");
+              applyGetCustomersCreditAction(shop?.id);
+              reset();
+              setisModalOpen(false)
+            })
+            .catch((error) => {
+              console.log(error);
+              if (error.message) {
+                toast.error(error.message);
+              } else {
+                toast.error("Recouvrement impossible");
+              }
+            })
+            .finally(() => {
+              setloadingRecovery(false);
+            });
   };
   useLayoutEffect(() => {
     const context = gsap.context(() => {
@@ -57,20 +91,77 @@ export default function CustomerCredits() {
     };
   }, [container]);
 
-   async function applyGetCustomersAction(shopId) {
+  async function applyGetCustomersCreditAction(shopId) {
       await getCustomersCreditsAction(shopId).then((response) => {
         setCustomersCredits(response.data);
       });
-    }
-    useEffect(() => {
-       (function init() {
-         if (shop?.id) {
-           applyGetCustomersAction(shop?.id);
-         }
-       })();
-     }, [shop]);
+  }
+  async function applyGetRecoveryCreditAction(customerCreditId) {
+      await getRecoveryCreditAction(customerCreditId).then((response) => {
+        setRecoveries(response.data);
+      });
+  }
+  useEffect(() => {
+    (function init() {
+      if (shop?.id) {
+        applyGetCustomersCreditAction(shop?.id);
+      }
+      })();
+  }, [shop]);
   return (
     <div ref={container} className="w-full h-full p-5 bg-gray-50 rounded-xl">
+      
+      <Dialog open={isModalOpen} onOpenChange={setisModalOpen}>
+                        <DialogContent className="sm:max-w-md">
+                          <DialogHeader>
+                            <DialogTitle className="text-lg">Faire un recouvrement</DialogTitle>
+                            <DialogDescription className="text-base">
+                              Avant de lancer le recouvrement vous devez mettre le montant payer par le client.
+                            </DialogDescription>
+                          </DialogHeader>
+                           <form action="" onSubmit={handleSubmit(submitForm)}>
+                            <div className="w-full space-y-5 py-10">
+                              <div className="w-full flex flex-col gap-y-2">
+                                <label>Montant payer</label>
+                                <input
+                                  type="number"
+                                  {...register("amountPaid", {
+                                    required: "Le montant est obligatoire",
+                                    valueAsNumber: true,
+                                  })}
+                                  name="amountPaid"
+                                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                                  placeholder="Entrer le montant à payer"
+                                />
+                                {errors.amountPaid && (
+                                  <p className="text-red-500 text-sm">
+                                    {errors.amountPaid.message}
+                                  </p>
+                                )}
+                              </div>
+ 
+ 
+
+                              <DialogFooter className="sm:justify-start items-center justify-center">
+                              <button type="submit" className="w-50 auth-btn flex flex-row items-center justify-center gap-x-2 w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] cursor-pointer focus:ring-offset-2 transition-all shadow-lg">
+                                     Valider{" "}
+                                                      {loadingRecovery ? (
+                                                        <ClipLoader color="white" size={20} />
+                                                      ) : null}
+                              </button>
+                              <button type="button" className="w-50 auth-btn border border-1 border-gray-600 text-black flex flex-row items-center justify-center gap-x-2 w-full mt-5 text-black py-3 px-4 rounded-lg font-semibold hover:bg-[#000] hover:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#000] focus:ring-offset-2 transition-all shadow-lg" onClick={()=>setisModalOpen(false)} variant="ghost">
+                                  Fermer
+                              </button>
+                            
+                            </DialogFooter>
+
+
+                            </div>
+                          </form>
+                         
+                        </DialogContent>
+                      </Dialog>
+
       <div className="w-full flex flex-row items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold ">Dettes Clients</h2>
@@ -123,7 +214,8 @@ export default function CustomerCredits() {
                 <th className="p-5">Produit</th>
                 <th className="p-5">Quantité</th>
                 <th className="p-5 ">Unité(FCFA)</th>
-                <th className="p-5 ">Total(FCFA)</th>
+                <th className="p-5 ">Reste(FCFA)</th>
+                <th className="p-5 ">Payé(FCFA)</th>
                 <th className="p-5 ">Status</th>
                 <th className=""></th>
               </tr>
@@ -142,7 +234,10 @@ export default function CustomerCredits() {
                     {credit.order.toOrders[0].product.purchasePrice}
                   </td>
                   <td className="px-5 py-5 font-medium text-gray-700">
-                    {credit.order.totalAmount}
+                    {credit.order.totalAmount - credit.amountPaid}
+                  </td>
+                  <td className="px-5 py-5 font-medium text-green-600">
+                    {credit.amountPaid}
                   </td>
                   <td
                     className={`px-5 py-5 font-medium text-gray-700 ${
@@ -156,25 +251,29 @@ export default function CustomerCredits() {
                   <td className="pr-5">
                     {" "}
                     <DropdownMenu>
-                      <DropdownMenuTrigger className="border border-transparent focus:border focus:border-transparent active:border active:border-transparent">
+                      <DropdownMenuTrigger onClick={()=>setcustomerCreditsId(credit.id)} className="border border-transparent focus:border focus:border-transparent active:border active:border-transparent">
                         <MdOutlineMoreVert />
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent className="w-40 border border-transparent">
+                      <DropdownMenuContent className="w-70 border border-transparent">
                         <DropdownMenuLabel className="text-xl">
                           Actions
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-lg">
+                        <DropdownMenuItem onClick={()=>{
+                          setcustomerCreditsId(credit.id)
+                          setisModalOpen(true)
+                        }} className="text-lg">
+                          Faire un Recouvrements
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={()=>{
+                          setcustomerCreditsId(credit.id)
+                          applyGetRecoveryCreditAction(credit.id)
+                          timeLineModal.current.play();
+                        }}  className="text-lg">
                           Recouvrements
                         </DropdownMenuItem>
                         <DropdownMenuItem className="text-lg">
-                          Modifier
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="text-lg">
                           Valider
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="text-lg">
-                          Supprimer
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -203,6 +302,21 @@ export default function CustomerCredits() {
           </button>
           <div className="w-full">
             <h3 className="text-xl text-[#F39C12] font-bold text-center">
+              Liste des recouvrements
+            </h3>
+            <div className="mt-5">
+              {recoveries.map((recovery)=>(
+                <div key={recovery.id} className="w-full flex flex-row items-center justify-between border rounded-lg p-3 border-gray-200 py-3">
+                  <div className="flex flex-col">
+                    <span className="font-medium text-lg text-gray-700">Montant payé: {recovery.amountPaid} FCFA</span>
+                    <span className="text-gray-500 text-lg text-sm">Date: {new Date(recovery.createdAt).toLocaleDateString()}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+
+            {/* <h3 className="text-xl text-[#F39C12] font-bold text-center">
               Ajouter une nouvelle dette
             </h3>
             <form onSubmit={handleSubmit(submitForm)}>
@@ -319,10 +433,11 @@ export default function CustomerCredits() {
                   Enrégistrer la dette
                 </button>
               </div>
-            </form>
+            </form> */}
           </div>
         </div>
       </div>
+      <Toaster />
     </div>
   );
 }

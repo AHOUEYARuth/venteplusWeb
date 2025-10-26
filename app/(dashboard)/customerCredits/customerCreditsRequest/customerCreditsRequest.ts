@@ -7,3 +7,18 @@ export const getCustomerCreditsRequest = async (shopId) => {
     url: `customer-credits/shop/${shopId}`,
   });
 };
+
+export const getRecoveryCreditRequest = async (customerCreditId) => {
+  return HttpClient.makeRequest({
+    method: "GET",
+    url: `recoveries/${customerCreditId}`,
+  });
+};
+
+export const createRecoveryRequest = async (payload) => {
+  return HttpClient.makeRequest({
+    method: "POST",
+    url: `recoveries`,
+    payload,
+  });
+};
