@@ -15,12 +15,13 @@ export const deleteSellingRequest = async (orderId) => {
   });
 };
 
-export const getSellingsRequest = async (shopId, isPaid) => {
+export const getSellingsRequest = async (shopId, isSale) => {
    const params = new URLSearchParams("");
-   if (isPaid != null) params.append("isPaid", isPaid);
+   if (isSale != null) params.append("isSale", JSON.stringify(isSale));
   return HttpClient.makeRequest({
     method: "GET",
     url: `orders/shop/${shopId}`,
+    searchParams: params,
   });
 };
 

@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useLayoutEffect, useRef } from "react";
+import React, { useEffect, useLayoutEffect, useState,useRef } from "react";
 import { MdClose, MdOutlineMoreVert, MdSearch } from "react-icons/md";
 import { sellingStore, useSellingStore } from "./sellingStore/sellingStore";
 import { FaCheckCircle } from "react-icons/fa";
@@ -16,22 +16,98 @@ import { gsap } from "gsap";
 import { IoMdArrowDropup, IoMdClose } from "react-icons/io";
 import { FiArrowUp, FiArrowUpRight } from "react-icons/fi";
 import { useForm } from "react-hook-form";
+import { useProductStore } from "../product/productStore/productStore";
+import { useLoginStore } from "@/app/login/loginStore/loginStore";
+import { customerStore } from "../customer/customerStore/customerStore";
+import { PhoneInput } from "@/components/ui/phone-input";
+import { ClipLoader } from "react-spinners";
+import toast,{Toaster} from "react-hot-toast";
+import { toBoolean } from "@/lib/utils";
 
 export default function Selling() {
-  const { orders, sellings, activeMenu, setActiveMenu } =
-    useSellingStore();
+  const { orders, sellings, activeMenu, orderAction ,setActiveMenu,setSellings,getOrdersAndSellingsAction,setOrders } = useSellingStore();
+  const { customers,setCustomers,getCustomersAction,customerAction } = customerStore();
+  const { products, setProducts, getProductsActions } = useProductStore();
+  const { shop } = useLoginStore();
+  const [loadingClient, setloadingClient] = useState(false);
+  const [loadingOrder, setLoadingOrder] = useState(false);
   const container = useRef(null);
   const timeLineModal = useRef();
-  const { register, handleSubmit, watch, formState, trigger } = useForm({
+  const timeLineModalClient = useRef();
+
+  const { register, setValue, handleSubmit,reset, watch, formState, trigger } = useForm({
     mode: "onChange",
   });
+  const {
+    register: registerClient,
+    handleSubmit: handleSubmitClient,
+    reset: resetClient,
+    formState: { errors: clientErrors },
+  } = useForm()
 
-  const submitForm = (data) => {
-    trigger().then((isValid) => {
-      if (isValid) {
-        console.log(data);
-      }
-    });
+  
+
+
+    async function submitFormClient(data) {
+      setloadingClient(true);
+      const payload = {
+        ...data,
+        shopId: shop?.id,
+      };
+      await customerAction(payload)
+        .then((response) => {
+          toast.success("Client ajouté avec succès");
+          applyGetCustomersAction(shop?.id);
+          resetClient();
+          timeLineModalClient.current.reversed(true);
+          setValue("customerId", response.data.id);
+          timeLineModal.current.play();
+        })
+        .catch((error) => {
+          console.log(error);
+          if (error.message) {
+            toast.error(error.message);
+          } else {
+            toast.error("Client non ajouté ");
+          }
+        })
+        .finally(() => {
+          setloadingClient(false);
+        });
+    }
+  const submitForm = async (data) => {
+   setLoadingOrder(true);
+      const payload = {
+        ...data,
+        shopId: shop?.id,
+        quantity: parseInt(data.quantity, 10),
+        isSale: toBoolean(data.isSale),
+        isCredit: toBoolean(data.isCredit),
+      };
+      await orderAction(payload)
+        .then((response) => {
+          toast.success("Commande ajoutée avec succès");
+          if(data.isSale === 'true'){
+            setActiveMenu("ventes");
+            applyGetSellingsAction(shop?.id);
+          }else{
+            applyGetOrdersAction(shop?.id);
+          }
+      
+          reset();
+          timeLineModal.current.reversed(true);
+        })
+        .catch((error) => {
+          console.log(error);
+          if (error.message) {
+            toast.error(error.message);
+          } else {
+            toast.error("Client non ajouté ");
+          }
+        })
+        .finally(() => {
+          setLoadingOrder(false);
+        });
   };
   useLayoutEffect(() => {
     const context = gsap.context(() => {
@@ -50,12 +126,62 @@ export default function Selling() {
           "-=0.5"
         )
         .paused(true);
+
+        timeLineModalClient.current = gsap
+                .timeline()
+                .to(".modal_container_client", {
+                  opacity: 1,
+                  duration: 0.5,
+                })
+                .to(
+                  ".form_container_client",
+                  {
+                    xPercent: -200,
+                    duration: 0.5,
+                  },
+                  "-=0.5"
+                )
+                .paused(true);
     }, [container]);
 
     return () => {
       context.revert();
     };
   }, [container]);
+
+
+   async function applyGetOrdersAction(shopId) {
+    await getOrdersAndSellingsAction(shopId,false).then((response) => {
+      setOrders(response.data);
+    });
+  }
+
+   async function applyGetSellingsAction(shopId) {
+    await getOrdersAndSellingsAction(shopId,true).then((response) => {
+      setSellings(response.data);
+    });
+  }
+
+   async function applyGetCustomersAction(shopId) {
+    await getCustomersAction(shopId).then((response) => {
+      setCustomers(response.data);
+    });
+  }
+  async function applyGetProductAction(shopId) {
+    await getProductsActions(shopId).then((response) => {
+      setProducts(response.data);
+  
+    });
+  }
+  useEffect(() => {
+     (function init() {
+       if (shop?.id) {
+         applyGetOrdersAction(shop?.id);
+         applyGetProductAction(shop?.id);
+         applyGetCustomersAction(shop?.id);
+       }
+     })();
+   }, [shop]);
 
  /*  useEffect(() => {
     fetchData();
@@ -221,7 +347,10 @@ export default function Selling() {
               Commande
             </button>
             <button
-              onClick={() => setActiveMenu("ventes")}
+              onClick={async () => {
+                setActiveMenu("ventes");
+                await applyGetSellingsAction(shop?.id);
+              }}
               className={`w-[200px] px-2 py-2 rounded-lg text-xl cursor-pointer ${
                 activeMenu === "ventes"
                   ? "text-white bg-[#F39C12]"
@@ -283,15 +412,15 @@ export default function Selling() {
                     key={order.id}
                     className="border-b hover:bg-gray-50 transition-colors"
                   >
-                    <td className="px-5 py-5 font-bold">{order.client}</td>
-                    <td className="px-5 py-5">{order.phoneNumber}</td>
-                    <td className="px-5 py-5">{order.product}</td>
-                    <td className="px-5 py-5">{order.quantity}</td>
+                    <td className="px-5 py-5 font-bold">{order.customer.name} {order.customer.firstName}</td>
+                    <td className="px-5 py-5">{order.customer.phoneNumber}</td>
+                    <td className="px-5 py-5">{order.toOrders[0].product.name}</td>
+                    <td className="px-5 py-5">{order.toOrders[0].quantity}</td>
                     <td className="px-5 py-5 font-medium text-gray-700">
-                      {order.unitPrice}
+                      {order.toOrders[0].product.salePrice}
                     </td>
                     <td className="px-5 py-5 font-medium text-green-600">
-                      {order.totalPrice}
+                      {order.totalAmount}
                     </td>
                     <td className="px-5 py-5 text-gray-700">
                       {order.deliveryAddress}
@@ -299,26 +428,26 @@ export default function Selling() {
                     <td className="px-5 py-5">
                       <span
                         className={`w-[110px] flex gap-x-2 items-center justify-center text-base  rounded-sm ${
-                          order.status === "livrée"
+                          order.status === "DELIVERED"
                             ? "bg-green-50"
-                            : order.status === "en cours"
+                            : order.status === "PENDING"
                             ? "bg-blue-50"
-                            : order.status === "annulée"
+                            : order.status === "CANCELLED"
                             ? "bg-red-50"
                             : "text-gray-600"
                         }`}
                       >
-                        {order.status === "Livrée" ? (
+                        {order.status === "DELIVERED" ? (
                           <FaCheckCircle size={14} className="text-green-600" />
-                        ) : order.status === "En cours" ? (
+                        ) : order.status === "PENDING" ? (
                           <RiProgress2Fill
                             size={15}
                             className="text-blue-600"
                           />
-                        ) : order.status === "Annulée" ? (
+                        ) : order.status === "CANCELLED" ? (
                           <MdClose size={15} className="text-red-600" />
                         ) : null}
-                        {order.status}
+                        {order.status == "PENDING" ? "En attente" : order.status == "DELIVERED" ? "Livrée" : order.status == "CANCELLED" ? "Annulée" : null}
                       </span>
                     </td>
                     <td className="pr-5">
@@ -352,6 +481,8 @@ export default function Selling() {
             <table className="w-full text-xl ">
               <thead className=" text-black bg-gray-100">
                 <tr className="border-b border-gray-200 text-left">
+                  <th className="p-5">Client</th>
+                  <th className="p-5">Téléphone</th>
                   <th className="p-5">Produit</th>
                   <th className="p-5">Quantité</th>
                   <th className="p-5 ">Prix d&apos;achat(FCFA)</th>
@@ -366,12 +497,14 @@ export default function Selling() {
                     key={selling.id}
                     className="border-b hover:bg-gray-50 transition-colors"
                   >
-                    <td className="p-5 font-bold">{selling.product}</td>
-                    <td className="p-5">{selling.quantitySold}</td>
-                    <td className="p-5">{selling.purchasePrice}</td>
-                    <td className="p-5">{selling.unitPrice}</td>
-                    <td className="p-5">{selling.totalRevenue}</td>
-                    <td className="p-5 text-green-600">{selling.totalProfit}</td>
+                     <td className="px-5 py-5 font-bold">{selling.customer.name} {selling.customer.firstName}</td>
+                    <td className="px-5 py-5">{selling.customer.phoneNumber}</td>
+                    <td className="p-5">{selling.toOrders[0].product.name}</td>
+                    <td className="p-5">{selling.toOrders[0].quantity}</td>
+                    <td className="p-5">{selling.toOrders[0].product.purchasePrice}</td>
+                    <td className="p-5">{selling.toOrders[0].product.salePrice}</td>
+                    <td className="p-5">{selling.totalAmount}</td>
+                    <td className="p-5 text-green-600">{(selling.toOrders[0].product.salePrice - selling.toOrders[0].product.purchasePrice) * selling.toOrders[0].quantity}</td>
                   </tr>
                 ))}
               </tbody>
@@ -379,6 +512,95 @@ export default function Selling() {
           )}
         </div>
       </div>
+
+
+       <div
+        style={{ pointerEvents: "none", opacity: 0 }}
+        className={`modal_container_client w-full h-full fixed top-0 right-0 bg-black/30`}
+      >
+        <div
+          style={{ transform: "translateX(200%)", pointerEvents: "all" }}
+          className={`form_container_client flex flex-col items-start gap-y-10 bg-white w-110 p-5 rounded-xl h-[96vh] absolute top-5 right-3 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden `}
+        >
+          <button
+            onClick={() => {
+              timeLineModalClient.current.reversed(true);
+              timeLineModal.current.play();
+            }}
+          >
+            <IoMdClose size={35} />
+          </button>
+          <div className="w-full">
+            <h3 className="text-xl text-[#F39C12] font-bold text-center">
+              Ajouter un client
+            </h3>
+            <form action="" onSubmit={handleSubmitClient(submitFormClient)}>
+              <div className="w-full space-y-5 py-10">
+                <div className="w-full flex flex-col gap-y-2">
+                  <label>Nom du client</label>
+                  <input
+                    type="text"
+                    {...registerClient("name", {
+                      required: "Le nom du client est obligatoire",
+                    })}
+                    name="name"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                    placeholder="Entrer le nom du client"
+                  />
+                  {clientErrors.name && (
+                    <p className="text-red-500 text-sm">
+                      {clientErrors.name.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="w-full flex flex-col gap-y-2">
+                  <label>Prénom du client</label>
+                  <input
+                    type="text"
+                    {...registerClient("firstName", {
+                      required: "Le prénom du client est obligatoire",
+                    })}
+                    name="firstName"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                    placeholder="Entrer le prénom du client"
+                  />
+                  {clientErrors.firstName && (
+                    <p className="text-red-500 text-sm">
+                      {clientErrors.firstName.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="w-full flex flex-col gap-y-2">
+                  <label>Numéro de téléphone</label>
+                  <PhoneInput
+                    {...registerClient("phoneNumber", {
+                      required: "Le numéro de téléphone est obligatoire",
+                    })}
+                    defaultCountry="BJ"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                    placeholder="Entrer le numéro du client"
+                  />
+                  {clientErrors.phoneNumber && (
+                    <p className="text-red-500 text-sm">
+                      {clientErrors.phoneNumber.message}
+                    </p>
+                  )}
+                </div>
+
+                <button type="submit" className="auth-btn flex flex-row items-center justify-center gap-x-2 w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] focus:ring-offset-2 transition-all shadow-lg">
+                  Ajouter{" "}
+                  {loadingClient ? (
+                    <ClipLoader color="white" size={20} />
+                  ) : null}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
 
       <div
         style={{ pointerEvents: "none", opacity: 0 }}
@@ -397,31 +619,35 @@ export default function Selling() {
           </button>
           <div className="w-full">
             <h3 className="text-xl text-[#F39C12] font-bold text-center">
-              Enrégistrer une nouvelle vente
+              Enrégistrer une nouvelle commande
             </h3>
             <form onSubmit={handleSubmit(submitForm)}>
               <div className="w-full space-y-6 py-10">
                 <div className="w-full flex flex-col gap-y-2">
-                  <label htmlFor="productName">Nom du produit</label>
+                  <label htmlFor="productId">Nom du produit</label>
                   <select
-                    {...register("productName", {
+                    {...register("productId", {
                       required: "Le nom du produit est obligatoire",
                     })}
-                    name="productName"
+                    name="productId"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
                     defaultValue=""
                   >
                     <option value="" disabled>
                       Sélectionner un produit
                     </option>
-                    <option value="Ciment">Ciment</option>
-                    <option value="Fer à béton">Fer à béton</option>
-                    <option value="Peinture">Peinture</option>
-                    <option value="Carrelage">Carrelage</option>
+                    {
+                      products.map((product) => (
+                        <option key={product.id} value={product.id}>
+                          {product.name}
+                        </option>
+                      ))
+                    }
+  
                   </select>
-                  {formState.errors.productName && (
+                  {formState.errors.productId && (
                     <p className="text-red-500 text-sm mt-1">
-                      {formState.errors.productName.message}
+                      {formState.errors.productId.message}
                     </p>
                   )}
                 </div>
@@ -448,58 +674,123 @@ export default function Selling() {
                   )}
                 </div>
 
-                <div className="w-full flex flex-col gap-y-2">
-                  <label htmlFor="purchasePrice">Prix d&apos;achat</label>
-                  <input
-                    {...register("purchasePrice", {
-                      required: "Le prix d'achat est obligatoire",
-                      min: {
-                        value: 1,
-                        message: "Le prix d'achat doit être supérieur à 0",
-                      },
+                 <div className="w-full flex flex-col gap-y-2">
+                  <label htmlFor="customerId">Client</label>
+                  <select
+                    {...register("customerId", {
+                      required: "Le client est obligatoire",
                     })}
-                    type="number"
-                    name="purchasePrice"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-                    placeholder="Entrer le prix d'achat du produit"
-                  />
-                  {formState.errors.purchasePrice && (
+                    name="customerId"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                    defaultValue=""
+                    
+                  >
+                    <option value="" disabled>
+                      Sélectionner un client
+                    </option>
+                    {
+                      customers.map((customer) => (
+                        <option key={customer.id} value={customer.id}>
+                          {customer.name} {customer.firstName}
+                        </option>
+                      ))
+                    }
+  
+                  </select>
+                  {formState.errors.customerId && (
                     <p className="text-red-500 text-sm mt-1">
-                      {formState.errors.purchasePrice.message}
+                      {formState.errors.customerId.message}
                     </p>
                   )}
                 </div>
 
+
                 <div className="w-full flex flex-col gap-y-2">
-                  <label htmlFor="salePrice">Prix de vente</label>
-                  <input
-                    {...register("salePrice", {
-                      required: "Le prix de vente est obligatoire",
-                      min: {
-                        value: 1,
-                        message: "Le prix de vente doit être supérieur à 0",
-                      },
+                  <label htmlFor="isSale">Vente</label>
+                  <select
+                    {...register("isSale", {
+                      required: false
                     })}
-                    type="number"
-                    name="salePrice"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-                    placeholder="Entrer le prix de vente du produit"
-                  />
-                  {formState.errors.salePrice && (
+                    name="isSale"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                    defaultValue=""
+                  >
+                    <option value={false}>
+                         Non
+                    </option>
+                    <option value={true}>
+                         Oui
+                    </option>
+                  </select>
+                  {formState.errors.productName && (
                     <p className="text-red-500 text-sm mt-1">
-                      {formState.errors.salePrice.message}
+                      {formState.errors.productName.message}
                     </p>
                   )}
                 </div>
 
-                <button className="auth-btn w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] focus:ring-offset-2 transition-all shadow-lg">
-                  Enrégistrer la vente
+
+
+
+                <div className="w-full flex flex-col gap-y-2">
+                  <label htmlFor="isCredit">Est ce un crédit ?</label>
+                  <select
+                    {...register("isCredit", {
+                      required: false
+                    })}
+                    name="isCredit"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                    defaultValue=""
+                  >
+                    <option value={false}>
+                         Non
+                    </option>
+                    <option value={true}>
+                         Oui
+                    </option>
+                  </select>
+
+                </div>
+
+
+
+
+                <div className="w-full flex flex-col gap-y-2">
+                  <label htmlFor="Addresse de livraison">Addresse de livraison</label>
+                  <input
+                    {...register("deliveryAddress", {
+                      required: false,
+                    })}
+                    type="text"
+                    name="deliveryAddress"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                    placeholder="Entrer l'adresse de livraison"
+                  />
+                  {formState.errors.deliveryAddress && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {formState.errors.deliveryAddress.message}
+                    </p>
+                  )}
+                </div>
+                <button type="button" onClick={()=>{
+                  timeLineModal.current.reversed(true)
+                  timeLineModalClient.current.play();
+                }} className="auth-btn w-full mt-5  text-black border border-1 cursor-pointer border-gray-500 py-3 px-4 rounded-lg font-semibold hover:bg-gray focus:outline-none focus:ring-2  focus:ring-offset-2 transition-all">
+                  Ajouter un nouveau client
+                </button>
+                <button className="auth-btn w-full mt-2 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] focus:ring-offset-2 transition-all shadow-lg">
+                  Enrégistrer la commande{" "}
+                  {loadingOrder ? (
+                    <ClipLoader color="white" size={20} />
+                  ) : null}
                 </button>
               </div>
             </form>
+            
           </div>
         </div>
       </div>
+      <Toaster />
     </div>
   );
 }

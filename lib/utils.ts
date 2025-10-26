@@ -44,3 +44,9 @@ export const cleanPayload = (payload: Record<string, any>) => {
 }
 
 export type VerbHttpType = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+
+export const toBoolean = (value: any): boolean => {
+  if (typeof value === "boolean") return value;
+  if (typeof value === "string") return value.toLowerCase() === "true";
+  return Boolean(value);
+};

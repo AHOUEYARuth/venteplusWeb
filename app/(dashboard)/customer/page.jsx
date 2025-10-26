@@ -224,7 +224,7 @@ const Customer = () => {
       <div
         style={{ pointerEvents: "none", opacity: 0 }}
         className={`modal_container w-full h-full fixed top-0 right-0 bg-black/30`}
-      >
+       >
         <div
           style={{ transform: "translateX(200%)", pointerEvents: "all" }}
           className={`form_container flex flex-col items-start gap-y-10 bg-white w-110 p-5 rounded-xl h-[96vh] absolute top-5 right-3 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden `}

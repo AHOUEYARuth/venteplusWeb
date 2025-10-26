@@ -1,6 +1,9 @@
-import api from "@/lib/util";
+import { HttpClient } from "@/lib/httpClient";
 
-export const getPlans = async () => {
-  const response = await api.get("/documents");
-  return response.data;
+
+export const getCustomerCreditsRequest = async (shopId) => {
+  return HttpClient.makeRequest({
+    method: "GET",
+    url: `customer-credits/shop/${shopId}`,
+  });
 };

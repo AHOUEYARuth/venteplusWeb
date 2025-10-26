@@ -302,6 +302,7 @@ export default function Product() {
             value={categorieFilter || "all"}
             onValueChange={setCategorieFilter}
             disabled={filterLoading}
+            
           >
             <SelectTrigger className="w-[200px] py-5 outline-none focus:outline-none border border-[#F39C12]">
               <SelectValue placeholder="Catégorie">

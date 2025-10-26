@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useLayoutEffect, useRef } from "react";
-import { customerCredits } from "./customerCreditsStore/customerCreditsStore";
+import { customerCredits, useCustomerCreditsStore } from "./customerCreditsStore/customerCreditsStore";
 import { gsap } from "gsap";
 import { MdOutlineMoreVert, MdSearch } from "react-icons/md";
 import {
@@ -14,8 +14,12 @@ import {
 import { IoMdClose } from "react-icons/io";
 import { useForm } from "react-hook-form";
 import { PhoneInput } from "@/components/ui/phone-input";
+import { useLoginStore } from "@/app/login/loginStore/loginStore";
+
+
 export default function CustomerCredits() {
-  const { customersCredits, fetchData } = customerCredits();
+  const { customersCredits,setCustomersCredits, getCustomersCreditsAction} = useCustomerCreditsStore();
+  const {shop} = useLoginStore()
   const container = useRef(null);
   const timeLineModal = useRef();
   const { register, handleSubmit, watch, formState, trigger } = useForm({
@@ -53,9 +57,18 @@ export default function CustomerCredits() {
     };
   }, [container]);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+   async function applyGetCustomersAction(shopId) {
+      await getCustomersCreditsAction(shopId).then((response) => {
+        setCustomersCredits(response.data);
+      });
+    }
+    useEffect(() => {
+       (function init() {
+         if (shop?.id) {
+           applyGetCustomersAction(shop?.id);
+         }
+       })();
+     }, [shop]);
   return (
     <div ref={container} className="w-full h-full p-5 bg-gray-50 rounded-xl">
       <div className="w-full flex flex-row items-center justify-between">
@@ -103,7 +116,7 @@ export default function CustomerCredits() {
         </div>
         <div className="w-[95%] overflow-x-auto pb-10 mt-5 bg-white">
           <table className="min-w-full text-xl">
-            <thead className=" text-black bg-gray-100  ">
+            <thead className=" text-black bg-gray-100">
               <tr className="border-b border-gray-200 text-left">
                 <th className="p-5">Client</th>
                 <th className="p-5">Téléphone</th>
@@ -121,24 +134,24 @@ export default function CustomerCredits() {
                   key={credit.id}
                   className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
                 >
-                  <td className="px-5 py-5 font-bold">{credit.client}</td>
-                  <td className="px-5 py-5 text-black">{credit.phoneNumber}</td>
-                  <td className="px-5 py-5">{credit.product}</td>
-                  <td className="px-5 py-5">{credit.quantity}</td>
+                  <td className="px-5 py-5 font-bold">{credit.customer.name} {credit.customer.firstName}</td>
+                  <td className="px-5 py-5 text-black">{credit.customer.phoneNumber}</td>
+                  <td className="px-5 py-5">{credit.order.toOrders[0].product.name}</td>
+                  <td className="px-5 py-5">{credit.order.toOrders[0].quantity}</td>
                   <td className="px-5 py-5 font-medium text-gray-700">
-                    {credit.unitPrice}
+                    {credit.order.toOrders[0].product.purchasePrice}
                   </td>
                   <td className="px-5 py-5 font-medium text-gray-700">
-                    {credit.totalPrice}
+                    {credit.order.totalAmount}
                   </td>
                   <td
                     className={`px-5 py-5 font-medium text-gray-700 ${
-                      credit.status.toLocaleLowerCase() === "non payée"
+                      credit.isPaid === false
                         ? "text-red-500"
                         : "text-green-500"
                     }`}
                   >
-                    {credit.status}
+                    {credit.isPaid === false ? "Impayé" : "Payé"}
                   </td>
                   <td className="pr-5">
                     {" "}

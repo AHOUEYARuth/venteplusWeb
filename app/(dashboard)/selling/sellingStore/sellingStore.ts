@@ -15,7 +15,7 @@ type SellingAction = {
   orderAction: (orderFormData: any) => Promise<void>;
   getOrdersAndSellingsAction: (
     shopId: string,
-    isPaid: boolean
+    isSale: boolean
   ) => Promise<void>;
   setSellings: (orders: any) => void;
   deleteSellingsAction: (orderId: string) => Promise<void>;
@@ -46,8 +46,8 @@ export const useSellingStore = create<State & SellingAction>((set) => ({
     const response = await createSellingRequest(orderFormData);
     return response;
   },
-  getOrdersAndSellingsAction: async (shopId, isPaid) => {
-    const response = await getSellingsRequest(shopId, isPaid);
+  getOrdersAndSellingsAction: async (shopId, isSale) => {
+    const response = await getSellingsRequest(shopId, isSale);
     return response;
   },
   setSellings: (sellings) => {
