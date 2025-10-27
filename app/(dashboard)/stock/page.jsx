@@ -28,6 +28,10 @@ import { useProductStore } from "../product/productStore/productStore";
 import { useLoginStore } from "@/app/login/loginStore/loginStore";
 import { ClipLoader } from "react-spinners";
 import { cleanPayload } from "@/lib/utils";
+import moment from "moment";
+import { DatePicker } from "@/components/ui/date-picker";
+import { Button } from "@/components/ui/button";
+import Product2 from "@/assets/images/emptyPro.png";
 export default function Stock() {
   const {
     products,
@@ -36,6 +40,7 @@ export default function Stock() {
     editedProduct,
     editedProductAction,
     setEditingProduct,
+    filterProducts,
   } = useProductStore();
   const { shop } = useLoginStore();
   const { stocks, fetchData } = stockStore();
@@ -45,6 +50,9 @@ export default function Stock() {
   const [loadingProduct, setloadingProduct] = useState(false);
   const [productInfos, setproductInfos] = useState({});
   const [availableQuantity, setavailableQuantity] = useState("");
+  const [categorieFilter, setCategorieFilter] = useState("");
+  const [nameFilter, setnameFilter] = useState("");
+  const [rangeDate, setRangeDate] = useState(null);
 
   const { register, handleSubmit, watch, formState, trigger, reset } = useForm({
     mode: "onChange",
@@ -54,26 +62,26 @@ export default function Stock() {
       setProducts(response.data);
     });
   }
-   async function applyUpdateProductAction(productId, payload) {
-     await editedProductAction(productId, payload)
-       .then(async () => {
-         setloadingProduct(true);
-         await applyGetProductAction(shop?.id);
-         toast.success("Produit modifier avec succès");
-         setisModalOpen(false);
-       })
-       .catch((error) => {
-         console.error(error);
-         toast.error(
-           error.message || "Erreur lors de la modification du produit"
-         );
-       })
-       .finally(() => {
-         setloadingProduct(false);
-       });
-   }
+  async function applyUpdateProductAction(productId, payload) {
+    await editedProductAction(productId, payload)
+      .then(async () => {
+        setloadingProduct(true);
+        await applyGetProductAction(shop?.id);
+        toast.success("Produit modifier avec succès");
+        setisModalOpen(false);
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error(
+          error.message || "Erreur lors de la modification du produit"
+        );
+      })
+      .finally(() => {
+        setloadingProduct(false);
+      });
+  }
 
-  async function submitForm (data)  {
+  async function submitForm(data) {
     data = cleanPayload(data);
     const payload = {
       ...data,
@@ -101,7 +109,7 @@ export default function Stock() {
           reset();
           await applyGetProductAc50tion(shop?.id);
           /* toast.success("Produit modifié avec succès"); */
-          
+
           setEditingProduct(null);
 
           timeLineModal.current.reversed(true);
@@ -123,11 +131,11 @@ export default function Stock() {
         console.log(data);
       }
     }); */
-  };
+  }
 
   console.log("produits");
   console.log(products);
-  
+
   useLayoutEffect(() => {
     const context = gsap.context(() => {
       timeLineModal.current = gsap
@@ -151,6 +159,36 @@ export default function Stock() {
       context.revert();
     };
   }, [container]);
+
+  function handleClearFilter() {
+    setCategorieFilter("");
+    setnameFilter("");
+    setRangeDate("");
+  }
+
+  useEffect(() => {
+    (async function handleFilter() {
+      if (categorieFilter != "" || nameFilter != "" || rangeDate != null) {
+        console.log("range init");
+        console.log(categorieFilter);
+        const dateFrom = rangeDate?.from;
+        const dateTo = rangeDate?.to;
+        await filterProducts(
+          shop?.id,
+          nameFilter,
+          categorieFilter,
+          dateFrom != undefined && dateFrom != null
+            ? moment(dateFrom).format("DD-MM-YYYY")
+            : dateFrom,
+          dateTo != undefined && dateTo != null
+            ? moment(dateTo).format("DD-MM-YYYY")
+            : dateTo
+        ).then((response) => {
+          setProducts(response.data);
+        });
+      }
+    })();
+  }, [categorieFilter, nameFilter, rangeDate]);
 
   useEffect(() => {
     (function init() {
@@ -259,30 +297,46 @@ export default function Stock() {
       <div className="w-full flex flex-col gap-y-5">
         <div className="w-full flex flex-row items-start justify-between mt-20">
           <h2 className="text-2xl font-semibold ">Listes des Stocks</h2>
-          <div className="w-[50%] flex flex-row items-center justify-center gap-x-4">
+          <div className="w-[60%] flex flex-row items-center justify-center gap-x-4">
             <div className="w-[40%] relative flex items-center justify-between bg-white gap-x-2 rounded-lg">
               <input
                 type="text"
+                onChange={(event) => setnameFilter(event.target.value)}
                 placeholder="Recherche par nom"
-                className="bg-white text-sm py-3 pl-2 outline-hidden rounded-lg focus:outline-none  transition-all"
+                className="bg-white text-lg py-3 pl-2 outline-hidden rounded-lg focus:outline-none  transition-all"
               />
               <button className="py-3 bg-[#F39C12] text-white rounded-tr-lg rounded-br-lg cursor-pointer px-4">
                 <MdSearch size={25} />
               </button>
             </div>
             <div className="w-[60%] flex flex-row gap-x-4 items-center">
-              <input
-                type="date"
-                name=""
-                id=""
-                className="border border-[#F39C12] py-3 px-4 rounded-lg"
-              />
+              <div className="flex flex-row gap-x-5 items-center">
+                <DatePicker onDateChange={(range) => setRangeDate(range)} />
+              </div>
+              <Button
+                onClick={() => handleClearFilter()}
+                variant="outline"
+                className="border-[#F39C12] text-[#F39C12] hover:bg-[#F39C12] hover:text-white cursor-pointer"
+              >
+                Effacer le filtre
+              </Button>
             </div>
           </div>
         </div>
-        <div className="w-[95%] overflow-x-auto pb-10 mt-5 bg-white">
+        <div className="w-full overflow-x-auto pb-10 mt-5 bg-white">
           {products.length === 0 ? (
-            <div>Aucun produit disponible dans votre stock</div>
+            <div className="w-full flex flex-col items-center gap-y-2 text-center py-5">
+              <div
+                className="w-[50%] sm:w-[100%] lg:w-[32%] h-[200px] relative overflow-hidden bg-contain bg-center bg-no-repeat cursor-pointer"
+                style={{ backgroundImage: `url(${Product2.src})` }}
+              ></div>
+              <div>
+                <p className="text-2xl font-bold">Aucun produit trouvé</p>
+                <p className="">
+                  Votre stock de produits est vide. La liste des produit enrégistrer s'affiche ici
+                </p>
+              </div>
+            </div>
           ) : (
             <table className="min-w-full text-xl  ">
               <thead className=" text-black bg-gray-100">
@@ -462,7 +516,7 @@ export default function Stock() {
         </div>
       </div> */}
 
-      <Toaster/>
+      <Toaster />
     </div>
   );
 }

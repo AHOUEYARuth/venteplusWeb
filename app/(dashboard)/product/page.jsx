@@ -48,8 +48,6 @@ export default function Product() {
     deleteProductAction,
     filterProducts,
     clearCategoryFilter,
-    selectedCategory,
-    filteredProducts,
     editedProduct,
     editedProductAction,
     setEditingProduct,
@@ -72,7 +70,6 @@ export default function Product() {
     mode: "onChange",
   });
 
-  const productsToDisplay = selectedCategory ? filteredProducts : products;
   async function applyUpdateProductAction(productId, payload) {
     await editedProductAction(productId, payload)
       .then(async () => {
