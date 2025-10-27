@@ -1,6 +1,6 @@
 "use client";
-import React from "react";
-import { dashboardStore } from "./dashboardStore/dashboardStore";
+import React,{useEffect} from "react";
+import { useDashboardStore } from "./dashboardStore/dashboardStore";
 import { Button } from "@/components/ui/button";
 import { FiArrowUpRight } from "react-icons/fi";
 import { IoMdArrowDropup } from "react-icons/io";
@@ -24,6 +24,8 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { useLoginStore } from "@/app/login/loginStore/loginStore";
+import { baseUrlNotApi } from "@/lib/httpClient";
 export const description = "A bar chart with a label";
 const chartData = [
   { month: "January", desktop: 186 },
@@ -40,8 +42,28 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-const dashboard = () => {
-  const { name, showProduct } = dashboardStore();
+export default function Dashboard(){
+  const { monthSelling, topProducts,setTopProducts,setMonthSelling,getTopProductsAction,getMonthSellingsAction } = useDashboardStore();
+  const { shop } = useLoginStore()
+
+  async function applyGetTopProductsAction(shopId) {
+    await getTopProductsAction(shopId).then((response) => {
+    
+    });
+  }
+  async function applyGetMonthSellingsAction(shopId) {
+    await getMonthSellingsAction(shopId).then((response) => {
+   
+    });
+  }
+  useEffect(() => {
+      (function init() {
+        if (shop?.id) {
+          applyGetTopProductsAction(shop?.id);
+          applyGetMonthSellingsAction(shop?.id);
+        }
+       })();
+  }, [shop]);
   return (
     <div className="w-full h-full p-5 bg-gray-50 rounded-xl">
       <div className="w-full flex flex-row items-center justify-between">
@@ -165,186 +187,96 @@ const dashboard = () => {
       </div>
       <div className="py-8">
         <h2 className="text-2xl font-bold mb-5">Top Produits</h2>
-        <div className="w-full flex flex-row flex-wrap items-center justify-between gap-4 ">
-          <div className="shop-item w-93 flex flex-col gap-5 bg-white rounded-2xl p-3 relative shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer">
-            <div className="w-full bg-gray-300 flex flex-col gap-5 rounded-tl-xl rounded-2xl">
-              <div
-                className="w-full h-[250px] bg-center bg-cover bg-no-repeat rounded-2xl"
-                style={{ backgroundImage: `url(${Product2.src})` }}
-              >
-                <button className="w-[40px] h-[40px] absolute text-xl flex items-center justify-center top-5 right-5 bg-[#F39C12] text-white rounded-full cursor-pointer ">
-                  <GrFavorite className="text-2xl" />
-                </button>
-              </div>
-            </div>
-
-            <div className="px-2 flex flex-col gap-2">
-              <p className="text-base">
-                <span className="text-[#F39C12] font-semibold text-2xl">
-                  Tee-Shirt
-                </span>
-              </p>
-
-              <p className="font-medium text-lg text-gray-500">
-                Lorem ipsum dolor sit amet consectetu amet consectetu..
-              </p>
-            </div>
-            <div className="px-2 flex items-center justify-between gap-4 text-sm text-gray-700">
-              <h3 className="text-2xl font-semibold">$10</h3>
-              <button className="bg-[#F39C12] text-white text-xl py-2 px-4 rounded-xl cursor-pointer">
-                <h3>Prix d&apos;achat : $8</h3>
-              </button>
-            </div>
-          </div>
-          <div className="shop-item w-93 flex flex-col gap-5 bg-white rounded-2xl p-3 relative shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer">
-            <div className="w-full bg-gray-300 flex flex-col gap-5 rounded-tl-xl rounded-2xl">
-              <div
-                className="w-full h-[250px] bg-center bg-cover bg-no-repeat rounded-2xl"
-                style={{ backgroundImage: `url(${Product3.src})` }}
-              >
-                <button className="w-[40px] h-[40px] cursor-pointer absolute text-xl flex items-center justify-center top-5 right-5 bg-[#F39C12] text-white rounded-full ">
-                  <GrFavorite className="text-2xl" />
-                </button>
-              </div>
-            </div>
-
-            <div className="px-2 flex flex-col gap-2">
-              <p className="text-base">
-                <span className="text-[#F39C12] font-semibold text-2xl">
-                  Pull-Over
-                </span>
-              </p>
-
-              <p className="font-medium text-lg text-gray-500">
-                Lorem ipsum dolor sit amet consectetu amet consectetu..
-              </p>
-            </div>
-            <div className="px-2 flex items-center justify-between gap-4 text-sm text-gray-700">
-              <h3 className="text-2xl font-semibold">$10</h3>
-              <button className="bg-[#F39C12] text-white text-xl py-2 px-4 rounded-xl cursor-pointer">
-                <h3>Prix d&apos;achat : $8</h3>
-              </button>
-            </div>
-          </div>
-          <div className="shop-item w-93 flex flex-col gap-5 bg-white rounded-2xl p-3 relative shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer">
-            <div className="w-full bg-gray-300 flex flex-col gap-5 rounded-tl-xl rounded-2xl">
-              <div
-                className="w-full h-[250px] bg-center bg-cover bg-no-repeat rounded-2xl"
-                style={{ backgroundImage: `url(${Product1.src})` }}
-              >
-                <button className="w-[40px] h-[40px] absolute cursor-pointer text-xl flex items-center justify-center top-5 right-5 bg-[#F39C12] text-white rounded-full ">
-                  <GrFavorite className="text-2xl" />
-                </button>
-              </div>
-            </div>
-
-            <div className="px-2 flex flex-col gap-2">
-              <p className="text-base">
-                <span className="text-[#F39C12] font-semibold text-2xl">
-                  Tee-Shirt
-                </span>
-              </p>
-
-              <p className="font-medium text-lg text-gray-500">
-                Lorem ipsum dolor sit amet consectetu amet consectetu..
-              </p>
-            </div>
-            <div className="px-2 flex items-center justify-between gap-4 text-sm text-gray-700">
-              <h3 className="text-2xl font-semibold">$10</h3>
-              <button className="bg-[#F39C12] cursor-pointer text-white text-xl py-2 px-4 rounded-xl">
-                <h3>Prix d&apos;achat : $8</h3>
-              </button>
-            </div>
-          </div>
-          <div className="shop-item w-93 flex flex-col gap-5 bg-white rounded-2xl p-3 relative shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer">
-            <div className="w-full bg-gray-300 flex flex-col gap-5 rounded-tl-xl rounded-2xl">
-              <div
-                className="w-full h-[250px] bg-center bg-cover bg-no-repeat rounded-2xl"
-                style={{ backgroundImage: `url(${Product1.src})` }}
-              >
-                <button className="w-[40px] h-[40px] absolute cursor-pointer text-xl flex items-center justify-center top-5 right-5 bg-[#F39C12] text-white rounded-full ">
-                  <GrFavorite className="text-2xl" />
-                </button>
-              </div>
-            </div>
-
-            <div className="px-2 flex flex-col gap-2">
-              <p className="text-base">
-                <span className="text-[#F39C12] font-semibold text-2xl">
-                  Tee-Shirt
-                </span>
-              </p>
-
-              <p className="font-medium text-lg text-gray-500">
-                Lorem ipsum dolor sit amet consectetu amet consectetu..
-              </p>
-            </div>
-            <div className="px-2 flex items-center justify-between gap-4 text-sm text-gray-700">
-              <h3 className="text-2xl font-semibold">$10</h3>
-              <button className="bg-[#F39C12] cursor-pointer text-white text-xl py-2 px-4 rounded-xl">
-                <h3>Prix d&apos;achat : $8</h3>
-              </button>
-            </div>
-          </div>
+        <div className="w-full flex flex-row flex-wrap items-center justify-start gap-4 ">
+         {topProducts.map((product, index) => {
+                         return (
+                           <div
+                             key={index}
+                             className="shop-item min-w-93 flex flex-col gap-5 bg-white rounded-2xl p-3 relative shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
+                           >
+                             <div className="w-full bg-gray-300 flex flex-col gap-5 rounded-tl-xl rounded-2xl">
+                               <div
+                                 className="w-full h-[300px] bg-center bg-cover bg-no-repeat rounded-2xl"
+                                 style={{
+                                   backgroundImage: `url("${baseUrlNotApi}${product?.image}")`,
+                                 }}
+                               >
+                                 <div>
+                                   <div className="w-full flex items-center justify-between pt-2 px-2">
+                                     
+          
+                                   </div>
+                                 </div>
+                               </div>
+                             </div>
+         
+                             <div className="px-2 flex flex-col gap-2">
+                               <p className="text-base">
+                                 <span className="text-[#F39C12] font-semibold text-2xl">
+                                   {product.name}
+                                 </span>
+                               </p>
+                               <p className="font-medium text-lg text-gray-500">
+                                 {product.description}
+                               </p>
+                             </div>
+                             <div className="px-2 flex items-center justify-between gap-4 text-sm text-gray-700">
+                               <h3 className="text-2xl font-semibold">
+                                 {product.salePrice} F
+                               </h3>
+                               <button className="bg-[#F39C12] text-white text-xl py-2 px-4 rounded-xl cursor-pointer">
+                                 <h3>
+                                   Prix d'achat :{" "}
+                                   <span className="font-bold">
+                                     {product.purchasePrice}
+                                   </span>
+                                 </h3>
+                               </button>
+                             </div>
+                           </div>
+                         );
+                       })}
         </div>
       </div>
       <div className="py-8">
         <h2 className="text-2xl font-bold mb-5">Listes des ventes</h2>
-        <div className="text-2xl font-bold bg-white p-5 rounded-2xl">
+        <div className="text-2xl bg-white p-5 rounded-2xl">
           <div className="overflow-x-auto">
-            <table className="min-w-full text-xl  border border-gray-200">
-              <thead className=" text-black">
+            
+            
+              <table className="w-full text-xl ">
+              <thead className="text-black bg-gray-100">
                 <tr className="border-b border-gray-200 text-left">
-                  <th className="px-4 py-2">Produit</th>
-                  <th className="px-4 py-2">Quantité</th>
-                  <th className="px-4 py-2">Taille</th>
-                  <th className="px-4 py-2 ">Prix d&apos;achat</th>
-                  <th className="px-4 py-2 ">Prix vente</th>
-                  <th className="px-4 py-2 ">Total</th>
-                  <th className="px-4 py-2 ">Bénéfice net</th>
+                  {/* <th className="p-5">Client</th>
+                  <th className="p-5">Téléphone</th> */}
+                  <th className="p-5">Produit</th>
+                  <th className="p-5">Quantité</th>
+                  <th className="p-5 ">Prix d&apos;achat(FCFA)</th>
+                  <th className="p-5 ">Prix vente(FCFA)</th>
+                  <th className="p-5 ">Total(FCFA)</th>
+                  <th className="p-5 ">Bénéfice net(FCFA)</th>
                 </tr>
               </thead>
-
               <tbody>
-                <tr className="border-b font-medium hover:bg-gray-50 transition-colors">
-                  <td className="px-4 py-3">Dolait</td>
-                  <td className="px-4 py-3 ">10</td>
-                  <td className="px-4 py-3 ">Moyen</td>
-                  <td className="px-4 py-3 ">1000</td>
-                  <td className="px-4 py-3 ">1200</td>
-                  <td className="px-4 py-3 font-medium text-gray-700">12000</td>
-                  <td className="px-4 py-3  text-green-600 font-semibold">
-                    2000
-                  </td>
-                </tr>
-                <tr className="border-b font-medium hover:bg-gray-50 transition-colors">
-                  <td className="px-4 py-3">Nutella</td>
-                  <td className="px-4 py-3 ">5</td>
-                  <td className="px-4 py-3 ">Petit</td>
-                  <td className="px-4 py-3 ">3000</td>
-                  <td className="px-4 py-3 ">3500</td>
-                  <td className="px-4 py-3  font-medium text-gray-700">
-                    17 500
-                  </td>
-                  <td className="px-4 py-3  text-green-600 font-semibold">
-                    2500
-                  </td>
-                </tr>
-                <tr className="border-b font-medium hover:bg-gray-50 transition-colors">
-                  <td className="px-4 py-3">Tee-Shirt</td>
-                  <td className="px-4 py-3 ">2</td>
-                  <td className="px-4 py-3 ">XL</td>
-                  <td className="px-4 py-3 ">7000</td>
-                  <td className="px-4 py-3 ">10000</td>
-                  <td className="px-4 py-3  font-medium text-gray-700">
-                    20000
-                  </td>
-                  <td className="px-4 py-3  text-green-600 font-semibold">
-                    6000
-                  </td>
-                </tr>
+                {monthSelling.map((selling) => (
+                  <tr
+                    key={selling.id}
+                    className="border-b hover:bg-gray-50 transition-colors"
+                  >
+                     {/* <td className="px-5 py-5">{selling.customer.name} {selling.customer.firstName}</td>
+                    <td className="px-5 py-5">{selling.customer.phoneNumber}</td> */}
+                    <td className="p-5">{selling.toOrders[0].product.name}</td>
+                    <td className="p-5">{selling.toOrders[0].quantity}</td>
+                    <td className="p-5">{selling.toOrders[0].product.purchasePrice}</td>
+                    <td className="p-5">{selling.toOrders[0].product.salePrice}</td>
+                    <td className="p-5">{selling.totalAmount}</td>
+                    <td className="p-5 text-green-600">{selling.profit}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
+
+            
           </div>
 
           <div className="pt-4 flex flex-col sm:flex-row justify-between text-lg font-semibold text-gray-700">
@@ -363,4 +295,4 @@ const dashboard = () => {
   );
 };
 
-export default dashboard;
+

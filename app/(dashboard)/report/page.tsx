@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React,{useEffect} from "react";
 import { reportStore } from "./reportStore/reportStore";
 import { IoMdArrowDropup } from "react-icons/io";
 import { FiArrowUpRight } from "react-icons/fi";
@@ -20,6 +20,8 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { Button } from "@/components/ui/button";
+import { useLoginStore } from "@/app/login/loginStore/loginStore";
+import { useSellingStore } from "../selling/sellingStore/sellingStore";
 export const description = "A bar chart with a label";
 const chartData = [
   { month: "January", desktop: 186 },
@@ -31,12 +33,27 @@ const chartData = [
 ];
 const chartConfig = {
   desktop: {
-    label: "Desktop",
+    label: "Bénefice",
     /* color: "var(--chart-1)", */
   },
 } satisfies ChartConfig;
-const report = () => {
-  const { title, details, showReportDetails } = reportStore();
+
+
+export default function Report(){
+  const {stats,getStatsAction,setStats} = useSellingStore()
+  const {shop} = useLoginStore()
+
+  async function applyGetStatsAction(shopId) {
+      await getStatsAction(shopId) 
+  }
+  useEffect(() => {
+      (function init() {
+        if (shop?.id) {
+          applyGetStatsAction(shop?.id);
+        }
+      })();
+  }, [shop]);
+  
   return (
     <div className="w-full h-full p-5 bg-gray-50 rounded-xl">
       <div className="w-full flex flex-row items-center justify-between">
@@ -61,7 +78,7 @@ const report = () => {
           </div>
 
           <div className="mt-4">
-            <h2 className="text-4xl font-semibold">34</h2>
+            <h2 className="text-4xl font-semibold">{stats?.monthlySalesCount ?? 0}</h2>
           </div>
 
           <div className="flex items-center gap-2 mt-4">
@@ -81,7 +98,7 @@ const report = () => {
           </div>
 
           <div className="mt-4">
-            <h2 className="text-4xl font-semibold">10</h2>
+            <h2 className="text-4xl font-semibold">{stats?.pendingOrders ?? 0}</h2>
           </div>
 
           <div className="flex items-center gap-2 mt-4">
@@ -101,7 +118,7 @@ const report = () => {
           </div>
 
           <div className="mt-4">
-            <h2 className="text-4xl font-semibold">10</h2>
+            <h2 className="text-4xl font-semibold">{stats?.monthlyProfit ?? 0}</h2>
           </div>
 
           <div className="flex items-center gap-2 mt-4">
@@ -123,7 +140,7 @@ const report = () => {
             <ChartContainer config={chartConfig} className="w-full h-full">
               <BarChart
                 accessibilityLayer
-                data={chartData}
+                data={stats?.yearlyProfit}
                 margin={{
                   top: 20,
                 }}
@@ -140,7 +157,7 @@ const report = () => {
                   cursor={false}
                   content={<ChartTooltipContent hideLabel />}
                 />
-                <Bar dataKey="desktop" fill="#F39C12" radius={8}>
+                <Bar dataKey="profit" fill="#F39C12" radius={8}>
                   <LabelList
                     position="top"
                     offset={12}
@@ -153,7 +170,7 @@ const report = () => {
           </CardContent>
           <CardFooter className="flex-col items-start gap-2 text-sm">
             <div className="flex gap-2 leading-none font-medium">
-              Tendance à la hausse de 5,2 % ce mois-ci{" "}
+              Bénéfice de l'année. Vos profit sur chaque vente du mois par année{" "}
               <TrendingUp className="h-4 w-4" />
             </div>
             {/* <div className="text-muted-foreground leading-none">
@@ -166,4 +183,4 @@ const report = () => {
   );
 };
 
-export default report;
+

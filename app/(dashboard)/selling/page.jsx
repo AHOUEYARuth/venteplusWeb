@@ -25,7 +25,7 @@ import toast,{Toaster} from "react-hot-toast";
 import { toBoolean } from "@/lib/utils";
 
 export default function Selling() {
-  const { orders, sellings, activeMenu, orderAction ,setActiveMenu,setSellings,getOrdersAndSellingsAction,setOrders } = useSellingStore();
+  const { orders, sellings, activeMenu, orderAction ,setActiveMenu,setSellings,getOrdersAndSellingsAction,setOrders,orderStatistics } = useSellingStore();
   const { customers,setCustomers,getCustomersAction,customerAction } = customerStore();
   const { products, setProducts, getProductsActions } = useProductStore();
   const { shop } = useLoginStore();
@@ -211,7 +211,7 @@ export default function Selling() {
               </div>
 
               <div className="mt-4">
-                <h2 className="text-4xl font-semibold">34</h2>
+                <h2 className="text-4xl font-semibold">{orderStatistics?.totalOrders ?? 0}</h2>
               </div>
 
               <div className="flex items-center gap-2 mt-4">
@@ -232,7 +232,7 @@ export default function Selling() {
               </div>
 
               <div className="mt-4">
-                <h2 className="text-4xl font-semibold">3</h2>
+                <h2 className="text-4xl font-semibold">{orderStatistics?.cancelledOrders ?? 0}</h2>
               </div>
 
               <div className="flex items-center gap-2 mt-4">
@@ -253,7 +253,7 @@ export default function Selling() {
               </div>
 
               <div className="mt-4">
-                <h2 className="text-4xl font-semibold">10</h2>
+                <h2 className="text-4xl font-semibold">{orderStatistics?.deliveredOrders ?? 0}</h2>
               </div>
 
               <div className="flex items-center gap-2 mt-4">
@@ -269,14 +269,14 @@ export default function Selling() {
           <>
             <div className="w-90 bg-gradient-to-br from-[#F39C12]/70 to-[#F39C12] text-white rounded-xl p-5 shadow-md hover:shadow-xl flex flex-col justify-between cursor-pointer">
               <div className="flex justify-between items-start">
-                <h2 className="text-2xl font-bold">Vente du jour</h2>
+                <h2 className="text-2xl font-bold">Vente du mois</h2>
                 <div className="bg-white hover:bg-white/30 transition-colors rounded-full p-2">
                   <FiArrowUpRight className="text-[#F39C12]" size={16} />
                 </div>
               </div>
 
               <div className="mt-4">
-                <h2 className="text-4xl font-semibold">10</h2>
+                <h2 className="text-4xl font-semibold">{orderStatistics?.monthlySales ?? 0}</h2>
               </div>
 
               <div className="flex items-center gap-2 mt-4">
@@ -297,7 +297,7 @@ export default function Selling() {
               </div>
 
               <div className="mt-4">
-                <h2 className="text-4xl font-semibold">15 000</h2>
+                <h2 className="text-4xl font-semibold">{orderStatistics?.netProfit ?? 0}</h2>
               </div>
 
               <div className="flex items-center gap-2 mt-4">
@@ -318,7 +318,7 @@ export default function Selling() {
               </div>
 
               <div className="mt-4">
-                <h2 className="text-4xl font-semibold">45 000</h2>
+                <h2 className="text-4xl font-semibold">{orderStatistics?.totalProfit ?? 0}</h2>
               </div>
 
               <div className="flex items-center gap-2 mt-4">
@@ -337,7 +337,10 @@ export default function Selling() {
         <div className="w-full flex flex-row items-start justify-between mt-5">
           <div className="bg-white flex flex-row items-center gap-x-5 rounded-lg p-2">
             <button
-              onClick={() => setActiveMenu("commandes")}
+              onClick={async () => {
+                setActiveMenu("commandes")
+                await applyGetOrdersAction(shop?.id);
+              }}
               className={`w-[200px] px-2 py-2  rounded-lg text-xl cursor-pointer ${
                 activeMenu === "commandes"
                   ? "text-white bg-[#F39C12]"

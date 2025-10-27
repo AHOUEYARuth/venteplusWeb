@@ -1,6 +1,16 @@
-import api from "@/lib/util";
+import { HttpClient } from "@/lib/httpClient";
 
-export const getProduct = async () => {
-  const response = await api.get("/products");
-  return response.data;
+
+export const getTopProductsRequest = async (shopId) => {
+  return HttpClient.makeRequest({
+    method: "GET",
+    url: `products/top-selling/${shopId}`,
+  });
 };
+export const getMonthSellingsRequest = async (shopId) => {
+  return HttpClient.makeRequest({
+    method: "GET",
+    url: `orders/month-sales/${shopId}`,
+  });
+};
+ 

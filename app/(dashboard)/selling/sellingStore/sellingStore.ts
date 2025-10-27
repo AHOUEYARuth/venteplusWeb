@@ -1,22 +1,27 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { create } from "zustand";
-import { createSellingRequest, deleteSellingRequest, getSellingsRequest, updateSellingRequest } from "../sellingRequest/sellingRequest";
+import { createSellingRequest, deleteSellingRequest, getStatsRequest,getSellingsRequest, updateSellingRequest } from "../sellingRequest/sellingRequest";
 
 type State = {
   orders: Array<any>;
   sellings: Array<any>;
   editedOrder: any;
+  orderStatistics:any;
+  stats:any;
 };
 
 type SellingAction = {
   activeMenu: string;
   /* fetchData: () => Promise<void>; */
+  setStats: (stats: any)=> void;
   setActiveMenu: (activeMenu: string) => void;
   orderAction: (orderFormData: any) => Promise<void>;
+  getStatsAction:(shopId:string)=> Promise<void>;
   getOrdersAndSellingsAction: (
     shopId: string,
     isSale: boolean
   ) => Promise<void>;
+  setOrderStatistics:(orderStatistics:any) => void;
   setSellings: (orders: any) => void;
   deleteSellingsAction: (orderId: string) => Promise<void>;
   updateSellingAction: (orderId: string, payload: any) => Promise<void>;
@@ -27,9 +32,13 @@ type SellingAction = {
 export const useSellingStore = create<State & SellingAction>((set) => ({
   orders: [],
   sellings: [],
+  stats:null,
   activeMenu: "commandes",
   editedOrder: null,
+  orderStatistics:null,
+  setOrderStatistics:(orderStatistics) => set({orderStatistics}),
   setActiveMenu: (activeMenu) => set({ activeMenu }),
+  setStats: (stats)=> set({stats}),
   /* fetchData: async () => {
     try {
       const response = await axios.get("/fakeData.json");
@@ -48,6 +57,12 @@ export const useSellingStore = create<State & SellingAction>((set) => ({
   },
   getOrdersAndSellingsAction: async (shopId, isSale) => {
     const response = await getSellingsRequest(shopId, isSale);
+    set({ orderStatistics: response.statistics });
+    return response;
+  },
+  getStatsAction: async (shopId) => {
+    const response = await getStatsRequest(shopId);
+    set({ stats: response.data });
     return response;
   },
   setSellings: (sellings) => {

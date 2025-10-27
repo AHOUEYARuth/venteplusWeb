@@ -24,6 +24,12 @@ export const getSellingsRequest = async (shopId, isSale) => {
     searchParams: params,
   });
 };
+export const getStatsRequest = async (shopId) => {
+  return HttpClient.makeRequest({
+    method: "GET",
+    url: `orders/statistics/${shopId}`,
+  });
+};
 
 export const updateSellingRequest = async (orderId, payload) => {
   return HttpClient.makeRequest({
