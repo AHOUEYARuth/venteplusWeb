@@ -218,7 +218,11 @@ export default function Product() {
         ).then((response) => {
           setProducts(response.data);
         });
-      }
+      }else {
+          if(shop?.id){
+            await applyGetProductAction(shop?.id)
+          }
+        }
     })();
   }, [categorieFilter, nameFilter, rangeDate]);
 

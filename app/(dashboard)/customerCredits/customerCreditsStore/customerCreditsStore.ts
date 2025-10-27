@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { create } from "zustand";
-import { getCustomerCreditsRequest,createRecoveryRequest ,getRecoveryCreditRequest} from "../customerCreditsRequest/customerCreditsRequest";
+import { getCustomerCreditsRequest,createRecoveryRequest,filterCreditsRequest ,getRecoveryCreditRequest} from "../customerCreditsRequest/customerCreditsRequest";
 
 type State = {
   customersCredits: Array<any>;
@@ -12,6 +12,12 @@ type SellingAction = {
   getCustomersCreditsAction: (shopId: string) => Promise<void>;
   getRecoveryCreditAction: (customerCreditId: string) => Promise<any>;
   setRecoveries: (recoveries: Array<any>) => void;
+  filterCreditsAction: (
+    shopId: string,
+    name: string,
+    dateFrom: string,
+    dateTo: string
+  ) => Promise<void>;
   createRecoveryAction: (payload: any) => Promise<any>;
 };
 
@@ -35,4 +41,17 @@ export const useCustomerCreditsStore = create<State & SellingAction>((set) => ({
     const response = await createRecoveryRequest(payload);
     return response;
   },
+  filterCreditsAction: async (shopId, name, dateFrom, dateTo) => {
+        if (!shopId) {
+          return;
+        }
+    
+        const response = await filterCreditsRequest(
+          shopId,
+          name,
+          dateFrom,
+          dateTo
+        );
+        return response;
+    },
 }));

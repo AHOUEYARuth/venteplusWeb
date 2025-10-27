@@ -32,7 +32,7 @@ export function DatePicker({ onDateChange }: DateRangePickerProps) {
           <Button
             variant="outline"
             id="date"
-            className="w-64 justify-between p-5 font-normal"
+            className="w-64 justify-between p-7 font-normal"
           >
             {date?.from && date?.to ? (
               <>

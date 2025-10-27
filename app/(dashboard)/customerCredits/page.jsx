@@ -31,7 +31,8 @@ import { useLoginStore } from "@/app/login/loginStore/loginStore";
 import { Button } from "@/components/ui/button";
 import { ClipLoader } from "react-spinners";
 import toast, { Toaster } from "react-hot-toast";
-
+import { DatePicker } from "@/components/ui/date-picker";
+import moment from "moment";
 export default function CustomerCredits() {
   const {
     customersCredits,
@@ -41,6 +42,7 @@ export default function CustomerCredits() {
     getRecoveryCreditAction,
     createRecoveryAction,
     getCustomersCreditsAction,
+    filterCreditsAction
   } = useCustomerCreditsStore();
   const { shop } = useLoginStore();
   const container = useRef(null);
@@ -48,6 +50,8 @@ export default function CustomerCredits() {
   const [customerCreditsId, setcustomerCreditsId] = useState("");
   const [loadingRecovery, setloadingRecovery] = useState(false);
   const [isModalOpen, setisModalOpen] = useState(false);
+  const [nameFilter, setnameFilter] = useState("");
+    const [rangeDate, setRangeDate] = useState(null);
   const {
     register,
     handleSubmit,
@@ -124,6 +128,32 @@ export default function CustomerCredits() {
       }
     })();
   }, [shop]);
+
+     useEffect(() => {
+        (async function handleFilter() {
+          if (nameFilter != "" || rangeDate != null) {
+         
+            const dateFrom = rangeDate?.from;
+            const dateTo = rangeDate?.to;
+            await filterCreditsAction(
+              shop?.id,
+              nameFilter,
+              dateFrom != undefined && dateFrom != null
+                ? moment(dateFrom).format("DD-MM-YYYY")
+                : dateFrom,
+              dateTo != undefined && dateTo != null
+                ? moment(dateTo).format("DD-MM-YYYY")
+                : dateTo
+            ).then((response) => {
+              setCustomersCredits(response.data);
+            });
+          } else {
+            if(shop?.id){
+              await applyGetCustomersCreditAction(shop?.id)
+            }
+          }
+        })();
+      }, [nameFilter, rangeDate]);
   return (
     <div ref={container} className="w-full h-full p-5 bg-gray-50 rounded-xl">
       <Dialog open={isModalOpen} onOpenChange={setisModalOpen}>
@@ -198,6 +228,7 @@ export default function CustomerCredits() {
             <div className="w-[40%] relative flex items-center justify-between bg-white gap-x-2 rounded-lg">
               <input
                 type="text"
+                onChange={(event) => setnameFilter(event.target.value)}
                 placeholder="Recherche par nom"
                 className="bg-white text-sm py-3 pl-2 outline-hidden rounded-lg focus:outline-none  transition-all"
               />
@@ -205,13 +236,8 @@ export default function CustomerCredits() {
                 <MdSearch size={25} />
               </button>
             </div>
-            <div className="w-[60%] flex flex-row gap-x-4 items-center">
-              <input
-                type="date"
-                name=""
-                id=""
-                className="border border-[#F39C12] py-3 px-4 rounded-lg"
-              />
+            <div className="w-[70%] flex flex-row gap-x-4 items-center">
+              <DatePicker className="p-5" onDateChange={(range) => setRangeDate(range)} />
               <button
                 onClick={() => {
                   timeLineModal.current.play();

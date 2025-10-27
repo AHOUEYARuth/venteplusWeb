@@ -22,3 +22,20 @@ export const createRecoveryRequest = async (payload) => {
     payload,
   });
 };
+export const filterCreditsRequest = async (
+  shopId,
+  name,
+  dateFrom,
+  dateTo
+) => {
+  const params = new URLSearchParams("");
+  if(name != "") params.append("name", name);
+  if(dateFrom) params.append("dateFrom", dateFrom);
+  if(dateTo) params.append("dateTo", dateTo);
+  
+  return HttpClient.makeRequest({
+    method: "GET",
+    url: `customer-credits/shop/${shopId}`,
+    searchParams:params
+  });
+};
