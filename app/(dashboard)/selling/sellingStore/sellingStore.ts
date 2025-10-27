@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { create } from "zustand";
-import { createSellingRequest, deleteSellingRequest, getStatsRequest,getSellingsRequest, updateSellingRequest } from "../sellingRequest/sellingRequest";
+import { createSellingRequest, getStatsRequest,getSellingsRequest, updateSellingRequest, deleteOrderRequest, cancelOrderRequest } from "../sellingRequest/sellingRequest";
 
 type State = {
   orders: Array<any>;
@@ -13,17 +13,18 @@ type State = {
 type SellingAction = {
   activeMenu: string;
   /* fetchData: () => Promise<void>; */
-  setStats: (stats: any)=> void;
+  setStats: (stats: any) => void;
   setActiveMenu: (activeMenu: string) => void;
   orderAction: (orderFormData: any) => Promise<void>;
-  getStatsAction:(shopId:string)=> Promise<void>;
+  getStatsAction: (shopId: string) => Promise<void>;
   getOrdersAndSellingsAction: (
     shopId: string,
     isSale: boolean
   ) => Promise<void>;
-  setOrderStatistics:(orderStatistics:any) => void;
+  setOrderStatistics: (orderStatistics: any) => void;
   setSellings: (orders: any) => void;
-  deleteSellingsAction: (orderId: string) => Promise<void>;
+  cancelOrderAction: (orderId: string) => Promise<void>;
+  deleteOrderAction: (orderId: string) => Promise<void>;
   updateSellingAction: (orderId: string, payload: any) => Promise<void>;
   setOrders: (orders: any) => void;
   setEditingOrder: (editedOrder: any) => void;
@@ -39,18 +40,6 @@ export const useSellingStore = create<State & SellingAction>((set) => ({
   setOrderStatistics:(orderStatistics) => set({orderStatistics}),
   setActiveMenu: (activeMenu) => set({ activeMenu }),
   setStats: (stats)=> set({stats}),
-  /* fetchData: async () => {
-    try {
-      const response = await axios.get("/fakeData.json");
-
-      set({
-        commandes: response.data.commandes,
-        ventes: response.data.ventes,
-      });
-    } catch (error) {
-      console.error("Erreur de chargement des données", error);
-    }
-  }, */
   orderAction: async (orderFormData) => {
     const response = await createSellingRequest(orderFormData);
     return response;
@@ -71,8 +60,12 @@ export const useSellingStore = create<State & SellingAction>((set) => ({
   setOrders: (orders) => {
     set({ orders: orders });
   },
-  deleteSellingsAction: async (orderId) => {
-    const response = await deleteSellingRequest(orderId);
+  cancelOrderAction: async(orderId) =>{
+    const response = await cancelOrderRequest(orderId);
+    return response;
+  },
+  deleteOrderAction: async (orderId) => {
+    const response = await deleteOrderRequest(orderId);
     return response;
   },
   updateSellingAction: async (orderId, payload) => {

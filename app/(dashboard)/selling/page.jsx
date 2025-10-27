@@ -1,7 +1,7 @@
 "use client";
-import React, { useEffect, useLayoutEffect, useState,useRef } from "react";
+import React, { useEffect, useLayoutEffect, useState, useRef } from "react";
 import { MdClose, MdOutlineMoreVert, MdSearch } from "react-icons/md";
-import { sellingStore, useSellingStore } from "./sellingStore/sellingStore";
+import { useSellingStore } from "./sellingStore/sellingStore";
 import { FaCheckCircle } from "react-icons/fa";
 import { RiProgress2Fill } from "react-icons/ri";
 import {
@@ -12,6 +12,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog.tsx";
 import { gsap } from "gsap";
 import { IoMdArrowDropup, IoMdClose } from "react-icons/io";
 import { FiArrowUp, FiArrowUpRight } from "react-icons/fi";
@@ -21,12 +31,26 @@ import { useLoginStore } from "@/app/login/loginStore/loginStore";
 import { customerStore } from "../customer/customerStore/customerStore";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { ClipLoader } from "react-spinners";
-import toast,{Toaster} from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import { toBoolean } from "@/lib/utils";
 
 export default function Selling() {
-  const { orders, sellings, activeMenu, orderAction ,setActiveMenu,setSellings,getOrdersAndSellingsAction,setOrders,orderStatistics } = useSellingStore();
-  const { customers,setCustomers,getCustomersAction,customerAction } = customerStore();
+  const {
+    orders,
+    sellings,
+    activeMenu,
+    orderAction,
+    setActiveMenu,
+    setSellings,
+    getOrdersAndSellingsAction,
+    setOrders,
+    orderStatistics,
+    cancelOrderAction,
+    deleteOrderAction
+
+  } = useSellingStore();
+  const { customers, setCustomers, getCustomersAction, customerAction } =
+    customerStore();
   const { products, setProducts, getProductsActions } = useProductStore();
   const { shop } = useLoginStore();
   const [loadingClient, setloadingClient] = useState(false);
@@ -34,80 +58,80 @@ export default function Selling() {
   const container = useRef(null);
   const timeLineModal = useRef();
   const timeLineModalClient = useRef();
-
-  const { register, setValue, handleSubmit,reset, watch, formState, trigger } = useForm({
-    mode: "onChange",
-  });
+  const [isModalOpen, setisModalOpen] = useState(false);
+  const [isCancelModalOpen, setisCancelModalOpen] = useState(false)
+  const [orderId, setorderId] = useState("")
+  const { register, setValue, handleSubmit, reset, watch, formState, trigger } =
+    useForm({
+      mode: "onChange",
+    });
   const {
     register: registerClient,
     handleSubmit: handleSubmitClient,
     reset: resetClient,
     formState: { errors: clientErrors },
-  } = useForm()
+  } = useForm();
 
-  
-
-
-    async function submitFormClient(data) {
-      setloadingClient(true);
-      const payload = {
-        ...data,
-        shopId: shop?.id,
-      };
-      await customerAction(payload)
-        .then((response) => {
-          toast.success("Client ajouté avec succès");
-          applyGetCustomersAction(shop?.id);
-          resetClient();
-          timeLineModalClient.current.reversed(true);
-          setValue("customerId", response.data.id);
-          timeLineModal.current.play();
-        })
-        .catch((error) => {
-          console.log(error);
-          if (error.message) {
-            toast.error(error.message);
-          } else {
-            toast.error("Client non ajouté ");
-          }
-        })
-        .finally(() => {
-          setloadingClient(false);
-        });
-    }
+  async function submitFormClient(data) {
+    setloadingClient(true);
+    const payload = {
+      ...data,
+      shopId: shop?.id,
+    };
+    await customerAction(payload)
+      .then((response) => {
+        toast.success("Client ajouté avec succès");
+        applyGetCustomersAction(shop?.id);
+        resetClient();
+        timeLineModalClient.current.reversed(true);
+        setValue("customerId", response.data.id);
+        timeLineModal.current.play();
+      })
+      .catch((error) => {
+        console.log(error);
+        if (error.message) {
+          toast.error(error.message);
+        } else {
+          toast.error("Client non ajouté ");
+        }
+      })
+      .finally(() => {
+        setloadingClient(false);
+      });
+  }
   const submitForm = async (data) => {
-   setLoadingOrder(true);
-      const payload = {
-        ...data,
-        shopId: shop?.id,
-        quantity: parseInt(data.quantity, 10),
-        isSale: toBoolean(data.isSale),
-        isCredit: toBoolean(data.isCredit),
-      };
-      await orderAction(payload)
-        .then((response) => {
-          toast.success("Commande ajoutée avec succès");
-          if(data.isSale === 'true'){
-            setActiveMenu("ventes");
-            applyGetSellingsAction(shop?.id);
-          }else{
-            applyGetOrdersAction(shop?.id);
-          }
-      
-          reset();
-          timeLineModal.current.reversed(true);
-        })
-        .catch((error) => {
-          console.log(error);
-          if (error.message) {
-            toast.error(error.message);
-          } else {
-            toast.error("Client non ajouté ");
-          }
-        })
-        .finally(() => {
-          setLoadingOrder(false);
-        });
+    setLoadingOrder(true);
+    const payload = {
+      ...data,
+      shopId: shop?.id,
+      quantity: parseInt(data.quantity, 10),
+      isSale: toBoolean(data.isSale),
+      isCredit: toBoolean(data.isCredit),
+    };
+    await orderAction(payload)
+      .then((response) => {
+        toast.success("Commande ajoutée avec succès");
+        if (data.isSale === "true") {
+          setActiveMenu("ventes");
+          applyGetSellingsAction(shop?.id);
+        } else {
+          applyGetOrdersAction(shop?.id);
+        }
+
+        reset();
+        timeLineModal.current.reversed(true);
+      })
+      .catch((error) => {
+        console.log(error);
+        if (error.message) {
+          toast.error(error.message);
+        } else {
+          toast.error("Client non ajouté ");
+        }
+      })
+      .finally(() => {
+        setLoadingOrder(false);
+      });
   };
   useLayoutEffect(() => {
     const context = gsap.context(() => {
@@ -127,21 +151,21 @@ export default function Selling() {
         )
         .paused(true);
 
-        timeLineModalClient.current = gsap
-                .timeline()
-                .to(".modal_container_client", {
-                  opacity: 1,
-                  duration: 0.5,
-                })
-                .to(
-                  ".form_container_client",
-                  {
-                    xPercent: -200,
-                    duration: 0.5,
-                  },
-                  "-=0.5"
-                )
-                .paused(true);
+      timeLineModalClient.current = gsap
+        .timeline()
+        .to(".modal_container_client", {
+          opacity: 1,
+          duration: 0.5,
+        })
+        .to(
+          ".form_container_client",
+          {
+            xPercent: -200,
+            duration: 0.5,
+          },
+          "-=0.5"
+        )
+        .paused(true);
     }, [container]);
 
     return () => {
@@ -149,20 +173,19 @@ export default function Selling() {
     };
   }, [container]);
 
-
-   async function applyGetOrdersAction(shopId) {
-    await getOrdersAndSellingsAction(shopId,false).then((response) => {
+  async function applyGetOrdersAction(shopId) {
+    await getOrdersAndSellingsAction(shopId, false).then((response) => {
       setOrders(response.data);
     });
   }
 
-   async function applyGetSellingsAction(shopId) {
-    await getOrdersAndSellingsAction(shopId,true).then((response) => {
+  async function applyGetSellingsAction(shopId) {
+    await getOrdersAndSellingsAction(shopId, true).then((response) => {
       setSellings(response.data);
     });
   }
 
-   async function applyGetCustomersAction(shopId) {
+  async function applyGetCustomersAction(shopId) {
     await getCustomersAction(shopId).then((response) => {
       setCustomers(response.data);
     });
@@ -170,25 +193,121 @@ export default function Selling() {
   async function applyGetProductAction(shopId) {
     await getProductsActions(shopId).then((response) => {
       setProducts(response.data);
-  
     });
   }
-  useEffect(() => {
-     (function init() {
-       if (shop?.id) {
-         applyGetOrdersAction(shop?.id);
-         applyGetProductAction(shop?.id);
-         applyGetCustomersAction(shop?.id);
-       }
-     })();
-   }, [shop]);
+  async function applyCancelOderAction(shopId) {
+     setLoadingOrder(true);
+    await cancelOrderAction(shopId)
+      .then((response) => {
+        toast.success(response?.message);
+        setisCancelModalOpen(false)
+      })
+      .catch((error) => {
+        toast.error(
+          error.message
+            ? error.message
+            : "Un problème est survenu lors de l'annulation de la commande"
+        );
+      })
+      .finally(() => {
+        setLoadingOrder(false);
+      });
+    await applyGetOrdersAction(shop?.id);
 
- /*  useEffect(() => {
+  }
+  async function applDeleteOderAction(shopId) {
+    setLoadingOrder(true)
+    await deleteOrderAction(shopId)
+      .then((response) => {
+        toast.success(response?.message);
+        setisModalOpen(false);
+      })
+      .catch((error) => {
+        toast.error(
+          error.message
+            ? error.message
+            : "Un problème est survenu lors de la suppression de la commande"
+        );
+      }).finally(() => {
+         setLoadingOrder(false);
+      }
+    );
+    await applyGetOrdersAction(shop?.id);
+  }
+  useEffect(() => {
+    (function init() {
+      if (shop?.id) {
+        applyGetOrdersAction(shop?.id);
+        applyGetProductAction(shop?.id);
+        applyGetCustomersAction(shop?.id);
+      }
+    })();
+  }, [shop]);
+
+  /*  useEffect(() => {
     fetchData();
   }, []); */
 
   return (
     <div ref={container} className="w-full h-full p-5 bg-gray-50 rounded-xl">
+      <Dialog open={isModalOpen} onOpenChange={setisModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-lg">
+              Supprimer une commande
+            </DialogTitle>
+            <DialogDescription className="text-base">
+              Voulez-vous vraiment supprimer cette commande?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-start items-center justify-center">
+            <button
+              onClick={() => applDeleteOderAction(orderId)}
+              className="w-50 auth-btn flex flex-row items-center justify-center gap-x-2 w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] cursor-pointer focus:ring-offset-2 transition-all shadow-lg"
+            >
+              OUI {loadingOrder ? <ClipLoader color="white" size={20} /> : null}
+            </button>
+            <button
+              type="button"
+              className="w-50 auth-btn border border-1 border-gray-600 text-black flex flex-row items-center justify-center gap-x-2 w-full mt-5 text-black py-3 px-4 rounded-lg font-semibold hover:bg-[#000] hover:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#000] focus:ring-offset-2 transition-all shadow-lg"
+              onClick={() => setisModalOpen(false)}
+              variant="ghost"
+            >
+              NON
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isCancelModalOpen} onOpenChange={setisCancelModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-lg">
+              Annuler une commande
+            </DialogTitle>
+            <DialogDescription className="text-base">
+              Voulez-vous vraiment annuler cette commande?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-start items-center justify-center">
+            <button
+              onClick={() => applyCancelOderAction(orderId)}
+              className="w-50 auth-btn flex flex-row items-center justify-center gap-x-2 w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] cursor-pointer focus:ring-offset-2 transition-all shadow-lg"
+            >
+              OUI {loadingOrder ? <ClipLoader color="white" size={20} /> : null}
+            </button>
+            <button
+              type="button"
+              className="w-50 auth-btn border border-1 border-gray-600 text-black flex flex-row items-center justify-center gap-x-2 w-full mt-5 text-black py-3 px-4 rounded-lg font-semibold hover:bg-[#000] hover:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#000] focus:ring-offset-2 transition-all shadow-lg"
+              onClick={() => setisCancelModalOpen(false)}
+              variant="ghost"
+            >
+              NON
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <div className="w-full flex flex-row items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold ">Commandes et Ventes</h2>
@@ -211,7 +330,9 @@ export default function Selling() {
               </div>
 
               <div className="mt-4">
-                <h2 className="text-4xl font-semibold">{orderStatistics?.totalOrders ?? 0}</h2>
+                <h2 className="text-4xl font-semibold">
+                  {orderStatistics?.totalOrders ?? 0}
+                </h2>
               </div>
 
               <div className="flex items-center gap-2 mt-4">
@@ -232,7 +353,9 @@ export default function Selling() {
               </div>
 
               <div className="mt-4">
-                <h2 className="text-4xl font-semibold">{orderStatistics?.cancelledOrders ?? 0}</h2>
+                <h2 className="text-4xl font-semibold">
+                  {orderStatistics?.cancelledOrders ?? 0}
+                </h2>
               </div>
 
               <div className="flex items-center gap-2 mt-4">
@@ -253,7 +376,9 @@ export default function Selling() {
               </div>
 
               <div className="mt-4">
-                <h2 className="text-4xl font-semibold">{orderStatistics?.deliveredOrders ?? 0}</h2>
+                <h2 className="text-4xl font-semibold">
+                  {orderStatistics?.deliveredOrders ?? 0}
+                </h2>
               </div>
 
               <div className="flex items-center gap-2 mt-4">
@@ -276,7 +401,9 @@ export default function Selling() {
               </div>
 
               <div className="mt-4">
-                <h2 className="text-4xl font-semibold">{orderStatistics?.monthlySales ?? 0}</h2>
+                <h2 className="text-4xl font-semibold">
+                  {orderStatistics?.monthlySales ?? 0}
+                </h2>
               </div>
 
               <div className="flex items-center gap-2 mt-4">
@@ -297,7 +424,9 @@ export default function Selling() {
               </div>
 
               <div className="mt-4">
-                <h2 className="text-4xl font-semibold">{orderStatistics?.netProfit ?? 0}</h2>
+                <h2 className="text-4xl font-semibold">
+                  {orderStatistics?.netProfit ?? 0}
+                </h2>
               </div>
 
               <div className="flex items-center gap-2 mt-4">
@@ -318,7 +447,9 @@ export default function Selling() {
               </div>
 
               <div className="mt-4">
-                <h2 className="text-4xl font-semibold">{orderStatistics?.totalProfit ?? 0}</h2>
+                <h2 className="text-4xl font-semibold">
+                  {orderStatistics?.totalProfit ?? 0}
+                </h2>
               </div>
 
               <div className="flex items-center gap-2 mt-4">
@@ -338,7 +469,7 @@ export default function Selling() {
           <div className="bg-white flex flex-row items-center gap-x-5 rounded-lg p-2">
             <button
               onClick={async () => {
-                setActiveMenu("commandes")
+                setActiveMenu("commandes");
                 await applyGetOrdersAction(shop?.id);
               }}
               className={`w-[200px] px-2 py-2  rounded-lg text-xl cursor-pointer ${
@@ -392,7 +523,7 @@ export default function Selling() {
             </div>
           </div>
         </div>
-        <div className="w-[95%] overflow-x-auto pb-10 mt-5 bg-white">
+        <div className="w-[100%] overflow-x-auto pb-10 mt-5 bg-white">
           {activeMenu === "commandes" ? (
             <table className="w-full text-xl ">
               <thead className=" text-black bg-gray-100  ">
@@ -415,14 +546,22 @@ export default function Selling() {
                     key={order.id}
                     className="border-b hover:bg-gray-50 transition-colors"
                   >
-                    <td className="px-5 py-5 font-bold">{order.customer.name} {order.customer.firstName}</td>
+                    <td className="px-5 py-5 font-bold">
+                      {order.customer.name} {order.customer.firstName}
+                    </td>
                     <td className="px-5 py-5">{order.customer.phoneNumber}</td>
-                    <td className="px-5 py-5">{order.toOrders[0].product.name}</td>
+                    <td className="px-5 py-5">
+                      {order.toOrders[0].product.name}
+                    </td>
                     <td className="px-5 py-5">{order.toOrders[0].quantity}</td>
                     <td className="px-5 py-5 font-medium text-gray-700">
                       {order.toOrders[0].product.salePrice}
                     </td>
-                    <td className={`px-5 py-5 font-medium ${order.customerCredit ? "text-red-600" : "text-green-600"}`}>
+                    <td
+                      className={`px-5 py-5 font-medium ${
+                        order.customerCredit ? "text-red-600" : "text-green-600"
+                      }`}
+                    >
                       {order.totalAmount}
                     </td>
                     <td className="px-5 py-5 text-gray-700">
@@ -450,13 +589,22 @@ export default function Selling() {
                         ) : order.status === "CANCELLED" ? (
                           <MdClose size={15} className="text-red-600" />
                         ) : null}
-                        {order.status == "PENDING" ? "En attente" : order.status == "DELIVERED" ? "Livrée" : order.status == "CANCELLED" ? "Annulée" : null}
+                        {order.status == "PENDING"
+                          ? "En attente"
+                          : order.status == "DELIVERED"
+                          ? "Livrée"
+                          : order.status == "CANCELLED"
+                          ? "Annulée"
+                          : null}
                       </span>
                     </td>
                     <td className="pr-5">
                       {" "}
                       <DropdownMenu>
-                        <DropdownMenuTrigger className="border border-transparent focus:border focus:border-transparent active:border active:border-transparent">
+                        <DropdownMenuTrigger
+                          onClick={() => setorderId(order.id)}
+                          className="border border-transparent focus:border focus:border-transparent active:border active:border-transparent"
+                        >
                           <MdOutlineMoreVert />
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="w-40 border border-transparent">
@@ -464,15 +612,48 @@ export default function Selling() {
                             Actions
                           </DropdownMenuLabel>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-lg">
-                            Annuler
-                          </DropdownMenuItem>
-                          <DropdownMenuItem className="text-lg">
-                            Confirmer
-                          </DropdownMenuItem>
-                          <DropdownMenuItem className="text-lg">
-                            Livrer
-                          </DropdownMenuItem>
+                          {order.status == "PENDING" ? (
+                            <div>
+                              <DropdownMenuItem className="text-lg">
+                                Confirmer
+                              </DropdownMenuItem>
+                              <DropdownMenuItem className="text-lg">
+                                Payer
+                              </DropdownMenuItem>
+                              <DropdownMenuItem className="text-lg">
+                                Livrer
+                              </DropdownMenuItem>
+                            </div>
+                          ) : null}
+                          {order.status !== "CANCELLED" &&
+                          order.status == "PENDING" ? (
+                            <DropdownMenuItem
+                              className="text-lg"
+                              onClick={() => {
+                                setorderId(order.id);
+                                setisCancelModalOpen(true);
+                              }}
+                            >
+                              Annuler
+                            </DropdownMenuItem>
+                          ) : null}
+                          {order.status == "CANCELLED" ? (
+                            <DropdownMenuItem
+                              className="text-lg"
+                              onClick={() => {
+                                setorderId(order.id);
+                                setisModalOpen(true);
+                              }}
+                            >
+                              Supprimer
+                            </DropdownMenuItem>
+                          ) : null}
+                          {order.status == "DELIVERED" ||
+                          order.status == "CONFIRMED" ? (
+                            <DropdownMenuItem className="text-lg">
+                              Payer
+                            </DropdownMenuItem>
+                          ) : null}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </td>
@@ -484,14 +665,16 @@ export default function Selling() {
             <table className="w-full text-xl ">
               <thead className=" text-black bg-gray-100">
                 <tr className="border-b border-gray-200 text-left">
-                  <th className="p-5">Client</th>
-                  <th className="p-5">Téléphone</th>
-                  <th className="p-5">Produit</th>
-                  <th className="p-5">Quantité</th>
-                  <th className="p-5 ">Prix d&apos;achat(FCFA)</th>
-                  <th className="p-5 ">Prix vente(FCFA)</th>
-                  <th className="p-5 ">Total(FCFA)</th>
-                  <th className="p-5 ">Bénéfice net(FCFA)</th>
+                  <th className="p-5 w-200">Client</th>
+                  {/* <th className="p-5 w-200">Téléphone</th> */}
+                  <th className="p-5 w-200">Produit</th>
+                  <th className="p-5 w-200">Quantité</th>
+                  <th className="p-5 w-200">Prix Achat(FCFA)</th>
+                  <th className="p-5 w-200 ">Prix vente(FCFA)</th>
+                  <th className="p-5 w-200 ">Total(FCFA)</th>
+                  <th className="p-5 w-200 ">Bénéfice(FCFA)</th>
+                  <th className="p-5 ">Status</th>
+                  <th className=""></th>
                 </tr>
               </thead>
               <tbody>
@@ -500,14 +683,57 @@ export default function Selling() {
                     key={selling.id}
                     className="border-b hover:bg-gray-50 transition-colors"
                   >
-                     <td className="px-5 py-5 font-bold">{selling.customer.name} {selling.customer.firstName}</td>
-                    <td className="px-5 py-5">{selling.customer.phoneNumber}</td>
+                    <td className="px-5 py-5 font-bold">
+                      {selling.customer.name} {selling.customer.firstName}
+                    </td>
+                    {/*  <td className="px-5 py-5">
+                      {selling.customer.phoneNumber}
+                    </td> */}
                     <td className="p-5">{selling.toOrders[0].product.name}</td>
                     <td className="p-5">{selling.toOrders[0].quantity}</td>
-                    <td className="p-5">{selling.toOrders[0].product.purchasePrice}</td>
-                    <td className="p-5">{selling.toOrders[0].product.salePrice}</td>
+                    <td className="p-5">
+                      {selling.toOrders[0].product.purchasePrice}
+                    </td>
+                    <td className="p-5">
+                      {selling.toOrders[0].product.salePrice}
+                    </td>
                     <td className="p-5">{selling.totalAmount}</td>
-                    <td className="p-5 text-green-600">{(selling.toOrders[0].product.salePrice - selling.toOrders[0].product.purchasePrice) * selling.toOrders[0].quantity}</td>
+                    <td className="p-5 text-green-600">
+                      {(selling.toOrders[0].product.salePrice -
+                        selling.toOrders[0].product.purchasePrice) *
+                        selling.toOrders[0].quantity}
+                    </td>
+                    <td className="px-5 py-5">
+                      <span
+                        className={`w-[110px] flex gap-x-2 items-center justify-center text-base  rounded-sm ${
+                          selling.isSale ? "bg-green-50" : "text-gray-600"
+                        }`}
+                      >
+                        {selling.isSale ? (
+                          <FaCheckCircle size={14} className="text-green-600" />
+                        ) : null}
+                        {selling.isSale ? "Confirmé" : null}
+                      </span>
+                    </td>
+                    <td className="pr-2">
+                      {" "}
+                      <DropdownMenu>
+                        <DropdownMenuTrigger className="border border-transparent focus:border focus:border-transparent active:border active:border-transparent">
+                          <MdOutlineMoreVert />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-40 border border-transparent">
+                          <DropdownMenuLabel className="text-xl">
+                            Actions
+                          </DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          {selling.isSale ? (
+                            <DropdownMenuItem className="text-lg">
+                              Payer
+                            </DropdownMenuItem>
+                          ) : null}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -516,8 +742,7 @@ export default function Selling() {
         </div>
       </div>
 
-
-       <div
+      <div
         style={{ pointerEvents: "none", opacity: 0 }}
         className={`modal_container_client w-full h-full fixed top-0 right-0 bg-black/30`}
       >
@@ -592,7 +817,10 @@ export default function Selling() {
                   )}
                 </div>
 
-                <button type="submit" className="auth-btn flex flex-row items-center justify-center gap-x-2 w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] focus:ring-offset-2 transition-all shadow-lg">
+                <button
+                  type="submit"
+                  className="auth-btn flex flex-row items-center justify-center gap-x-2 w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] focus:ring-offset-2 transition-all shadow-lg"
+                >
                   Ajouter{" "}
                   {loadingClient ? (
                     <ClipLoader color="white" size={20} />
@@ -603,7 +831,6 @@ export default function Selling() {
           </div>
         </div>
       </div>
-
 
       <div
         style={{ pointerEvents: "none", opacity: 0 }}
@@ -639,14 +866,11 @@ export default function Selling() {
                     <option value="" disabled>
                       Sélectionner un produit
                     </option>
-                    {
-                      products.map((product) => (
-                        <option key={product.id} value={product.id}>
-                          {product.name}
-                        </option>
-                      ))
-                    }
-  
+                    {products.map((product) => (
+                      <option key={product.id} value={product.id}>
+                        {product.name}
+                      </option>
+                    ))}
                   </select>
                   {formState.errors.productId && (
                     <p className="text-red-500 text-sm mt-1">
@@ -677,7 +901,7 @@ export default function Selling() {
                   )}
                 </div>
 
-                 <div className="w-full flex flex-col gap-y-2">
+                <div className="w-full flex flex-col gap-y-2">
                   <label htmlFor="customerId">Client</label>
                   <select
                     {...register("customerId", {
@@ -686,19 +910,15 @@ export default function Selling() {
                     name="customerId"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
                     defaultValue=""
-                    
                   >
                     <option value="" disabled>
                       Sélectionner un client
                     </option>
-                    {
-                      customers.map((customer) => (
-                        <option key={customer.id} value={customer.id}>
-                          {customer.name} {customer.firstName}
-                        </option>
-                      ))
-                    }
-  
+                    {customers.map((customer) => (
+                      <option key={customer.id} value={customer.id}>
+                        {customer.name} {customer.firstName}
+                      </option>
+                    ))}
                   </select>
                   {formState.errors.customerId && (
                     <p className="text-red-500 text-sm mt-1">
@@ -707,23 +927,18 @@ export default function Selling() {
                   )}
                 </div>
 
-
                 <div className="w-full flex flex-col gap-y-2">
                   <label htmlFor="isSale">Vente</label>
                   <select
                     {...register("isSale", {
-                      required: false
+                      required: false,
                     })}
                     name="isSale"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
                     defaultValue=""
                   >
-                    <option value={false}>
-                         Non
-                    </option>
-                    <option value={true}>
-                         Oui
-                    </option>
+                    <option value={false}>Non</option>
+                    <option value={true}>Oui</option>
                   </select>
                   {formState.errors.productName && (
                     <p className="text-red-500 text-sm mt-1">
@@ -732,34 +947,25 @@ export default function Selling() {
                   )}
                 </div>
 
-
-
-
                 <div className="w-full flex flex-col gap-y-2">
                   <label htmlFor="isCredit">Est ce un crédit ?</label>
                   <select
                     {...register("isCredit", {
-                      required: false
+                      required: false,
                     })}
                     name="isCredit"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
                     defaultValue=""
                   >
-                    <option value={false}>
-                         Non
-                    </option>
-                    <option value={true}>
-                         Oui
-                    </option>
+                    <option value={false}>Non</option>
+                    <option value={true}>Oui</option>
                   </select>
-
                 </div>
 
-
-
-
                 <div className="w-full flex flex-col gap-y-2">
-                  <label htmlFor="Addresse de livraison">Addresse de livraison</label>
+                  <label htmlFor="Addresse de livraison">
+                    Addresse de livraison
+                  </label>
                   <input
                     {...register("deliveryAddress", {
                       required: false,
@@ -775,21 +981,22 @@ export default function Selling() {
                     </p>
                   )}
                 </div>
-                <button type="button" onClick={()=>{
-                  timeLineModal.current.reversed(true)
-                  timeLineModalClient.current.play();
-                }} className="auth-btn w-full mt-5  text-black border border-1 cursor-pointer border-gray-500 py-3 px-4 rounded-lg font-semibold hover:bg-gray focus:outline-none focus:ring-2  focus:ring-offset-2 transition-all">
+                <button
+                  type="button"
+                  onClick={() => {
+                    timeLineModal.current.reversed(true);
+                    timeLineModalClient.current.play();
+                  }}
+                  className="auth-btn w-full mt-5  text-black border border-1 cursor-pointer border-gray-500 py-3 px-4 rounded-lg font-semibold hover:bg-gray focus:outline-none focus:ring-2  focus:ring-offset-2 transition-all"
+                >
                   Ajouter un nouveau client
                 </button>
                 <button className="auth-btn w-full mt-2 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] focus:ring-offset-2 transition-all shadow-lg">
                   Enrégistrer la commande{" "}
-                  {loadingOrder ? (
-                    <ClipLoader color="white" size={20} />
-                  ) : null}
+                  {loadingOrder ? <ClipLoader color="white" size={20} /> : null}
                 </button>
               </div>
             </form>
-            
           </div>
         </div>
       </div>

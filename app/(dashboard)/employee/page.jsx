@@ -131,13 +131,19 @@ const Employee = () => {
                       <DropdownMenuTrigger className="border border-transparent focus:border focus:border-transparent active:border active:border-transparent">
                         <MdOutlineMoreVert />
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent className="w-40 border border-transparent">
+                      <DropdownMenuContent className="w-50 border border-transparent">
                         <DropdownMenuLabel className="text-xl">
                           Actions
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem className="text-lg">
-                          Modifier
+                          Valider
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="text-lg">
+                          Voir carte d&apos;identité
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="text-lg">
+                          Bloquer
                         </DropdownMenuItem>
                         <DropdownMenuItem className="text-lg">
                           Supprimer

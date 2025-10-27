@@ -8,10 +8,17 @@ export const createSellingRequest = async (orderData) => {
   });
 };
 
-export const deleteSellingRequest = async (orderId) => {
+export const deleteOrderRequest = async (orderId) => {
   return HttpClient.makeRequest({
     method: "DELETE",
     url: `orders/${orderId}`,
+  });
+};
+
+export const cancelOrderRequest = async (orderId) => {
+  return HttpClient.makeRequest({
+    method: "PUT",
+    url: `orders/cancel/${orderId}`,
   });
 };
 
@@ -24,6 +31,7 @@ export const getSellingsRequest = async (shopId, isSale) => {
     searchParams: params,
   });
 };
+
 export const getStatsRequest = async (shopId) => {
   return HttpClient.makeRequest({
     method: "GET",

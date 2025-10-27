@@ -15,3 +15,13 @@ export const registerUserRequest = async (userData: any) => {
     payload: objectToFormData(userData),
   });
 };
+
+export const registerEmployeeRequest = async (employeeData: any, role) => {
+  const params = new URLSearchParams("");
+  params.append('role', role);
+  return HttpClient.makeRequest({
+    method: "POST",
+    url: "employees/register",
+    payload: objectToFormData(employeeData),
+  });
+};

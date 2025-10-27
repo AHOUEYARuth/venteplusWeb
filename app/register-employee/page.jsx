@@ -7,16 +7,22 @@ import RegisterP from "@/assets/images/login.jpg";
 import "@/style/style.scss";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { ClipLoader } from "react-spinners";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { registerStore } from "../register/registerStore/registerStore";
 
 const RegisterEmployee = () => {
-  const { activeForm, setActiveForm, registerAction } = registerStore();
+  const { activeForm, setActiveForm, registerAction, employeeRegisterAction } = registerStore();
   const [logoImg, setLogoImg] = useState(null);
   const [coverImg, setCoverImg] = useState(null);
   const [loading, setloading] = useState(false);
-  
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  /* const { role } = router.query; */
+  const role = searchParams.get('role')
+  console.log("Employee rôle");
+  console.log(role);
+  
 
   const { register, handleSubmit, watch, formState, trigger } = useForm({
     mode: "onChange",
@@ -39,17 +45,15 @@ const RegisterEmployee = () => {
     console.log()
     const payload = {
       ...data,
-      role: "TRADER",
+      role: role,
       avatar: data?.avatar[0],
-      logo: data?.logo[0],
       identityCard: data?.identityCard[0],
-      imageShop: data?.imageShop[0],
     };
-    await registerAction(payload)
+    await employeeRegisterAction(payload)
       .then((response) => {
         setloading(false);
         console.log(response);
-        router.push('/login')
+        /* router.push("/login"); */
       })
       .catch((error) => {
         setloading(false);
@@ -63,7 +67,6 @@ const RegisterEmployee = () => {
       }
     });
   }
-
   return (
     <div className="min-h-screen bg-[#F9FAFB] flex items-center justify-center">
       <div className="content w-[55%] bg-white rounded-xl flex items-center justify-between p-8">
