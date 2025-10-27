@@ -38,6 +38,11 @@ const Login = () => {
           setIsSelectedShop(true)
           setShops(response.data.shops)
         }else if(response.data.token){
+          console.log("access-token")
+          console.log(JSON.stringify(response.data.token));
+          
+          localStorage.setItem("access-token",response.data.token);
+
           setToken(response.data.token) 
           setUser(response.data.user)
           setShop(response.data.shop)
