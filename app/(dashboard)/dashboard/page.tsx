@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/chart";
 import { useLoginStore } from "@/app/login/loginStore/loginStore";
 import { baseUrlNotApi } from "@/lib/httpClient";
+import { useSellingStore } from "../selling/sellingStore/sellingStore";
 export const description = "A bar chart with a label";
 const chartData = [
   { month: "January", desktop: 186 },
@@ -37,14 +38,15 @@ const chartData = [
 ];
 const chartConfig = {
   desktop: {
-    label: "Desktop",
+    label: "Bénefice",
     /* color: "var(--chart-1)", */
   },
 } satisfies ChartConfig;
 
 export default function Dashboard(){
-  const { monthSelling, topProducts,setTopProducts,setMonthSelling,getTopProductsAction,getMonthSellingsAction } = useDashboardStore();
+  const { monthSelling,monthSaleTotal, monthSaleProfitTotal,topProducts,setTopProducts,setMonthSelling,getTopProductsAction,getMonthSellingsAction } = useDashboardStore();
   const { shop } = useLoginStore()
+  const {stats,daysStats,getStatsAction,getDaysStatsAction} = useSellingStore()
 
   async function applyGetTopProductsAction(shopId) {
     await getTopProductsAction(shopId).then((response) => {
@@ -56,11 +58,17 @@ export default function Dashboard(){
    
     });
   }
+
+  async function applyGetStatsAction(shopId) {
+      await getStatsAction(shopId) 
+      await getDaysStatsAction(shopId);
+  }
   useEffect(() => {
       (function init() {
         if (shop?.id) {
           applyGetTopProductsAction(shop?.id);
           applyGetMonthSellingsAction(shop?.id);
+          applyGetStatsAction(shop?.id);
         }
        })();
   }, [shop]);
@@ -85,7 +93,7 @@ export default function Dashboard(){
           </div>
 
           <div className="mt-4">
-            <h2 className="text-4xl font-semibold">34</h2>
+            <h2 className="text-4xl font-semibold">{daysStats?.daysSalesCount ?? 0}</h2>
           </div>
 
           <div className="flex items-center gap-2 mt-4">
@@ -105,7 +113,7 @@ export default function Dashboard(){
           </div>
 
           <div className="mt-4">
-            <h2 className="text-4xl font-semibold">10 500</h2>
+            <h2 className="text-4xl font-semibold">{daysStats?.daysProfit ?? 0}</h2>
           </div>
 
           <div className="flex items-center gap-2 mt-4">
@@ -125,7 +133,7 @@ export default function Dashboard(){
           </div>
 
           <div className="mt-4">
-            <h2 className="text-4xl font-semibold">10</h2>
+            <h2 className="text-4xl font-semibold">{daysStats?.pendingOrders ?? 0}</h2>
           </div>
 
           <div className="flex items-center gap-2 mt-4">
@@ -140,14 +148,14 @@ export default function Dashboard(){
       <div className="w-full h-[500px]">
         <Card className="w-full h-full">
           <CardHeader>
-            <CardTitle>Bar Chart - Label</CardTitle>
-            <CardDescription>January - June 2024</CardDescription>
+            <CardTitle>Statistique de l&apos;année</CardTitle>
+            <CardDescription>January - Décembre</CardDescription>
           </CardHeader>
           <CardContent className="w-full h-[70%]">
             <ChartContainer config={chartConfig} className="w-full h-full">
               <BarChart
                 accessibilityLayer
-                data={chartData}
+                data={stats?.yearlyProfit}
                 margin={{
                   top: 20,
                 }}
@@ -164,7 +172,7 @@ export default function Dashboard(){
                   cursor={false}
                   content={<ChartTooltipContent hideLabel />}
                 />
-                <Bar dataKey="desktop" fill="#F39C12" radius={8}>
+                <Bar dataKey="profit" fill="#F39C12" radius={8}>
                   <LabelList
                     position="top"
                     offset={12}
@@ -177,10 +185,7 @@ export default function Dashboard(){
           </CardContent>
           <CardFooter className="flex-col items-start gap-2 text-sm">
             <div className="flex gap-2 leading-none font-medium">
-              Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-            </div>
-            <div className="text-muted-foreground leading-none">
-              Showing total visitors for the last 6 months
+              Bénéfice de l'année. Vos profit sur chaque vente du mois par année <TrendingUp className="h-4 w-4" />
             </div>
           </CardFooter>
         </Card>
@@ -281,12 +286,12 @@ export default function Dashboard(){
 
           <div className="pt-4 flex flex-col sm:flex-row justify-between text-lg font-semibold text-gray-700">
             <p>
-              <span className="text-gray-500 text-xl">Bénéfice total : </span>
-              <span className="text-green-600">49 500 FCFA</span>
+              <span className="text-gray-500 text-xl">Total vendues : </span>
+              <span className="text-green-600">{monthSaleTotal} FCFA</span>
             </p>
             <p>
-              <span className="text-gray-500 text-xl">Bénéfice net : </span>
-              <span className="text-[#F39C12]">10 500 FCFA</span>
+              <span className="text-gray-500 text-xl">Bénéfice total : </span>
+              <span className="text-[#F39C12]">{monthSaleProfitTotal} FCFA</span>
             </p>
           </div>
         </div>

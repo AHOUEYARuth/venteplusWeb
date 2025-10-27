@@ -39,6 +39,13 @@ export const getStatsRequest = async (shopId) => {
   });
 };
 
+export const getDaysStatsRequest = async (shopId) => {
+  return HttpClient.makeRequest({
+    method: "GET",
+    url: `orders/days-statistics/${shopId}`,
+  });
+};
+
 export const updateSellingRequest = async (orderId, payload) => {
   return HttpClient.makeRequest({
     method: "POST",

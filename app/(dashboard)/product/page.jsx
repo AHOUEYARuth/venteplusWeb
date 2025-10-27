@@ -204,8 +204,8 @@ export default function Product() {
           shop?.id,
           nameFilter,
           categorieFilter,
-          moment(dateFrom).format("dd-mm-yyy"),
-          moment(dateTo).format("dd-mm-yyy")
+          dateFrom != undefined && dateFrom != null ? moment(dateFrom).format("DD-MM-YYYY") : dateFrom,
+          dateTo != undefined && dateTo != null ? moment(dateTo).format("DD-MM-YYYY") : dateTo
         ).then((response) => {
           setProducts(response.data);
         });
@@ -278,6 +278,7 @@ export default function Product() {
         <div className="w-[30%] relative flex items-center justify-between bg-white gap-x-2 rounded-lg">
           <input
             type="text"
+            onChange={(event)=>setnameFilter(event.target.value)}
             placeholder="Recherche par nom"
             className="text-xl py-3 pl-4 outline-hidden rounded-lg focus:outline-none  transition-all"
           />

@@ -1,17 +1,11 @@
 "use client";
-
 import * as React from "react";
 import { ChevronDownIcon } from "lucide-react";
 import { DateRange } from "react-day-picker";
-
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Label } from "@/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 // 🟢 Définition des props
 interface DateRangePickerProps {
@@ -22,7 +16,7 @@ export function DatePicker({ onDateChange }: DateRangePickerProps) {
   const [open, setOpen] = React.useState(false);
   const [date, setDate] = React.useState<DateRange | undefined>(undefined);
 
-  // Chaque fois que la date change, on notifie le parent
+  // 🔴 N'appeler onDateChange QUE lorsque l'utilisateur sélectionne activement des dates
   const handleSelect = (range: DateRange | undefined) => {
     setDate(range);
     if (onDateChange) onDateChange(range);
@@ -33,7 +27,6 @@ export function DatePicker({ onDateChange }: DateRangePickerProps) {
       <Label htmlFor="date" className="px-1">
         Date
       </Label>
-
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -52,7 +45,6 @@ export function DatePicker({ onDateChange }: DateRangePickerProps) {
             <ChevronDownIcon />
           </Button>
         </PopoverTrigger>
-
         <PopoverContent className="w-auto p-0" align="start">
           <Calendar
             mode="range"

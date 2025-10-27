@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { create } from "zustand";
-import { createSellingRequest, getStatsRequest,getSellingsRequest, updateSellingRequest, deleteOrderRequest, cancelOrderRequest } from "../sellingRequest/sellingRequest";
+import { createSellingRequest,getDaysStatsRequest, getStatsRequest,getSellingsRequest, updateSellingRequest, deleteOrderRequest, cancelOrderRequest } from "../sellingRequest/sellingRequest";
 
 type State = {
   orders: Array<any>;
@@ -8,15 +8,18 @@ type State = {
   editedOrder: any;
   orderStatistics:any;
   stats:any;
+  daysStats:any;
 };
 
 type SellingAction = {
   activeMenu: string;
   /* fetchData: () => Promise<void>; */
   setStats: (stats: any) => void;
+  setDaysStats:(daysStats:any)=> void;
   setActiveMenu: (activeMenu: string) => void;
   orderAction: (orderFormData: any) => Promise<void>;
   getStatsAction: (shopId: string) => Promise<void>;
+  getDaysStatsAction:(shopId:string)=> Promise<void>;
   getOrdersAndSellingsAction: (
     shopId: string,
     isSale: boolean
@@ -34,12 +37,14 @@ export const useSellingStore = create<State & SellingAction>((set) => ({
   orders: [],
   sellings: [],
   stats:null,
+  daysStats:null,
   activeMenu: "commandes",
   editedOrder: null,
   orderStatistics:null,
   setOrderStatistics:(orderStatistics) => set({orderStatistics}),
   setActiveMenu: (activeMenu) => set({ activeMenu }),
   setStats: (stats)=> set({stats}),
+  setDaysStats:(daysStats)=>set({daysStats}),
   orderAction: async (orderFormData) => {
     const response = await createSellingRequest(orderFormData);
     return response;
@@ -52,6 +57,11 @@ export const useSellingStore = create<State & SellingAction>((set) => ({
   getStatsAction: async (shopId) => {
     const response = await getStatsRequest(shopId);
     set({ stats: response.data });
+    return response;
+  },
+  getDaysStatsAction: async (shopId) => {
+    const response = await getDaysStatsRequest(shopId);
+    set({ daysStats: response.data });
     return response;
   },
   setSellings: (sellings) => {

@@ -134,7 +134,7 @@ export default function Report(){
         <Card className="w-full h-full">
           <CardHeader>
             <CardTitle>Statistique de l&apos;année </CardTitle>
-            <CardDescription>Janvier - Juin</CardDescription>
+            <CardDescription>Janvier - Décembre</CardDescription>
           </CardHeader>
           <CardContent className="w-full h-[70%]">
             <ChartContainer config={chartConfig} className="w-full h-full">
@@ -173,9 +173,6 @@ export default function Report(){
               Bénéfice de l'année. Vos profit sur chaque vente du mois par année{" "}
               <TrendingUp className="h-4 w-4" />
             </div>
-            {/* <div className="text-muted-foreground leading-none">
-              Showing total visitors for the last 6 months
-            </div> */}
           </CardFooter>
         </Card>
       </div>
