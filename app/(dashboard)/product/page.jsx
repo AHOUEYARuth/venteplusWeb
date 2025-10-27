@@ -8,6 +8,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog.tsx";
 import { gsap } from "gsap";
 import Product2 from "@/assets/images/emptyPro.png";
 import { useProductStore } from "./productStore/productStore";
@@ -18,15 +28,7 @@ import { baseUrlNotApi } from "@/lib/httpClient";
 import { ClipLoader } from "react-spinners";
 import toast, { Toaster } from "react-hot-toast";
 import { RiDeleteBin6Line } from "react-icons/ri";
-import moment from "moment"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import moment from "moment";
 import { cleanPayload } from "@/lib/utils";
 import { DatePicker } from "@/components/ui/date-picker";
 
@@ -35,7 +37,8 @@ export default function Product() {
   const timeLineModal = useRef();
   const [coverImg, setcoverImg] = useState(null);
   const [payloadImg, setpayloadImg] = useState(null);
-  
+  const [isModalOpen, setisModalOpen] = useState(false);
+  const [productId, setproductId] = useState("");
   const {
     products,
     createProductAction,
@@ -57,22 +60,17 @@ export default function Product() {
   const [filterLoading, setFilterLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
-  const [categorieFilter, setCategorieFilter] = useState("")
-  const [nameFilter, setnameFilter] = useState("")
+  const [categorieFilter, setCategorieFilter] = useState("");
+  const [nameFilter, setnameFilter] = useState("");
   const [rangeDate, setRangeDate] = useState(null);
 
   const [productInfos, setproductInfos] = useState({});
   const [availableQuantity, setavailableQuantity] = useState("");
   const [additionalCosts, setadditionalCosts] = useState("");
 
-
-  const { register, handleSubmit, formState, trigger, reset } = useForm({
+  const { register, handleSubmit, formState, reset } = useForm({
     mode: "onChange",
   });
-
-
-  
-
 
   const productsToDisplay = selectedCategory ? filteredProducts : products;
   async function applyUpdateProductAction(productId, payload) {
@@ -105,6 +103,7 @@ export default function Product() {
       .then(async () => {
         await applyGetProductAction(shop?.id);
         toast.success("Produit supprimé avec succès");
+        setisModalOpen(false);
       })
       .catch((error) => {
         console.error(error);
@@ -150,11 +149,13 @@ export default function Product() {
       console.log(cleanPayload(payload));
       await applyUpdateProductAction(editedProduct.id, cleanPayload(payload))
         .then(async (response) => {
+          reset();
           await applyGetProductAction(shop?.id);
           toast.success("Produit modifié avec succès");
           setcoverImg(null);
+          
           setEditingProduct(null);
-          reset();
+
           timeLineModal.current.reversed(true);
         })
         .catch((error) => {
@@ -173,11 +174,12 @@ export default function Product() {
         .then(async (response) => {
           console.log("product");
           console.log(response);
+          timeLineModal.current.reversed(true);
+          reset();
           await applyGetProductAction(shop?.id);
           toast.success("Produit ajouté avec succès");
           setcoverImg(null);
-          reset();
-          timeLineModal.current.reversed(true);
+          /* timeLineModal.current.reversed(true); */
         })
         .catch((error) => {
           console.log(error);
@@ -193,10 +195,16 @@ export default function Product() {
     }
   }
 
+  function handleClearFilter() {
+    setCategorieFilter("");
+    setnameFilter("");
+    setRangeDate("");
+  }
+
   useEffect(() => {
     (async function handleFilter() {
       if (categorieFilter != "" || nameFilter != "" || rangeDate != null) {
-        console.log("range init")
+        console.log("range init");
         console.log(categorieFilter);
         const dateFrom = rangeDate?.from;
         const dateTo = rangeDate?.to;
@@ -204,15 +212,19 @@ export default function Product() {
           shop?.id,
           nameFilter,
           categorieFilter,
-          dateFrom != undefined && dateFrom != null ? moment(dateFrom).format("DD-MM-YYYY") : dateFrom,
-          dateTo != undefined && dateTo != null ? moment(dateTo).format("DD-MM-YYYY") : dateTo
+          dateFrom != undefined && dateFrom != null
+            ? moment(dateFrom).format("DD-MM-YYYY")
+            : dateFrom,
+          dateTo != undefined && dateTo != null
+            ? moment(dateTo).format("DD-MM-YYYY")
+            : dateTo
         ).then((response) => {
           setProducts(response.data);
         });
       }
     })();
-  }, [categorieFilter, nameFilter, rangeDate])
-  
+  }, [categorieFilter, nameFilter, rangeDate]);
+
   useEffect(() => {
     (function init() {
       if (shop?.id) {
@@ -255,6 +267,33 @@ export default function Product() {
       ref={container}
       className="w-full h-full p-5 bg-gray-50 rounded-xl overflow-hidden"
     >
+      <Dialog open={isModalOpen} onOpenChange={setisModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-lg">Supprimer un produit</DialogTitle>
+            <DialogDescription className="text-base">
+              Voulez-vous vraiment supprimer ce produit?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-start items-center justify-center">
+            <button
+              onClick={() => applyDeleteProdAction(productId)}
+              className="w-50 auth-btn flex flex-row items-center justify-center gap-x-2 w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] cursor-pointer focus:ring-offset-2 transition-all shadow-lg"
+            >
+              OUI{" "}
+              {deleteLoading ? <ClipLoader color="white" size={20} /> : null}
+            </button>
+            <button
+              type="button"
+              className="w-50 auth-btn border border-1 border-gray-600 text-black flex flex-row items-center justify-center gap-x-2 w-full mt-5 text-black py-3 px-4 rounded-lg font-semibold hover:bg-[#000] hover:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#000] focus:ring-offset-2 transition-all shadow-lg"
+              onClick={() => setisModalOpen(false)}
+              variant="ghost"
+            >
+              NON
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       <div className="w-full flex flex-row items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold ">Produits</h2>
@@ -266,6 +305,7 @@ export default function Product() {
         <div className="flex items-center gap-x-5">
           <Button
             onClick={() => {
+              reset();
               timeLineModal.current.play();
             }}
             className="bg-[#F39C12] cursor-pointer"
@@ -278,7 +318,7 @@ export default function Product() {
         <div className="w-[30%] relative flex items-center justify-between bg-white gap-x-2 rounded-lg">
           <input
             type="text"
-            onChange={(event)=>setnameFilter(event.target.value)}
+            onChange={(event) => setnameFilter(event.target.value)}
             placeholder="Recherche par nom"
             className="text-xl py-3 pl-4 outline-hidden rounded-lg focus:outline-none  transition-all"
           />
@@ -303,7 +343,6 @@ export default function Product() {
             value={categorieFilter || "all"}
             onValueChange={setCategorieFilter}
             disabled={filterLoading}
-            
           >
             <SelectTrigger className="w-[200px] py-5 outline-none focus:outline-none border border-[#F39C12]">
               <SelectValue placeholder="Catégorie">
@@ -328,7 +367,7 @@ export default function Product() {
           <Button
             onClick={() => handleClearFilter()}
             variant="outline"
-            className="border-[#F39C12] text-[#F39C12] hover:bg-[#F39C12] hover:text-white"
+            className="border-[#F39C12] text-[#F39C12] hover:bg-[#F39C12] hover:text-white cursor-pointer"
           >
             Effacer le filtre
           </Button>
@@ -382,8 +421,17 @@ export default function Product() {
                             >
                               Modifier
                             </div>
+                            <div
+                              onClick={() => {
+                                setproductId(product.id);
+                                setisModalOpen(true);
+                              }}
+                              className="w-[40px] h-[40px]  text-xl flex items-center justify-center bg-red-100 text-red-500 rounded-full cursor-pointer "
+                            >
+                              <RiDeleteBin6Line />
+                            </div>
 
-                            <Dialog>
+                            {/*  <Dialog>
                               <DialogTrigger>
                                 <div className="w-[40px] h-[40px]  text-xl flex items-center justify-center bg-red-100 text-red-500 rounded-full cursor-pointer ">
                                   <RiDeleteBin6Line />
@@ -413,7 +461,7 @@ export default function Product() {
                                   </DialogDescription>
                                 </DialogHeader>
                               </DialogContent>
-                            </Dialog>
+                            </Dialog> */}
                           </div>
                         </div>
                       </div>
