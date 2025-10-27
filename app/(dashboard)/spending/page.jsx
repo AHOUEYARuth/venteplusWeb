@@ -18,10 +18,12 @@ import { useLoginStore } from "@/app/login/loginStore/loginStore";
 import toast, { Toaster } from "react-hot-toast";
 import { ClipLoader } from "react-spinners";
 import moment from "moment";
+import { DatePicker } from "@/components/ui/date-picker";
 
 export default function Spending() {
   const container = useRef(null);
   const timeLineModal = useRef();
+  const [rangeDate, setRangeDate] = useState(null);
   const [expenseLoadind, setexpenseLoadind] = useState(false);
   const {
     spendings,
@@ -29,6 +31,7 @@ export default function Spending() {
     expenseActions,
     getExpenseAction,
     setExpenses,
+    filterSpendingAction
   } = spendingStore();
   const { shop } = useLoginStore();
 
@@ -110,6 +113,31 @@ export default function Spending() {
       }
     })();
   }, [shop]);
+
+  useEffect(() => {
+          (async function handleFilter() {
+            if (rangeDate != null) {
+           
+              const dateFrom = rangeDate?.from;
+              const dateTo = rangeDate?.to;
+              await filterSpendingAction(
+                shop?.id,
+                dateFrom != undefined && dateFrom != null
+                  ? moment(dateFrom).format("DD-MM-YYYY")
+                  : dateFrom,
+                dateTo != undefined && dateTo != null
+                  ? moment(dateTo).format("DD-MM-YYYY")
+                  : dateTo
+              ).then((response) => {
+                setExpenses(response.data);
+              });
+            } else {
+              if(shop?.id){
+                await applyGetExpenseAction(shop?.id)
+              }
+            }
+          })();
+  }, [rangeDate]);
   return (
     <div ref={container} className="w-full h-full p-5 bg-gray-50 rounded-xl">
       <div className="w-full flex flex-row items-center justify-between">
@@ -189,7 +217,7 @@ export default function Spending() {
         <div className="w-full flex flex-row items-start justify-between mt-20">
           <h2 className="text-2xl font-semibold ">Listes des Dépenses</h2>
           <div className="w-[50%] flex flex-row items-center justify-center gap-x-4">
-            <div className="w-[40%] relative flex items-center justify-between bg-white gap-x-2 rounded-lg">
+            {/* <div className="w-[40%] relative flex items-center justify-between bg-white gap-x-2 rounded-lg">
               <input
                 type="text"
                 placeholder="Recherche par nom"
@@ -198,21 +226,20 @@ export default function Spending() {
               <button className="py-3 bg-[#F39C12] text-white rounded-tr-lg rounded-br-lg cursor-pointer px-4">
                 <MdSearch size={25} />
               </button>
-            </div>
-            <div className="w-[60%] flex flex-row gap-x-4 items-center">
-              <input
-                type="date"
-                name=""
-                id=""
-                className="border border-[#F39C12] py-3 px-4 rounded-lg"
-              />
+            </div> */}
+            <div className="flex flex-row gap-x-4 items-center">
+               <DatePicker className="p-5" onDateChange={(range) => setRangeDate(range)} />
               <button
                 onClick={() => {
-                  timeLineModal.current.play();
+                  setRangeDate(null)
+                  if(shop?.id){
+                      applyGetExpenseAction(shop?.id)
+                  }
+                  
                 }}
                 className="bg-[#F39C12] cursor-pointer py-3 px-4 text-white rounded-lg"
               >
-                Nouvelle Dépense
+               Effacer
               </button>
             </div>
           </div>

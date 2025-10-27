@@ -51,7 +51,7 @@ export default function CustomerCredits() {
   const [loadingRecovery, setloadingRecovery] = useState(false);
   const [isModalOpen, setisModalOpen] = useState(false);
   const [nameFilter, setnameFilter] = useState("");
-    const [rangeDate, setRangeDate] = useState(null);
+  const [rangeDate, setRangeDate] = useState(null);
   const {
     register,
     handleSubmit,

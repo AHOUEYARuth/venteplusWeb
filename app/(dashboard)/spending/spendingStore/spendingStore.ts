@@ -2,7 +2,7 @@
 
 import { create } from "zustand";
 import axios from "axios";
-import { createExpenseRequest, getExpensesRequest } from "../spendingRequest/spendingRequest";
+import { createExpenseRequest,filterSpendingRequest, getExpensesRequest } from "../spendingRequest/spendingRequest";
 
 type Sate = {
   spendings: Array<any> ;
@@ -12,6 +12,11 @@ type ExpenseAction = {
   expenseActions: (expenseFormData: any) => Promise<void>;
   getExpenseAction: (shopId: string) => Promise<void>;
   setExpenses: (spendings: any) => void;
+  filterSpendingAction: (
+    shopId: string,
+    dateFrom: string,
+    dateTo: string
+  ) => Promise<void>;
 };
 
 export const spendingStore = create<Sate & ExpenseAction>((set) => ({
@@ -26,5 +31,17 @@ export const spendingStore = create<Sate & ExpenseAction>((set) => ({
   },
   setExpenses(spendings) {
     set({ spendings: spendings });
+  },
+  filterSpendingAction: async (shopId, dateFrom, dateTo) => {
+      if (!shopId) {
+          return;
+      }
+      
+      const response = await filterSpendingRequest(
+        shopId,
+        dateFrom,
+        dateTo
+      );
+      return response;
   },
 }));

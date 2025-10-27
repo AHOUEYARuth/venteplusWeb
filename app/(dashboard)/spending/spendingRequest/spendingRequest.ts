@@ -21,4 +21,18 @@ export const getExpensesRequest = async (shopId) => {
     url: `expenses/shop/${shopId}`,
   });
 }
-
+export const filterSpendingRequest = async (
+  shopId,
+  dateFrom,
+  dateTo
+) => {
+  const params = new URLSearchParams("");
+  if(dateFrom) params.append("dateFrom", dateFrom);
+  if(dateTo) params.append("dateTo", dateTo);
+  
+  return HttpClient.makeRequest({
+    method: "GET",
+    url: `expenses/shop/${shopId}`,
+    searchParams:params
+  });
+};
