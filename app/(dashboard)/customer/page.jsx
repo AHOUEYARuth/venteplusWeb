@@ -19,16 +19,20 @@ import toast, { Toaster } from "react-hot-toast";
 import { ClipLoader } from "react-spinners";
 import { useLoginStore } from "@/app/login/loginStore/loginStore";
 import moment from "moment";
+import { DatePicker } from "@/components/ui/date-picker";
 const Customer = () => {
   const container = useRef(null);
   const timeLineModal = useRef();
+  const [nameFilter, setnameFilter] = useState("");
+  const [rangeDate, setRangeDate] = useState(null);
   const [loadingClient, setloadingClient] = useState(false);
   const {
     customers,
     customerAction,
     getCustomersAction,
     setCustomers,
-    deleteCustomersAction
+    deleteCustomersAction,
+    filterCustomerAction,
   } = customerStore();
   const { shop } = useLoginStore();
   const { register, handleSubmit, watch, formState, trigger, reset } = useForm({
@@ -80,12 +84,6 @@ const Customer = () => {
       .finally(() => {
         setloadingClient(false);
       });
-
-    /* trigger().then((isValid) => {
-      if (isValid) {
-        console.log(data);
-      }
-    }); */
   }
 
   useLayoutEffect(() => {
@@ -121,6 +119,33 @@ const Customer = () => {
       }
     })();
   }, [shop]);
+
+
+   useEffect(() => {
+      (async function handleFilter() {
+        if (nameFilter != "" || rangeDate != null) {
+       
+          const dateFrom = rangeDate?.from;
+          const dateTo = rangeDate?.to;
+          await filterCustomerAction(
+            shop?.id,
+            nameFilter,
+            dateFrom != undefined && dateFrom != null
+              ? moment(dateFrom).format("DD-MM-YYYY")
+              : dateFrom,
+            dateTo != undefined && dateTo != null
+              ? moment(dateTo).format("DD-MM-YYYY")
+              : dateTo
+          ).then((response) => {
+            setCustomers(response.data);
+          });
+        } else {
+          if(shop?.id){
+            await applyGetCustomersAction(shop?.id)
+          }
+        }
+      })();
+    }, [nameFilter, rangeDate]);
   return (
     <div ref={container} className="w-full h-full p-5 bg-gray-50 rounded-xl">
       <div className="w-full flex flex-row items-center justify-between">
@@ -139,6 +164,7 @@ const Customer = () => {
             <div className="w-[40%] relative flex items-center justify-between bg-white gap-x-2 rounded-lg">
               <input
                 type="text"
+                onChange={(event) => setnameFilter(event.target.value)}
                 placeholder="Recherche par nom"
                 className="bg-white text-sm py-3 pl-2 outline-hidden rounded-lg focus:outline-none  transition-all"
               />
@@ -146,18 +172,13 @@ const Customer = () => {
                 <MdSearch size={25} />
               </button>
             </div>
-            <div className="w-[60%] flex flex-row gap-x-4 items-center">
-              <input
-                type="date"
-                name=""
-                id=""
-                className="border border-[#F39C12] py-3 px-4 rounded-lg"
-              />
+            <div className="w-[70%] flex flex-row gap-x-4 items-center">
+              <DatePicker className="p-5" onDateChange={(range) => setRangeDate(range)} />
               <button
                 onClick={() => {
                   timeLineModal.current.play();
                 }}
-                className="bg-[#F39C12] cursor-pointer py-3 px-4 text-white rounded-lg"
+                className="bg-[#F39C12] cursor-pointer w-min-fit py-3 px-4 text-white rounded-lg"
               >
                 Nouveau Client
               </button>

@@ -22,3 +22,22 @@ export const getCustomersRequest = async (shopId) => {
     url: `customers/shop/${shopId}`,
   });
 }
+
+
+export const filterCustomersRequest = async (
+  shopId,
+  name,
+  dateFrom,
+  dateTo
+) => {
+  const params = new URLSearchParams("");
+  if(name != "") params.append("name", name);
+  if(dateFrom) params.append("dateFrom", dateFrom);
+  if(dateTo) params.append("dateTo", dateTo);
+  
+  return HttpClient.makeRequest({
+    method: "GET",
+    url: `customers/shop/${shopId}`,
+    searchParams:params
+  });
+};

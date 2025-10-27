@@ -16,7 +16,7 @@ export function DatePicker({ onDateChange }: DateRangePickerProps) {
   const [open, setOpen] = React.useState(false);
   const [date, setDate] = React.useState<DateRange | undefined>(undefined);
 
-  // 🔴 N'appeler onDateChange QUE lorsque l'utilisateur sélectionne activement des dates
+   
   const handleSelect = (range: DateRange | undefined) => {
     setDate(range);
     if (onDateChange) onDateChange(range);
@@ -32,7 +32,7 @@ export function DatePicker({ onDateChange }: DateRangePickerProps) {
           <Button
             variant="outline"
             id="date"
-            className="w-64 justify-between py-5 font-normal"
+            className="w-64 justify-between p-5 font-normal"
           >
             {date?.from && date?.to ? (
               <>
