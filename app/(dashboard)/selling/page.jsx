@@ -22,6 +22,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog.tsx";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { gsap } from "gsap";
 import { IoMdArrowDropup, IoMdClose } from "react-icons/io";
 import { FiArrowUp, FiArrowUpRight } from "react-icons/fi";
@@ -33,6 +40,10 @@ import { PhoneInput } from "@/components/ui/phone-input";
 import { ClipLoader } from "react-spinners";
 import toast, { Toaster } from "react-hot-toast";
 import { toBoolean } from "@/lib/utils";
+import Product2 from "@/assets/images/emptyPro.png";
+import { DatePicker } from "@/components/ui/date-picker";
+import { Button } from "@/components/ui/button";
+import moment from "moment";
 
 export default function Selling() {
   const {
@@ -46,8 +57,8 @@ export default function Selling() {
     setOrders,
     orderStatistics,
     cancelOrderAction,
-    deleteOrderAction
-
+    deleteOrderAction,
+    filterOrderAndSellingAction,
   } = useSellingStore();
   const { customers, setCustomers, getCustomersAction, customerAction } =
     customerStore();
@@ -59,8 +70,13 @@ export default function Selling() {
   const timeLineModal = useRef();
   const timeLineModalClient = useRef();
   const [isModalOpen, setisModalOpen] = useState(false);
-  const [isCancelModalOpen, setisCancelModalOpen] = useState(false)
-  const [orderId, setorderId] = useState("")
+  const [isCancelModalOpen, setisCancelModalOpen] = useState(false);
+  const [orderId, setorderId] = useState("");
+
+  const [rangeDate, setRangeDate] = useState(null);
+  const [searchFilter, setsearchFilter] = useState("");
+  const [statusFilter, setstatusFilter] = useState("");
+
   const { register, setValue, handleSubmit, reset, watch, formState, trigger } =
     useForm({
       mode: "onChange",
@@ -196,11 +212,11 @@ export default function Selling() {
     });
   }
   async function applyCancelOderAction(shopId) {
-     setLoadingOrder(true);
+    setLoadingOrder(true);
     await cancelOrderAction(shopId)
       .then((response) => {
         toast.success(response?.message);
-        setisCancelModalOpen(false)
+        setisCancelModalOpen(false);
       })
       .catch((error) => {
         toast.error(
@@ -213,10 +229,9 @@ export default function Selling() {
         setLoadingOrder(false);
       });
     await applyGetOrdersAction(shop?.id);
-
   }
   async function applDeleteOderAction(shopId) {
-    setLoadingOrder(true)
+    setLoadingOrder(true);
     await deleteOrderAction(shopId)
       .then((response) => {
         toast.success(response?.message);
@@ -228,10 +243,10 @@ export default function Selling() {
             ? error.message
             : "Un problème est survenu lors de la suppression de la commande"
         );
-      }).finally(() => {
-         setLoadingOrder(false);
-      }
-    );
+      })
+      .finally(() => {
+        setLoadingOrder(false);
+      });
     await applyGetOrdersAction(shop?.id);
   }
   useEffect(() => {
@@ -244,9 +259,30 @@ export default function Selling() {
     })();
   }, [shop]);
 
-  /*  useEffect(() => {
-    fetchData();
-  }, []); */
+  useEffect(() => {
+    (async function handleFilter() {
+      if (searchFilter != "" || rangeDate != null || statusFilter != "") {
+        const dateFrom = rangeDate?.from;
+        const dateTo = rangeDate?.to;
+        await filterOrderAndSellingAction(
+          shop?.id,
+          searchFilter,
+          dateFrom != undefined && dateFrom != null
+            ? moment(dateFrom).format("DD-MM-YYYY")
+            : dateFrom,
+          dateTo != undefined && dateTo != null
+            ? moment(dateTo).format("DD-MM-YYYY")
+            : dateTo
+        ).then((response) => {
+          setOrders(response.data);
+        });
+      } else {
+        if (shop?.id) {
+          await applyGetOrdersAction(shop?.id);
+        }
+      }
+    })();
+  }, [searchFilter, rangeDate, statusFilter]);
 
   return (
     <div ref={container} className="w-full h-full p-5 bg-gray-50 rounded-xl">
@@ -282,9 +318,7 @@ export default function Selling() {
       <Dialog open={isCancelModalOpen} onOpenChange={setisCancelModalOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-lg">
-              Annuler une commande
-            </DialogTitle>
+            <DialogTitle className="text-lg">Annuler une commande</DialogTitle>
             <DialogDescription className="text-base">
               Voulez-vous vraiment annuler cette commande?
             </DialogDescription>
@@ -317,6 +351,14 @@ export default function Selling() {
             visibilité.
           </p>
         </div>
+        <button
+          onClick={() => {
+            timeLineModal.current.play();
+          }}
+          className="bg-[#F39C12] cursor-pointer py-3 px-4 text-white rounded-lg"
+        >
+          Nouvelle Commande
+        </button>
       </div>
       <div className="w-full flex flex-row flex-wrap items-center py-8 gap-x-10">
         {activeMenu === "commandes" ? (
@@ -498,6 +540,7 @@ export default function Selling() {
             <div className="w-[40%] relative flex items-center justify-between bg-white gap-x-2 rounded-lg">
               <input
                 type="text"
+                onChange={(event) => setsearchFilter(event.target.value)}
                 placeholder="Recherche par nom"
                 className="bg-white text-sm py-3 pl-2 outline-hidden rounded-lg focus:outline-none  transition-all"
               />
@@ -506,161 +549,211 @@ export default function Selling() {
               </button>
             </div>
             <div className="w-[60%] flex flex-row gap-x-4 items-center">
-              <input
-                type="date"
-                name=""
-                id=""
-                className="border border-[#F39C12] py-3 px-4 rounded-lg"
+              <DatePicker
+                className="p-5"
+                onDateChange={(range) => setRangeDate(range)}
               />
-              <button
-                onClick={() => {
-                  timeLineModal.current.play();
-                }}
-                className="bg-[#F39C12] cursor-pointer py-3 px-4 text-white rounded-lg"
+              <Select
+                value={statusFilter || "all"}
+                onValueChange={setstatusFilter}
               >
-                Nouvelle Commande
-              </button>
+                <SelectTrigger className="w-[200px] py-5 outline-none focus:outline-none border border-[#F39C12]">
+                  <SelectValue placeholder="Status">Status</SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Toutes les status</SelectItem>
+                  <SelectItem value="PENDING">En attente</SelectItem>
+                  <SelectItem value="CONFIRMED">Confirmer</SelectItem>
+                  <SelectItem value="DELIVERED">Livrée</SelectItem>
+                  <SelectItem value="CANCEL">Annulée</SelectItem>
+                </SelectContent>
+              </Select>
+              {/* <Button
+                variant="outline"
+                className="border-[#F39C12] text-[#F39C12] hover:bg-[#F39C12] hover:text-white cursor-pointer"
+              >
+                Effacer le filtre
+              </Button> */}
             </div>
           </div>
         </div>
         <div className="w-[100%] overflow-x-auto pb-10 mt-5 bg-white">
           {activeMenu === "commandes" ? (
-            <table className="w-full text-xl ">
-              <thead className=" text-black bg-gray-100  ">
-                <tr className="border-b border-gray-200 text-left">
-                  <th className="p-5">Client</th>
-                  <th className="p-5">Téléphone</th>
-                  <th className="p-5">Produit</th>
-                  <th className="p-5">Quantité</th>
-                  <th className="p-5 ">Unité(FCFA)</th>
-                  <th className="p-5 ">Total(FCFA)</th>
-                  <th className="p-5">livraison</th>
-                  <th className="p-5 ">Status</th>
-                  <th className=""></th>
-                </tr>
-              </thead>
+            orders.length == 0 ? (
+              <div className="w-full flex flex-col items-center gap-y-2 text-center py-5">
+                <div
+                  className="w-[50%] sm:w-[100%] lg:w-[32%] h-[200px] relative overflow-hidden bg-contain bg-center bg-no-repeat cursor-pointer"
+                  style={{ backgroundImage: `url(${Product2.src})` }}
+                ></div>
+                <div>
+                  <p className="text-2xl font-bold">Aucune commande trouvé</p>
+                  <p className="">
+                    La liste des commandes enrégistrées s'affiche ici. Vous
+                    n'avez aucune commande actuellement
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <table className="w-full text-xl ">
+                <thead className=" text-black bg-gray-100  ">
+                  <tr className="border-b border-gray-200 text-left">
+                    <th className="p-5">Client</th>
+                    <th className="p-5">Téléphone</th>
+                    <th className="p-5">Produit</th>
+                    <th className="p-5">Quantité</th>
+                    <th className="p-5 ">Unité(FCFA)</th>
+                    <th className="p-5 ">Total(FCFA)</th>
+                    <th className="p-5">livraison</th>
+                    <th className="p-5 ">Status</th>
+                    <th className=""></th>
+                  </tr>
+                </thead>
 
-              <tbody>
-                {orders.map((order) => (
-                  <tr
-                    key={order.id}
-                    className="border-b hover:bg-gray-50 transition-colors"
-                  >
-                    <td className="px-5 py-5 font-bold">
-                      {order.customer.name} {order.customer.firstName}
-                    </td>
-                    <td className="px-5 py-5">{order.customer.phoneNumber}</td>
-                    <td className="px-5 py-5">
-                      {order.toOrders[0].product.name}
-                    </td>
-                    <td className="px-5 py-5">{order.toOrders[0].quantity}</td>
-                    <td className="px-5 py-5 font-medium text-gray-700">
-                      {order.toOrders[0].product.salePrice}
-                    </td>
-                    <td
-                      className={`px-5 py-5 font-medium ${
-                        order.customerCredit ? "text-red-600" : "text-green-600"
-                      }`}
+                <tbody>
+                  {orders.map((order) => (
+                    <tr
+                      key={order.id}
+                      className="border-b hover:bg-gray-50 transition-colors"
                     >
-                      {order.totalAmount}
-                    </td>
-                    <td className="px-5 py-5 text-gray-700">
-                      {order.deliveryAddress}
-                    </td>
-                    <td className="px-5 py-5">
-                      <span
-                        className={`w-[110px] flex gap-x-2 items-center justify-center text-base  rounded-sm ${
-                          order.status === "DELIVERED"
-                            ? "bg-green-50"
-                            : order.status === "PENDING"
-                            ? "bg-blue-50"
-                            : order.status === "CANCELLED"
-                            ? "bg-red-50"
-                            : "text-gray-600"
+                      <td className="px-5 py-5 font-bold">
+                        {order.customer.name} {order.customer.firstName}
+                      </td>
+                      <td className="px-5 py-5">
+                        {order.customer.phoneNumber}
+                      </td>
+                      <td className="px-5 py-5">
+                        {order.toOrders[0].product.name}
+                      </td>
+                      <td className="px-5 py-5">
+                        {order.toOrders[0].quantity}
+                      </td>
+                      <td className="px-5 py-5 font-medium text-gray-700">
+                        {order.toOrders[0].product.salePrice}
+                      </td>
+                      <td
+                        className={`px-5 py-5 font-medium ${
+                          order.customerCredit
+                            ? "text-red-600"
+                            : "text-green-600"
                         }`}
                       >
-                        {order.status === "DELIVERED" ? (
-                          <FaCheckCircle size={14} className="text-green-600" />
-                        ) : order.status === "PENDING" ? (
-                          <RiProgress2Fill
-                            size={15}
-                            className="text-blue-600"
-                          />
-                        ) : order.status === "CANCELLED" ? (
-                          <MdClose size={15} className="text-red-600" />
-                        ) : null}
-                        {order.status == "PENDING"
-                          ? "En attente"
-                          : order.status == "DELIVERED"
-                          ? "Livrée"
-                          : order.status == "CANCELLED"
-                          ? "Annulée"
-                          : null}
-                      </span>
-                    </td>
-                    <td className="pr-5">
-                      {" "}
-                      <DropdownMenu>
-                        <DropdownMenuTrigger
-                          onClick={() => setorderId(order.id)}
-                          className="border border-transparent focus:border focus:border-transparent active:border active:border-transparent"
+                        {order.totalAmount}
+                      </td>
+                      <td className="px-5 py-5 text-gray-700">
+                        {order.deliveryAddress}
+                      </td>
+                      <td className="px-5 py-5">
+                        <span
+                          className={`w-[110px] flex gap-x-2 items-center justify-center text-base  rounded-sm ${
+                            order.status === "DELIVERED"
+                              ? "bg-green-50"
+                              : order.status === "PENDING"
+                              ? "bg-blue-50"
+                              : order.status === "CANCELLED"
+                              ? "bg-red-50"
+                              : "text-gray-600"
+                          }`}
                         >
-                          <MdOutlineMoreVert />
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-40 border border-transparent">
-                          <DropdownMenuLabel className="text-xl">
-                            Actions
-                          </DropdownMenuLabel>
-                          <DropdownMenuSeparator />
-                          {order.status == "PENDING" ? (
-                            <div>
-                              <DropdownMenuItem className="text-lg">
-                                Confirmer
+                          {order.status === "DELIVERED" ? (
+                            <FaCheckCircle
+                              size={14}
+                              className="text-green-600"
+                            />
+                          ) : order.status === "PENDING" ? (
+                            <RiProgress2Fill
+                              size={15}
+                              className="text-blue-600"
+                            />
+                          ) : order.status === "CANCELLED" ? (
+                            <MdClose size={15} className="text-red-600" />
+                          ) : null}
+                          {order.status == "PENDING"
+                            ? "En attente"
+                            : order.status == "DELIVERED"
+                            ? "Livrée"
+                            : order.status == "CANCELLED"
+                            ? "Annulée"
+                            : null}
+                        </span>
+                      </td>
+                      <td className="pr-5">
+                        {" "}
+                        <DropdownMenu>
+                          <DropdownMenuTrigger
+                            onClick={() => setorderId(order.id)}
+                            className="border border-transparent focus:border focus:border-transparent active:border active:border-transparent"
+                          >
+                            <MdOutlineMoreVert />
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent className="w-40 border border-transparent">
+                            <DropdownMenuLabel className="text-xl">
+                              Actions
+                            </DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            {order.status == "PENDING" ? (
+                              <div>
+                                <DropdownMenuItem className="text-lg">
+                                  Confirmer
+                                </DropdownMenuItem>
+                                <DropdownMenuItem className="text-lg">
+                                  Payer
+                                </DropdownMenuItem>
+                                <DropdownMenuItem className="text-lg">
+                                  Livrer
+                                </DropdownMenuItem>
+                              </div>
+                            ) : null}
+                            {order.status !== "CANCELLED" &&
+                            order.status == "PENDING" ? (
+                              <DropdownMenuItem
+                                className="text-lg"
+                                onClick={() => {
+                                  setorderId(order.id);
+                                  setisCancelModalOpen(true);
+                                }}
+                              >
+                                Annuler
                               </DropdownMenuItem>
+                            ) : null}
+                            {order.status == "CANCELLED" ? (
+                              <DropdownMenuItem
+                                className="text-lg"
+                                onClick={() => {
+                                  setorderId(order.id);
+                                  setisModalOpen(true);
+                                }}
+                              >
+                                Supprimer
+                              </DropdownMenuItem>
+                            ) : null}
+                            {order.status == "DELIVERED" ||
+                            order.status == "CONFIRMED" ? (
                               <DropdownMenuItem className="text-lg">
                                 Payer
                               </DropdownMenuItem>
-                              <DropdownMenuItem className="text-lg">
-                                Livrer
-                              </DropdownMenuItem>
-                            </div>
-                          ) : null}
-                          {order.status !== "CANCELLED" &&
-                          order.status == "PENDING" ? (
-                            <DropdownMenuItem
-                              className="text-lg"
-                              onClick={() => {
-                                setorderId(order.id);
-                                setisCancelModalOpen(true);
-                              }}
-                            >
-                              Annuler
-                            </DropdownMenuItem>
-                          ) : null}
-                          {order.status == "CANCELLED" ? (
-                            <DropdownMenuItem
-                              className="text-lg"
-                              onClick={() => {
-                                setorderId(order.id);
-                                setisModalOpen(true);
-                              }}
-                            >
-                              Supprimer
-                            </DropdownMenuItem>
-                          ) : null}
-                          {order.status == "DELIVERED" ||
-                          order.status == "CONFIRMED" ? (
-                            <DropdownMenuItem className="text-lg">
-                              Payer
-                            </DropdownMenuItem>
-                          ) : null}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                            ) : null}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )
+          ) : sellings.length == 0 ? (
+            <div className="w-full flex flex-col items-center gap-y-2 text-center py-5">
+              <div
+                className="w-[50%] sm:w-[100%] lg:w-[32%] h-[200px] relative overflow-hidden bg-contain bg-center bg-no-repeat cursor-pointer"
+                style={{ backgroundImage: `url(${Product2.src})` }}
+              ></div>
+              <div>
+                <p className="text-2xl font-bold">Aucune vente trouvé</p>
+                <p className="">
+                  La liste des ventes enrégistrées s'affiche ici. Vous effectué
+                  aucune vente pour le moment
+                </p>
+              </div>
+            </div>
           ) : (
             <table className="w-full text-xl ">
               <thead className=" text-black bg-gray-100">

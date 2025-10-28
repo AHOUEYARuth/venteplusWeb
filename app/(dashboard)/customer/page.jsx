@@ -145,7 +145,8 @@ const Customer = () => {
           }
         }
       })();
-    }, [nameFilter, rangeDate]);
+   }, [nameFilter, rangeDate]);
+  
   return (
     <div ref={container} className="w-full h-full p-5 bg-gray-50 rounded-xl">
       <div className="w-full flex flex-row items-center justify-between">

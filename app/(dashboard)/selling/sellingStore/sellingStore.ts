@@ -1,25 +1,34 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { create } from "zustand";
-import { createSellingRequest,getDaysStatsRequest, getStatsRequest,getSellingsRequest, updateSellingRequest, deleteOrderRequest, cancelOrderRequest } from "../sellingRequest/sellingRequest";
+import {
+  createSellingRequest,
+  getDaysStatsRequest,
+  getStatsRequest,
+  getSellingsRequest,
+  updateSellingRequest,
+  deleteOrderRequest,
+  cancelOrderRequest,
+  filterOrderAndSellingRequest,
+} from "../sellingRequest/sellingRequest";
 
 type State = {
   orders: Array<any>;
   sellings: Array<any>;
   editedOrder: any;
-  orderStatistics:any;
-  stats:any;
-  daysStats:any;
+  orderStatistics: any;
+  stats: any;
+  daysStats: any;
 };
 
 type SellingAction = {
   activeMenu: string;
   /* fetchData: () => Promise<void>; */
   setStats: (stats: any) => void;
-  setDaysStats:(daysStats:any)=> void;
+  setDaysStats: (daysStats: any) => void;
   setActiveMenu: (activeMenu: string) => void;
   orderAction: (orderFormData: any) => Promise<void>;
   getStatsAction: (shopId: string) => Promise<void>;
-  getDaysStatsAction:(shopId:string)=> Promise<void>;
+  getDaysStatsAction: (shopId: string) => Promise<void>;
   getOrdersAndSellingsAction: (
     shopId: string,
     isSale: boolean
@@ -31,20 +40,28 @@ type SellingAction = {
   updateSellingAction: (orderId: string, payload: any) => Promise<void>;
   setOrders: (orders: any) => void;
   setEditingOrder: (editedOrder: any) => void;
+  filterOrderAndSellingAction: (
+    shopId: string,
+    status: string,
+    search: string,
+    isSale: boolean,
+    dateFrom: string,
+    dateTo: string
+  ) => Promise<void>;
 };
 
 export const useSellingStore = create<State & SellingAction>((set) => ({
   orders: [],
   sellings: [],
-  stats:null,
-  daysStats:null,
+  stats: null,
+  daysStats: null,
   activeMenu: "commandes",
   editedOrder: null,
-  orderStatistics:null,
-  setOrderStatistics:(orderStatistics) => set({orderStatistics}),
+  orderStatistics: null,
+  setOrderStatistics: (orderStatistics) => set({ orderStatistics }),
   setActiveMenu: (activeMenu) => set({ activeMenu }),
-  setStats: (stats)=> set({stats}),
-  setDaysStats:(daysStats)=>set({daysStats}),
+  setStats: (stats) => set({ stats }),
+  setDaysStats: (daysStats) => set({ daysStats }),
   orderAction: async (orderFormData) => {
     const response = await createSellingRequest(orderFormData);
     return response;
@@ -70,7 +87,7 @@ export const useSellingStore = create<State & SellingAction>((set) => ({
   setOrders: (orders) => {
     set({ orders: orders });
   },
-  cancelOrderAction: async(orderId) =>{
+  cancelOrderAction: async (orderId) => {
     const response = await cancelOrderRequest(orderId);
     return response;
   },
@@ -84,5 +101,28 @@ export const useSellingStore = create<State & SellingAction>((set) => ({
   },
   setEditingOrder: (editedOrder) => {
     set({ editedOrder: editedOrder });
+  },
+
+  filterOrderAndSellingAction: async (
+    shopId,
+    status,
+    search,
+    isSale,
+    dateFrom,
+    dateTo
+  ) => {
+    if (!shopId) {
+      return;
+    }
+
+    const response = await filterOrderAndSellingRequest(
+      shopId,
+      status,
+      search,
+      isSale,
+      dateFrom,
+      dateTo
+    );
+    return response;
   },
 }));

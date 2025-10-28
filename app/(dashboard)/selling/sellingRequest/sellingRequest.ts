@@ -53,3 +53,27 @@ export const updateSellingRequest = async (orderId, payload) => {
     payload: payload,
   });
 };
+
+
+export const filterOrderAndSellingRequest = async (
+  shopId,
+  status,
+  search,
+  isSale,
+  dateFrom,
+  dateTo
+) => {
+  const params = new URLSearchParams("");
+  if (status) params.append("status", status);
+  if (search) params.append("search", search);
+  if (isSale) params.append("isSale", isSale);
+  if (dateFrom) params.append("dateFrom", dateFrom);
+  if (dateTo) params.append("dateTo", dateTo);
+
+
+  return HttpClient.makeRequest({
+    method: "GET",
+    url: `orders/shop/${shopId}`,
+    searchParams: params,
+  });
+};
