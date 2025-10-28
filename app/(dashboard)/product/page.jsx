@@ -89,9 +89,11 @@ export default function Product() {
       });
   }
   async function applyGetProductAction(shopId) {
+    setproductLoading(true)
     await getProductsActions(shopId).then((response) => {
       setProducts(response.data);
       clearCategoryFilter();
+      setproductLoading(false)
     });
   }
   async function applyDeleteProdAction(productId) {
@@ -375,6 +377,7 @@ export default function Product() {
         </div>
 
         <div className="flex flex-row flex-wrap items-center gap-4">
+         
           {products.length === 0 ? (
             <div className="w-full flex flex-col items-center gap-y-2 text-center">
               <div

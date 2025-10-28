@@ -16,19 +16,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog.tsx";
 import { IoMdClose } from "react-icons/io";
 import { useForm } from "react-hook-form";
-import { PhoneInput } from "@/components/ui/phone-input";
 import { useLoginStore } from "@/app/login/loginStore/loginStore";
-import { Button } from "@/components/ui/button";
 import { ClipLoader } from "react-spinners";
 import toast, { Toaster } from "react-hot-toast";
 import { DatePicker } from "@/components/ui/date-picker";
@@ -57,7 +53,6 @@ export default function CustomerCredits() {
     handleSubmit,
     reset,
     formState: { errors },
-    trigger,
   } = useForm({
     mode: "onChange",
   });
@@ -217,8 +212,6 @@ export default function CustomerCredits() {
             Gérez les crédits accordés à vos clients. Suivez les remboursements
             et relancez facilement les paiements en attente.
           </p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Perspiciatis,
-          reprehenderit.
         </div>
       </div>
       <div className="w-full flex flex-col gap-y-5">

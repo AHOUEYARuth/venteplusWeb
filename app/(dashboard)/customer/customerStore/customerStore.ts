@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { create } from "zustand";
-import axios from "axios";
 import { createCustomerRequest,filterCustomersRequest, deleteCustomerRequest, getCustomersRequest } from "../customerRequest/customerRequest";
 
 type State = {

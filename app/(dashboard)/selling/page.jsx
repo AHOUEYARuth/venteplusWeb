@@ -288,7 +288,11 @@ export default function Selling() {
       }
     })();
   }, [searchFilter, rangeDate, statusFilter]);
-
+   function handleClearFilter() {
+     setsearchFilter("");
+     setRangeDate("");
+     setstatusFilter("");
+   }
   return (
     <div ref={container} className="w-full h-full p-5 bg-gray-50 rounded-xl">
       <Dialog open={isModalOpen} onOpenChange={setisModalOpen}>
@@ -541,8 +545,8 @@ export default function Selling() {
               Ventes
             </button>
           </div>
-          <div className="w-[50%] flex flex-row items-center justify-center gap-x-4">
-            <div className="w-[40%] relative flex items-center justify-between bg-white gap-x-2 rounded-lg">
+          <div className="w-[65%] flex flex-row items-center justify-center gap-x-4">
+            <div className="w-[30%] relative flex items-center justify-between bg-white gap-x-2 rounded-lg">
               <input
                 type="text"
                 onChange={(event) => setsearchFilter(event.target.value)}
@@ -553,32 +557,52 @@ export default function Selling() {
                 <MdSearch size={25} />
               </button>
             </div>
-            <div className="w-[60%] flex flex-row gap-x-4 items-center">
+            <div className="w-[65%] flex flex-row gap-x-4 items-center">
               <DatePicker
                 className="p-5"
                 onDateChange={(range) => setRangeDate(range)}
               />
+
               <Select
                 value={statusFilter || "all"}
                 onValueChange={setstatusFilter}
               >
-                <SelectTrigger className="w-[200px] py-5 outline-none focus:outline-none border border-[#F39C12]">
-                  <SelectValue placeholder="Status">Status</SelectValue>
+                <SelectTrigger className="w-[150px] py-6 outline-none focus:outline-none border border-[#F39C12]">
+                  <SelectValue placeholder="Status">
+                    {statusFilter === "all"
+                      ? "Toutes les status"
+                      : statusFilter === "PENDING"
+                      ? "En attente"
+                      : statusFilter === "CONFIRMED"
+                      ? "Confirmer"
+                      : statusFilter === "DELIVERED"
+                      ? "Livrée"
+                      : statusFilter === "CANCELLED"
+                      ? "Annulée"
+                      : "status"}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Toutes les status</SelectItem>
                   <SelectItem value="PENDING">En attente</SelectItem>
                   <SelectItem value="CONFIRMED">Confirmer</SelectItem>
                   <SelectItem value="DELIVERED">Livrée</SelectItem>
-                  <SelectItem value="CANCEL">Annulée</SelectItem>
+                  <SelectItem value="CANCELLED">Annulée</SelectItem>
                 </SelectContent>
               </Select>
-              {/* <Button
-                variant="outline"
-                className="border-[#F39C12] text-[#F39C12] hover:bg-[#F39C12] hover:text-white cursor-pointer"
+              {/* <button
+                onClick={() => handleClearFilter()}
+                className="bg-[#F39C12] cursor-pointer py-3 px-2 text-white rounded-lg hover:bg-transparent hover-border hover:border-[#F39C12] hover:text-[#F39C12]"
               >
                 Effacer le filtre
-              </Button> */}
+              </button> */}
+              <Button
+                onClick={() => handleClearFilter()}
+                variant="outline"
+                className="border-[#F39C12] text-[#F39C12] py-4 hover:bg-[#F39C12] hover:text-white cursor-pointer"
+              >
+                Effacer le filtre
+              </Button>
             </div>
           </div>
         </div>

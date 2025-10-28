@@ -1,5 +1,4 @@
 "use client";
-import { Button } from "@/components/ui/button";
 import React, { useLayoutEffect, useRef, useEffect, useState } from "react";
 import { gsap } from "gsap";
 import { IoMdClose } from "react-icons/io";
@@ -35,7 +34,7 @@ const Customer = () => {
     filterCustomerAction,
   } = customerStore();
   const { shop } = useLoginStore();
-  const { register, handleSubmit, watch, formState, trigger, reset } = useForm({
+  const { register, handleSubmit, formState, reset } = useForm({
     mode: "onChange",
   });
 
@@ -186,7 +185,7 @@ const Customer = () => {
             </div>
           </div>
         </div>
-        <div className="w-[95%] overflow-x-auto pb-10 mt-5 bg-white">
+        <div className="w-full overflow-x-auto pb-10 mt-5 bg-white">
           <table className="min-w-full text-xl">
             <thead className=" text-black bg-gray-100  ">
               <tr className="border-b border-gray-200 text-left">

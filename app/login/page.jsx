@@ -13,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import toast, { Toaster } from "react-hot-toast";
 import { useForm } from "react-hook-form";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { useRouter } from "next/navigation";
@@ -21,7 +22,7 @@ import { useLoginStore } from "./loginStore/loginStore";
 const Login = () => {
   const { name, showLogin, loginActions,setToken,setUser,setShop } = useLoginStore();
   const router = useRouter();
-  const { register, handleSubmit, watch, formState, trigger } = useForm({
+  const { register, handleSubmit, watch, formState, trigger, reset } = useForm({
     mode: "onChange",
   });
   const [loading, setLoading] = useState(false)
@@ -52,6 +53,8 @@ const Login = () => {
       .catch((error) => {
         setLoading(false);
         console.log(error);
+        reset();
+        if(error.message) toast.error(error.message)
       });
     trigger().then((isValid) => {
       if (isValid) {
@@ -208,6 +211,7 @@ const Login = () => {
           />
         </div>
       </div>
+      <Toaster/>
     </div>
   );
 };

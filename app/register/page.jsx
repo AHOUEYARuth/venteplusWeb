@@ -9,7 +9,7 @@ import "@/style/style.scss";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { ClipLoader } from "react-spinners";
 import { useRouter } from "next/navigation";
-
+import toast, { Toaster } from "react-hot-toast";
 const Register = () => {
   const { activeForm, setActiveForm, registerAction } = registerStore();
   const [logoImg, setLogoImg] = useState(null);
@@ -18,7 +18,7 @@ const Register = () => {
   
   const router = useRouter();
 
-  const { register, handleSubmit, watch, formState, trigger } = useForm({
+  const { register, handleSubmit, watch, formState, trigger,reset } = useForm({
     mode: "onChange",
   });
 
@@ -49,11 +49,13 @@ const Register = () => {
       .then((response) => {
         setloading(false);
         console.log(response);
+        reset();
         router.push('/login')
       })
       .catch((error) => {
         setloading(false);
         console.log(error);
+        if(error.message) toast.error(error.message)
       });
   }
   async function validatoreStep() {
@@ -504,6 +506,7 @@ const Register = () => {
           />
         </div>
       </div>
+      <Toaster/>
     </div>
   );
 };

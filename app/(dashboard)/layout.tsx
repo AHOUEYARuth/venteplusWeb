@@ -4,7 +4,7 @@ import DashboardRightSideB from "@/components/layout/DashboardRightSideB";
 import DashboardLeftSideBar from "@/components/layout/DashboardLeftSideBar";
 import DashboardNavBar from "@/components/layout/DashboardNavBar";
 import { ReactNode } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useLoginStore } from "../login/loginStore/loginStore";
 import { ClipLoader, PuffLoader } from "react-spinners";
 
@@ -13,17 +13,24 @@ import { ClipLoader, PuffLoader } from "react-spinners";
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [loading, setLoading] = useState(true);
+  const { user } = useLoginStore();
+  const router = useRouter();
 
   useEffect(() => {
     (function init() {
-      if(loading){
-         setTimeout(() => {
+      if (!localStorage.getItem("access-token")) {
+        router.push('/login')
+      } else {
+        if (loading) {
+          setTimeout(() => {
             setLoading(false);
           }, 5000);
+        }
       }
-       
+      
     })();
   }, [])
+
   const hidePaths = [
     "/selling",
     "/stock",

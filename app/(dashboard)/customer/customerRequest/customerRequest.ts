@@ -1,5 +1,5 @@
 import { HttpClient } from "@/lib/httpClient";
-import api from "@/lib/util";
+/* import api from "@/lib/util"; */
 
 export const createCustomerRequest = async (customerData) => {
   return HttpClient.makeRequest({

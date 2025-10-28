@@ -1,13 +1,8 @@
 "use client";
-import React,{useEffect} from "react";
+import React, { useEffect } from "react";
 import { useDashboardStore } from "./dashboardStore/dashboardStore";
-import { Button } from "@/components/ui/button";
 import { FiArrowUpRight } from "react-icons/fi";
 import { IoMdArrowDropup } from "react-icons/io";
-import Product2 from "@/assets/images/product10.jpg";
-import Product3 from "@/assets/images/product3.png";
-import Product1 from "@/assets/images/product9.png";
-import { GrFavorite } from "react-icons/gr";
 import { TrendingUp } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from "recharts";
 import {
@@ -28,14 +23,14 @@ import { useLoginStore } from "@/app/login/loginStore/loginStore";
 import { baseUrlNotApi } from "@/lib/httpClient";
 import { useSellingStore } from "../selling/sellingStore/sellingStore";
 export const description = "A bar chart with a label";
-const chartData = [
+/* const chartData = [
   { month: "January", desktop: 186 },
   { month: "February", desktop: 305 },
   { month: "March", desktop: 237 },
   { month: "April", desktop: 73 },
   { month: "May", desktop: 209 },
   { month: "June", desktop: 214 },
-];
+]; */
 const chartConfig = {
   desktop: {
     label: "Bénefice",
@@ -43,34 +38,38 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export default function Dashboard(){
-  const { monthSelling,monthSaleTotal, monthSaleProfitTotal,topProducts,setTopProducts,setMonthSelling,getTopProductsAction,getMonthSellingsAction } = useDashboardStore();
-  const { shop } = useLoginStore()
-  const {stats,daysStats,getStatsAction,getDaysStatsAction} = useSellingStore()
+export default function Dashboard() {
+  const {
+    monthSelling,
+    monthSaleTotal,
+    monthSaleProfitTotal,
+    topProducts,
+    getTopProductsAction,
+    getMonthSellingsAction,
+  } = useDashboardStore();
+  const { shop } = useLoginStore();
+  const { stats, daysStats, getStatsAction, getDaysStatsAction } =
+    useSellingStore();
 
   async function applyGetTopProductsAction(shopId) {
-    await getTopProductsAction(shopId).then((response) => {
-    
-    });
+    await getTopProductsAction(shopId).then(() => {});
   }
   async function applyGetMonthSellingsAction(shopId) {
-    await getMonthSellingsAction(shopId).then((response) => {
-   
-    });
+    await getMonthSellingsAction(shopId).then(() => {});
   }
 
   async function applyGetStatsAction(shopId) {
-      await getStatsAction(shopId) 
-      await getDaysStatsAction(shopId);
+    await getStatsAction(shopId);
+    await getDaysStatsAction(shopId);
   }
   useEffect(() => {
-      (function init() {
-        if (shop?.id) {
-          applyGetTopProductsAction(shop?.id);
-          applyGetMonthSellingsAction(shop?.id);
-          applyGetStatsAction(shop?.id);
-        }
-       })();
+    (function init() {
+      if (shop?.id) {
+        applyGetTopProductsAction(shop?.id);
+        applyGetMonthSellingsAction(shop?.id);
+        applyGetStatsAction(shop?.id);
+      }
+    })();
   }, [shop]);
   return (
     <div className="w-full h-full p-5 bg-gray-50 rounded-xl">
@@ -78,8 +77,8 @@ export default function Dashboard(){
         <div>
           <h2 className="text-2xl font-bold ">Tableau de bord</h2>
           <p className="text-gray-500 text-xl pt-5">
-            Suivez en un coup d&apos;œil la performance de votre commerce. Visualisez
-            vos ventes, bénéfices et statistiques clés en temps réel.
+            Suivez en un coup d&apos;œil la performance de votre commerce.
+            Visualisez vos ventes, bénéfices et statistiques clés en temps réel.
           </p>
         </div>
       </div>
@@ -93,7 +92,9 @@ export default function Dashboard(){
           </div>
 
           <div className="mt-4">
-            <h2 className="text-4xl font-semibold">{daysStats?.daysSalesCount ?? 0}</h2>
+            <h2 className="text-4xl font-semibold">
+              {daysStats?.daysSalesCount ?? 0}
+            </h2>
           </div>
 
           <div className="flex items-center gap-2 mt-4">
@@ -113,7 +114,9 @@ export default function Dashboard(){
           </div>
 
           <div className="mt-4">
-            <h2 className="text-4xl font-semibold">{daysStats?.daysProfit ?? 0}</h2>
+            <h2 className="text-4xl font-semibold">
+              {daysStats?.daysProfit ?? 0}
+            </h2>
           </div>
 
           <div className="flex items-center gap-2 mt-4">
@@ -133,7 +136,9 @@ export default function Dashboard(){
           </div>
 
           <div className="mt-4">
-            <h2 className="text-4xl font-semibold">{daysStats?.pendingOrders ?? 0}</h2>
+            <h2 className="text-4xl font-semibold">
+              {daysStats?.pendingOrders ?? 0}
+            </h2>
           </div>
 
           <div className="flex items-center gap-2 mt-4">
@@ -185,7 +190,8 @@ export default function Dashboard(){
           </CardContent>
           <CardFooter className="flex-col items-start gap-2 text-sm">
             <div className="flex gap-2 leading-none font-medium">
-              Bénéfice de l'année. Vos profit sur chaque vente du mois par année <TrendingUp className="h-4 w-4" />
+              Bénéfice de l&aps;année. Vos profit sur chaque vente du mois par
+              année <TrendingUp className="h-4 w-4" />
             </div>
           </CardFooter>
         </Card>
@@ -193,63 +199,56 @@ export default function Dashboard(){
       <div className="py-8">
         <h2 className="text-2xl font-bold mb-5">Top Produits</h2>
         <div className="w-full flex flex-row flex-wrap items-center justify-start gap-4 ">
-         {topProducts.map((product, index) => {
-                         return (
-                           <div
-                             key={index}
-                             className="shop-item min-w-93 flex flex-col gap-5 bg-white rounded-2xl p-3 relative shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
-                           >
-                             <div className="w-full bg-gray-300 flex flex-col gap-5 rounded-tl-xl rounded-2xl">
-                               <div
-                                 className="w-full h-[300px] bg-center bg-cover bg-no-repeat rounded-2xl"
-                                 style={{
-                                   backgroundImage: `url("${baseUrlNotApi}${product?.image}")`,
-                                 }}
-                               >
-                                 <div>
-                                   <div className="w-full flex items-center justify-between pt-2 px-2">
-                                     
-          
-                                   </div>
-                                 </div>
-                               </div>
-                             </div>
-         
-                             <div className="px-2 flex flex-col gap-2">
-                               <p className="text-base">
-                                 <span className="text-[#F39C12] font-semibold text-2xl">
-                                   {product.name}
-                                 </span>
-                               </p>
-                               <p className="font-medium text-lg text-gray-500">
-                                 {product.description}
-                               </p>
-                             </div>
-                             <div className="px-2 flex items-center justify-between gap-4 text-sm text-gray-700">
-                               <h3 className="text-2xl font-semibold">
-                                 {product.salePrice} F
-                               </h3>
-                               <button className="bg-[#F39C12] text-white text-xl py-2 px-4 rounded-xl cursor-pointer">
-                                 <h3>
-                                   Prix d'achat :{" "}
-                                   <span className="font-bold">
-                                     {product.purchasePrice}
-                                   </span>
-                                 </h3>
-                               </button>
-                             </div>
-                           </div>
-                         );
-                       })}
+          {topProducts.map((product, index) => {
+            return (
+              <div
+                key={index}
+                className="shop-item min-w-93 flex flex-col gap-5 bg-white rounded-2xl p-3 relative shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
+              >
+                <div className="w-full bg-gray-300 flex flex-col gap-5 rounded-tl-xl rounded-2xl">
+                  <div
+                    className="w-full h-[300px] bg-center bg-cover bg-no-repeat rounded-2xl"
+                    style={{
+                      backgroundImage: `url("${baseUrlNotApi}${product?.image}")`,
+                    }}
+                  >
+                    <div>
+                      <div className="w-full flex items-center justify-between pt-2 px-2"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="px-2 flex flex-col gap-2">
+                  <p className="text-base">
+                    <span className="text-[#F39C12] font-semibold text-2xl">
+                      {product.name}
+                    </span>
+                  </p>
+                  <p className="font-medium text-lg text-gray-500">
+                    {product.description}
+                  </p>
+                </div>
+                <div className="px-2 flex items-center justify-between gap-4 text-sm text-gray-700">
+                  <h3 className="text-2xl font-semibold">
+                    {product.salePrice} F
+                  </h3>
+                  <button className="bg-[#F39C12] text-white text-xl py-2 px-4 rounded-xl cursor-pointer">
+                    <h3>
+                      Prix d&apos;achat :{" "}
+                      <span className="font-bold">{product.purchasePrice}</span>
+                    </h3>
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
       <div className="py-8">
         <h2 className="text-2xl font-bold mb-5">Listes des ventes</h2>
         <div className="text-2xl bg-white p-5 rounded-2xl">
           <div className="overflow-x-auto">
-            
-            
-              <table className="w-full text-xl ">
+            <table className="w-full text-xl ">
               <thead className="text-black bg-gray-100">
                 <tr className="border-b border-gray-200 text-left">
                   {/* <th className="p-5">Client</th>
@@ -268,20 +267,22 @@ export default function Dashboard(){
                     key={selling.id}
                     className="border-b hover:bg-gray-50 transition-colors"
                   >
-                     {/* <td className="px-5 py-5">{selling.customer.name} {selling.customer.firstName}</td>
+                    {/* <td className="px-5 py-5">{selling.customer.name} {selling.customer.firstName}</td>
                     <td className="px-5 py-5">{selling.customer.phoneNumber}</td> */}
                     <td className="p-5">{selling.toOrders[0].product.name}</td>
                     <td className="p-5">{selling.toOrders[0].quantity}</td>
-                    <td className="p-5">{selling.toOrders[0].product.purchasePrice}</td>
-                    <td className="p-5">{selling.toOrders[0].product.salePrice}</td>
+                    <td className="p-5">
+                      {selling.toOrders[0].product.purchasePrice}
+                    </td>
+                    <td className="p-5">
+                      {selling.toOrders[0].product.salePrice}
+                    </td>
                     <td className="p-5">{selling.totalAmount}</td>
                     <td className="p-5 text-green-600">{selling.profit}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
-
-            
           </div>
 
           <div className="pt-4 flex flex-col sm:flex-row justify-between text-lg font-semibold text-gray-700">
@@ -291,13 +292,13 @@ export default function Dashboard(){
             </p>
             <p>
               <span className="text-gray-500 text-xl">Bénéfice total : </span>
-              <span className="text-[#F39C12]">{monthSaleProfitTotal} FCFA</span>
+              <span className="text-[#F39C12]">
+                {monthSaleProfitTotal} FCFA
+              </span>
             </p>
           </div>
         </div>
       </div>
     </div>
   );
-};
-
-
+}

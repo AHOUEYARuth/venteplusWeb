@@ -21,7 +21,7 @@ export const registerEmployeeRequest = async (employeeData: any, role) => {
   params.append('role', role);
   return HttpClient.makeRequest({
     method: "POST",
-    url: "employees/register",
+    url: "traders/register-employe",
     payload: objectToFormData(employeeData),
   });
 };

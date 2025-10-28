@@ -7,26 +7,59 @@ import RegisterP from "@/assets/images/login.jpg";
 import "@/style/style.scss";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { ClipLoader } from "react-spinners";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { registerStore } from "../register/registerStore/registerStore";
+import toast, { Toaster } from "react-hot-toast";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog.tsx";
 
-const RegisterEmployee = () => {
-  const { activeForm, setActiveForm, registerAction, employeeRegisterAction } = registerStore();
+export default function RegisterEmployee()  {
+  const { activeForm, setActiveForm, registerAction, employeeRegisterAction } =
+    registerStore();
   const [logoImg, setLogoImg] = useState(null);
   const [coverImg, setCoverImg] = useState(null);
   const [loading, setloading] = useState(false);
+  const [isModalOpen, setisModalOpen] = useState(false);
+  const [params, setParams] = useState({})
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const [shopId, setshopId] = useState("");
+  const [role, setrole] = useState("");
 
-  /* const { role } = router.query; */
-  const role = searchParams.get('role')
-  console.log("Employee rôle");
-  console.log(role);
-  
+  const registerLink =
+    "register-employee/?shopId=68f7be93cc6ba0ba5233b885&role=TRADER";
+  /* const role = searchParams.get("role");
+  const shopId = searchParams.get("shopId"); */
+  /* console.log("Employee rôle");
+  console.log(role); 
+  console.log("Shop id");
+  console.log(shopId); */
 
-  const { register, handleSubmit, watch, formState, trigger } = useForm({
-    mode: "onChange",
-  });
+
+   
+
+  useEffect(() => {
+    const query = window.location.search
+    const searchParams = new URLSearchParams(query)
+    const entries = Object.fromEntries(searchParams.entries())
+    setshopId(entries.shopId)
+    setrole(entries.role)
+    console.log("entries");
+    console.log(entries)
+    setParams(entries)
+  }, [])
+
+  const { register, handleSubmit, watch, formState, trigger, reset } =
+    useForm({
+      mode: "onChange",
+    });
 
   function previewCoverImage(e) {
     if (e.target.files && e.target.files[0]) {
@@ -42,10 +75,11 @@ const RegisterEmployee = () => {
 
   async function submitForm(data) {
     setloading(true);
-    console.log()
+    console.log();
     const payload = {
       ...data,
-      role: role,
+      shopId: shopId,
+      role: role.toString().toUpperCase(),
       avatar: data?.avatar[0],
       identityCard: data?.identityCard[0],
     };
@@ -53,11 +87,14 @@ const RegisterEmployee = () => {
       .then((response) => {
         setloading(false);
         console.log(response);
-        /* router.push("/login"); */
+        reset();
+        setisModalOpen(true);
       })
       .catch((error) => {
         setloading(false);
         console.log(error);
+        if (error.message) toast.error(error.message);
+        
       });
   }
   async function validatoreStep() {
@@ -69,6 +106,27 @@ const RegisterEmployee = () => {
   }
   return (
     <div className="min-h-screen bg-[#F9FAFB] flex items-center justify-center">
+      <Dialog open={isModalOpen} onOpenChange={setisModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-lg">Inscription réussie</DialogTitle>
+            <DialogDescription className="text-base">
+              Veuillez attendre la validation de votre compte par
+              l'administrateur de la boutique
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="w-[50] sm:justify-start items-center justify-center">
+            <button
+              type="button"
+              className="w-[100px] auth-btn border border-1 border-[#F39C12] text-[#F39C12] flex flex-row items-center justify-center gap-x-2 w-full mt-5  py-2 px-4 rounded-lg font-semibold hover:bg-[#F39C12] hover:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#F39C12] focus:ring-offset-2 transition-all shadow-lg"
+              onClick={() => setisModalOpen(false)}
+              variant="ghost"
+            >
+              Ok
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       <div className="content w-[55%] bg-white rounded-xl flex items-center justify-between p-8">
         <div className="custom-box w-[50%] overflow-hidden">
           <div className="px-8 center-text">
@@ -312,8 +370,9 @@ const RegisterEmployee = () => {
           />
         </div>
       </div>
+      <Toaster />
     </div>
   );
 };
 
-export default RegisterEmployee;
+
