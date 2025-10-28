@@ -264,17 +264,22 @@ export default function Selling() {
       if (searchFilter != "" || rangeDate != null || statusFilter != "") {
         const dateFrom = rangeDate?.from;
         const dateTo = rangeDate?.to;
+       console.log("call")
         await filterOrderAndSellingAction(
           shop?.id,
           searchFilter,
-          dateFrom != undefined && dateFrom != null
-            ? moment(dateFrom).format("DD-MM-YYYY")
+          dateFrom != undefined && dateFrom != null ? moment(dateFrom).format("DD-MM-YYYY")
             : dateFrom,
           dateTo != undefined && dateTo != null
             ? moment(dateTo).format("DD-MM-YYYY")
-            : dateTo
+            : dateTo,
+            statusFilter,
+            activeMenu == "ventes" ? true : false
         ).then((response) => {
-          setOrders(response.data);
+          if(activeMenu == "ventes")
+            setSellings(response.data);
+          else
+            setOrders(response.data);
         });
       } else {
         if (shop?.id) {

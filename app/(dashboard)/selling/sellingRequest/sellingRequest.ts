@@ -57,11 +57,11 @@ export const updateSellingRequest = async (orderId, payload) => {
 
 export const filterOrderAndSellingRequest = async (
   shopId,
-  status,
   search,
-  isSale,
   dateFrom,
-  dateTo
+  dateTo,
+  status,
+  isSale,
 ) => {
   const params = new URLSearchParams("");
   if (status) params.append("status", status);

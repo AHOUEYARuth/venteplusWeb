@@ -42,11 +42,12 @@ type SellingAction = {
   setEditingOrder: (editedOrder: any) => void;
   filterOrderAndSellingAction: (
     shopId: string,
-    status: string,
     search: string,
-    isSale: boolean,
     dateFrom: string,
-    dateTo: string
+    dateTo: string,
+    isSale: boolean,
+    status: string,
+    
   ) => Promise<void>;
 };
 
@@ -105,11 +106,11 @@ export const useSellingStore = create<State & SellingAction>((set) => ({
 
   filterOrderAndSellingAction: async (
     shopId,
-    status,
     search,
-    isSale,
     dateFrom,
-    dateTo
+    dateTo,
+    status,
+    isSale,
   ) => {
     if (!shopId) {
       return;
@@ -117,11 +118,11 @@ export const useSellingStore = create<State & SellingAction>((set) => ({
 
     const response = await filterOrderAndSellingRequest(
       shopId,
-      status,
       search,
-      isSale,
       dateFrom,
-      dateTo
+      dateTo,
+      status,
+      isSale,
     );
     return response;
   },
