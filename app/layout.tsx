@@ -36,7 +36,14 @@ export default function RootLayout({
         <NavBar></NavBar>
         {children}
         <Footer/>
-        <Toaster closeButton={true}/>
+        <Toaster richColors
+          closeButton
+          toastOptions={{
+            style: {
+              background: "#000", 
+              color: "#fff",       
+            },
+          }}/>
       </body>
     </html>
   );

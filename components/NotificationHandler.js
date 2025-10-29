@@ -2,8 +2,10 @@
 import { useEffect } from "react";
 import { messaging, getToken, onMessage } from "@/lib/firebase";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function NotificationHandler() {
+  const router = useRouter()
   useEffect(() => {
     if (!messaging) return;
 
@@ -30,10 +32,14 @@ export default function NotificationHandler() {
      
       toast(`${payload.notification.title}`, {
           description: `${payload.notification.body}`,
-          action: {
-            label: "Liste des commandes",
-            onClick: () => console.log("Undo"),
-          },
+          duration: Infinity, 
+           action: {
+            label: "Commandes",
+            onClick: () => {
+                toast.dismiss()
+                router.push("/selling")
+            },
+      },
         })
       console.log("Message reçu :", payload);
     //   alert(`${payload.notification.title} - ${payload.notification.body}`);
