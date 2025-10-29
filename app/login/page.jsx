@@ -41,7 +41,8 @@ const Login = () => {
   const [shops, setShops] = useState([]);
   const [isModalOpen, setisModalOpen] = useState(false);
   const [phoneNum, setphoneNum] = useState("");
-  const [isOtpModalOpen, setisOtpModalOpen] = useState(false)
+  const [isOtpModalOpen, setisOtpModalOpen] = useState(false);
+  const [newpassModal, setnewpassModal] = useState(false)
 
   async function submitForm(data) {
     setLoading(true);
@@ -170,6 +171,55 @@ const Login = () => {
             <DialogFooter className="sm:justify-start items-center justify-center">
               <button
                 type="submit"
+                onClick={() => {
+                  setisOtpModalOpen(false)
+                  setnewpassModal(true)
+                }}
+                className="w-50 auth-btn flex flex-row items-center justify-center gap-x-2 w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] cursor-pointer focus:ring-offset-2 transition-all shadow-lg"
+              >
+                Valider
+                {/* {employeLoading ? <ClipLoader color="white" size={20} /> : null} */}
+              </button>
+              <button
+                type="button"
+                className="w-50 auth-btn border border-1 border-gray-600 text-black flex flex-row items-center justify-center gap-x-2 w-full mt-5 text-black py-3 px-4 rounded-lg font-semibold hover:bg-[#000] hover:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#000] focus:ring-offset-2 transition-all shadow-lg"
+                onClick={() => setisOtpModalOpen(false)}
+              >
+                Fermer
+              </button>
+            </DialogFooter>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={newpassModal} onOpenChange={setnewpassModal}>
+        <DialogContent className="w-[500px] ">
+          <DialogHeader>
+            <DialogTitle className="text-lg">Nouveau mot de passe</DialogTitle>
+            <DialogDescription className="text-base">
+              Veuillez saisir votre nouveau mot de passe
+            </DialogDescription>
+          </DialogHeader>
+          <div className="w-full space-y-5">
+            <div className=" ">
+              <label htmlFor="">Nouveau mot de passe</label>
+              <input
+                type="text"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                placeholder="saisissez votre nouveau mot de passe"
+              />
+            </div>
+            <div className=" ">
+              <label htmlFor="">Confimer le mot de passe</label>
+              <input
+                type="text"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                placeholder="confirmer le nouveau mot de passe"
+              />
+            </div>
+            <DialogFooter className="sm:justify-start items-center justify-center">
+              <button
+                type="submit"
                 onClick={() => submitPassForm(phoneNum)}
                 className="w-50 auth-btn flex flex-row items-center justify-center gap-x-2 w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] cursor-pointer focus:ring-offset-2 transition-all shadow-lg"
               >
@@ -179,7 +229,7 @@ const Login = () => {
               <button
                 type="button"
                 className="w-50 auth-btn border border-1 border-gray-600 text-black flex flex-row items-center justify-center gap-x-2 w-full mt-5 text-black py-3 px-4 rounded-lg font-semibold hover:bg-[#000] hover:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#000] focus:ring-offset-2 transition-all shadow-lg"
-                onClick={() => setisModalOpen(false)}
+                onClick={() => setnewpassModal(false)}
               >
                 Fermer
               </button>
@@ -187,7 +237,6 @@ const Login = () => {
           </div>
         </DialogContent>
       </Dialog>
-
       <div className="content w-[55%] bg-white rounded-xl flex items-center justify-between p-5">
         <div className="custom-box w-[50%] overflow-hidden">
           <div className="p-8 center-text">
