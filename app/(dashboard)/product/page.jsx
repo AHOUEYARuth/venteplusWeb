@@ -25,7 +25,7 @@ import { IoMdClose } from "react-icons/io";
 import { useForm } from "react-hook-form";
 import { useLoginStore } from "@/app/login/loginStore/loginStore";
 import { baseUrlNotApi } from "@/lib/httpClient";
-import { ClipLoader } from "react-spinners";
+import { ClipLoader, PuffLoader } from "react-spinners";
 import toast, { Toaster } from "react-hot-toast";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import moment from "moment";
@@ -89,11 +89,12 @@ export default function Product() {
       });
   }
   async function applyGetProductAction(shopId) {
-    setproductLoading(true)
+    setProducts([]);
+    setproductLoading(true);
     await getProductsActions(shopId).then((response) => {
       setProducts(response.data);
       clearCategoryFilter();
-      setproductLoading(false)
+      setproductLoading(false);
     });
   }
   async function applyDeleteProdAction(productId) {
@@ -152,7 +153,6 @@ export default function Product() {
           await applyGetProductAction(shop?.id);
           toast.success("Produit modifié avec succès");
           setcoverImg(null);
-          
           setEditingProduct(null);
 
           timeLineModal.current.reversed(true);
@@ -171,14 +171,12 @@ export default function Product() {
     } else {
       await createProductAction(payload)
         .then(async (response) => {
-          console.log("product");
-          console.log(response);
-          timeLineModal.current.reversed(true);
-          reset();
-          await applyGetProductAction(shop?.id);
-          toast.success("Produit ajouté avec succès");
           setcoverImg(null);
-          /* timeLineModal.current.reversed(true); */
+          setproductInfos({});
+          reset();
+          toast.success("Produit ajouté avec succès");
+          timeLineModal.current.reversed(true);
+          await applyGetProductAction(shop?.id);
         })
         .catch((error) => {
           console.log(error);
@@ -220,11 +218,11 @@ export default function Product() {
         ).then((response) => {
           setProducts(response.data);
         });
-      }else {
-          if(shop?.id){
-            await applyGetProductAction(shop?.id)
-          }
+      } else {
+        if (shop?.id) {
+          await applyGetProductAction(shop?.id);
         }
+      }
     })();
   }, [categorieFilter, nameFilter, rangeDate]);
 
@@ -329,39 +327,30 @@ export default function Product() {
             Rechercher
           </button>
         </div>
-        <div className="w-[50%] flex items-center gap-3">
+        {/* <div className="w-[50%] flex items-center gap-3"> */}
           <div className="flex flex-row gap-x-5 items-center ">
             <DatePicker onDateChange={(range) => setRangeDate(range)} />
-            {/* <label htmlFor="" className="text-lg">
-              Filtrer par date :{" "}
-            </label>
-            <input
-              type="date"
-              name=""
-              id=""
-              className="border border-[#F39C12] py-2 px-4 rounded-lg"
-            /> */}
+            <Select
+              value={categorieFilter || "all"}
+              onValueChange={setCategorieFilter}
+              disabled={filterLoading}
+            >
+              <SelectTrigger className="w-[200px] py-5 outline-none focus:outline-none border border-[#F39C12]">
+                <SelectValue placeholder="Catégorie">
+                  {filterLoading ? "Chargement..." : "Catégorie"}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Toutes les catégories</SelectItem>
+                {categories.map((category, index) => (
+                  <SelectItem key={index} value={category.id}>
+                    {category.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-          <Select
-            value={categorieFilter || "all"}
-            onValueChange={setCategorieFilter}
-            disabled={filterLoading}
-          >
-            <SelectTrigger className="w-[200px] py-5 outline-none focus:outline-none border border-[#F39C12]">
-              <SelectValue placeholder="Catégorie">
-                {filterLoading ? "Chargement..." : "Catégorie"}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Toutes les catégories</SelectItem>
-              {categories.map((category, index) => (
-                <SelectItem key={index} value={category.id}>
-                  {category.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+       {/*  </div> */}
       </div>
 
       <div className="py-8 mt-10">
@@ -375,131 +364,105 @@ export default function Product() {
             Effacer le filtre
           </Button>
         </div>
-
-        <div className="flex flex-row flex-wrap items-center gap-4">
-         
-          {products.length === 0 ? (
-            <div className="w-full flex flex-col items-center gap-y-2 text-center">
-              <div
-                className="w-[50%] sm:w-[100%] lg:w-[32%] h-[200px] relative overflow-hidden bg-contain bg-center bg-no-repeat cursor-pointer"
-                style={{ backgroundImage: `url(${Product2.src})` }}
-              ></div>
-              <div>
-                <p className="text-2xl font-bold">Aucun produit trouvé</p>
-                <p className="">
-                  La liste des produit enrégistrer s'affiche ici
-                </p>
+        {productLoading ? (
+          <div className="w-full h-[500px] flex items-center justify-center">
+            <ClipLoader color="#F39C12" size={50} />
+          </div>
+        ) : (
+          <div className="flex flex-row flex-wrap items-center gap-4">
+            {products.length === 0 ? (
+              <div className="w-full flex flex-col items-center gap-y-2 text-center">
+                <div
+                  className="w-[50%] sm:w-[100%] lg:w-[32%] h-[200px] relative overflow-hidden bg-contain bg-center bg-no-repeat cursor-pointer"
+                  style={{ backgroundImage: `url(${Product2.src})` }}
+                ></div>
+                <div>
+                  <p className="text-2xl font-bold">Aucun produit trouvé</p>
+                  <p className="">
+                    La liste des produit enrégistrés s'affiche ici
+                  </p>
+                </div>
               </div>
-            </div>
-          ) : (
-            <>
-              {products.map((product, index) => {
-                return (
-                  <div
-                    key={index}
-                    className="shop-item min-w-93 flex flex-col gap-5 bg-white rounded-2xl p-3 relative shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
-                  >
-                    <div className="w-full bg-gray-300 flex flex-col gap-5 rounded-tl-xl rounded-2xl">
-                      <div
-                        className="w-full h-[300px] bg-center bg-cover bg-no-repeat rounded-2xl"
-                        style={{
-                          backgroundImage: `url("${baseUrlNotApi}${product?.image}")`,
-                        }}
-                      >
-                        <div>
-                          <div className="w-full flex items-center justify-between pt-2 px-2">
-                            <div
-                              onClick={() => {
-                                setEditingProduct(product);
-                                setproductInfos({
-                                  ...product,
-                                });
-                                setcoverImg(
-                                  `${baseUrlNotApi}${product?.image}`
-                                );
-                                setadditionalCosts(product?.additionalCosts);
-                                setavailableQuantity(product.availableQuantity);
-                                timeLineModal.current.play();
-                              }}
-                              className="flex flex-row gap-2 text-black items-center justify-between p-2 bg-gray-100 rounded-md font-bold"
-                            >
-                              Modifier
+            ) : (
+              <>
+                {products.map((product, index) => {
+                  return (
+                    <div
+                      key={index}
+                      className="shop-item min-w-93 max-w-93 flex flex-col gap-5 bg-white rounded-2xl p-3 relative shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
+                    >
+                      <div className="w-full bg-gray-300 flex flex-col gap-5 rounded-tl-xl rounded-2xl">
+                        <div
+                          className="w-full h-[300px] bg-center bg-cover bg-no-repeat rounded-2xl"
+                          style={{
+                            backgroundImage: `url("${baseUrlNotApi}${product?.image}")`,
+                          }}
+                        >
+                          <div>
+                            <div className="w-full flex items-center justify-between pt-2 px-2">
+                              <div
+                                onClick={() => {
+                                  setEditingProduct(product);
+                                  setproductInfos({
+                                    ...product,
+                                  });
+                                  setcoverImg(
+                                    `${baseUrlNotApi}${product?.image}`
+                                  );
+                                  setadditionalCosts(product?.additionalCosts);
+                                  setavailableQuantity(
+                                    product.availableQuantity
+                                  );
+                                  timeLineModal.current.play();
+                                }}
+                                className="flex flex-row gap-2 text-black items-center justify-between p-2 bg-gray-100 rounded-md font-bold"
+                              >
+                                Modifier
+                              </div>
+                              <div
+                                onClick={() => {
+                                  setproductId(product.id);
+                                  setisModalOpen(true);
+                                }}
+                                className="w-[40px] h-[40px]  text-xl flex items-center justify-center bg-red-100 text-red-500 rounded-full cursor-pointer "
+                              >
+                                <RiDeleteBin6Line />
+                              </div>
                             </div>
-                            <div
-                              onClick={() => {
-                                setproductId(product.id);
-                                setisModalOpen(true);
-                              }}
-                              className="w-[40px] h-[40px]  text-xl flex items-center justify-center bg-red-100 text-red-500 rounded-full cursor-pointer "
-                            >
-                              <RiDeleteBin6Line />
-                            </div>
-
-                            {/*  <Dialog>
-                              <DialogTrigger>
-                                <div className="w-[40px] h-[40px]  text-xl flex items-center justify-center bg-red-100 text-red-500 rounded-full cursor-pointer ">
-                                  <RiDeleteBin6Line />
-                                </div>
-                              </DialogTrigger>
-                              <DialogContent className="w-[450px]">
-                                <DialogHeader>
-                                  <DialogTitle className="text-center">
-                                    Voulez-vous vraiment supprimer ce produit?
-                                  </DialogTitle>
-                                  <DialogDescription className="w-full flex flex-row gap-x-5 justify-center mt-5">
-                                    <button
-                                      onClick={() => {
-                                        applyDeleteProdAction(product.id);
-                                      }}
-                                      disabled={deleteLoading}
-                                      className="p-1 flex flex-row items-center jeustify-center gap-x-2 bg-green-500 text-white text-lg rounded-sm  cursor-pointer"
-                                    >
-                                      Oui{" "}
-                                      {deleteLoading ? (
-                                        <ClipLoader color="white" size={20} />
-                                      ) : null}
-                                    </button>
-                                    <button className="p-1 bg-red-500 text-white text-lg rounded-sm cursor-pointer">
-                                      Non
-                                    </button>
-                                  </DialogDescription>
-                                </DialogHeader>
-                              </DialogContent>
-                            </Dialog> */}
                           </div>
                         </div>
                       </div>
-                    </div>
 
-                    <div className="px-2 flex flex-col gap-2">
-                      <p className="text-base">
-                        <span className="text-[#F39C12] font-semibold text-2xl">
-                          {product.name}
-                        </span>
-                      </p>
-                      <p className="font-medium text-lg text-gray-500">
-                        {product.description}
-                      </p>
-                    </div>
-                    <div className="px-2 flex items-center justify-between gap-4 text-sm text-gray-700">
-                      <h3 className="text-2xl font-semibold">
-                        {product.salePrice} F
-                      </h3>
-                      <button className="bg-[#F39C12] text-white text-xl py-2 px-4 rounded-xl cursor-pointer">
-                        <h3>
-                          Prix d'achat :{" "}
-                          <span className="font-bold">
-                            {product.purchasePrice}
+                      <div className="px-2 flex flex-col gap-2">
+                        <p className="text-base">
+                          <span className="text-[#F39C12] font-semibold text-2xl">
+                            {product.name}
                           </span>
+                        </p>
+                        <p className="font-medium text-lg text-gray-500">
+                          {product.description}
+                        </p>
+                      </div>
+                      <div className="px-2 flex items-center justify-between gap-4 text-sm text-gray-700">
+                        <h3 className="text-2xl font-semibold">
+                          {product.salePrice} F
                         </h3>
-                      </button>
+                        <button className="bg-[#F39C12] text-white text-xl py-2 px-4 rounded-xl cursor-pointer">
+                          <h3>
+                            Prix d'achat :{" "}
+                            <span className="font-bold">
+                              {product.purchasePrice}
+                            </span>
+                          </h3>
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-            </>
-          )}
-        </div>
+                  );
+                })}
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       <div

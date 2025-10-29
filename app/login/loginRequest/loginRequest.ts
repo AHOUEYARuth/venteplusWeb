@@ -14,3 +14,11 @@ export const loginRequest = async (userData) => {
     payload: userData,
   });
 }
+
+export const forgotPasswordRequest = async (data) => {
+  return HttpClient.makeRequest({
+    method: "POST",
+    url: "auth/forgot-password",
+    payload: data,
+  });
+};

@@ -190,15 +190,29 @@ export default function Selling() {
   }, [container]);
 
   async function applyGetOrdersAction(shopId) {
-    await getOrdersAndSellingsAction(shopId, false).then((response) => {
-      setOrders(response.data);
-    });
+    setOrders([]);
+    setLoadingOrder(true);
+    await getOrdersAndSellingsAction(shopId, false)
+      .then((response) => {
+        setOrders(response.data);
+      })
+      .catch((error) => {})
+      .finally(() => {
+        setLoadingOrder(false);
+      });
   }
 
   async function applyGetSellingsAction(shopId) {
-    await getOrdersAndSellingsAction(shopId, true).then((response) => {
-      setSellings(response.data);
-    });
+    setSellings([]);
+    setLoadingOrder(true);
+    await getOrdersAndSellingsAction(shopId, true)
+      .then((response) => {
+        setSellings(response.data);
+      })
+      .catch((error) => {})
+      .finally(() => {
+        setLoadingOrder(false);
+      });
   }
 
   async function applyGetCustomersAction(shopId) {
@@ -264,22 +278,21 @@ export default function Selling() {
       if (searchFilter != "" || rangeDate != null || statusFilter != "") {
         const dateFrom = rangeDate?.from;
         const dateTo = rangeDate?.to;
-       console.log("call")
+        console.log("call");
         await filterOrderAndSellingAction(
           shop?.id,
           searchFilter,
-          dateFrom != undefined && dateFrom != null ? moment(dateFrom).format("DD-MM-YYYY")
+          dateFrom != undefined && dateFrom != null
+            ? moment(dateFrom).format("DD-MM-YYYY")
             : dateFrom,
           dateTo != undefined && dateTo != null
             ? moment(dateTo).format("DD-MM-YYYY")
             : dateTo,
-            statusFilter,
-            activeMenu == "ventes" ? true : false
+          statusFilter,
+          activeMenu == "ventes" ? true : false
         ).then((response) => {
-          if(activeMenu == "ventes")
-            setSellings(response.data);
-          else
-            setOrders(response.data);
+          if (activeMenu == "ventes") setSellings(response.data);
+          else setOrders(response.data);
         });
       } else {
         if (shop?.id) {
@@ -288,11 +301,11 @@ export default function Selling() {
       }
     })();
   }, [searchFilter, rangeDate, statusFilter]);
-   function handleClearFilter() {
-     setsearchFilter("");
-     setRangeDate("");
-     setstatusFilter("");
-   }
+  function handleClearFilter() {
+    setsearchFilter("");
+    setRangeDate("");
+    setstatusFilter("");
+  }
   return (
     <div ref={container} className="w-full h-full p-5 bg-gray-50 rounded-xl">
       <Dialog open={isModalOpen} onOpenChange={setisModalOpen}>
@@ -606,112 +619,251 @@ export default function Selling() {
             </div>
           </div>
         </div>
-        <div className="w-[100%] overflow-x-auto pb-10 mt-5 bg-white">
-          {activeMenu === "commandes" ? (
-            orders.length == 0 ? (
+        {loadingOrder ? (
+          <div className="w-full h-[500px] flex items-center justify-center">
+            <ClipLoader color="#F39C12" size={50} />
+          </div>
+        ) : (
+          <div className="w-[100%] overflow-x-auto pb-10 mt-5 bg-white">
+            {activeMenu === "commandes" ? (
+              orders.length == 0 ? (
+                <div className="w-full flex flex-col items-center gap-y-2 text-center py-5">
+                  <div
+                    className="w-[50%] sm:w-[100%] lg:w-[32%] h-[200px] relative overflow-hidden bg-contain bg-center bg-no-repeat cursor-pointer"
+                    style={{ backgroundImage: `url(${Product2.src})` }}
+                  ></div>
+                  <div>
+                    <p className="text-2xl font-bold">Aucune commande trouvé</p>
+                    <p className="">
+                      La liste des commandes enrégistrées s'affiche ici. Vous
+                      n'avez aucune commande actuellement
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <table className="w-full text-xl ">
+                  <thead className=" text-black bg-gray-100  ">
+                    <tr className="border-b border-gray-200 text-left">
+                      <th className="p-5">Client</th>
+                      <th className="p-5">Téléphone</th>
+                      <th className="p-5">Produit</th>
+                      <th className="p-5">Quantité</th>
+                      <th className="p-5 ">Unité(FCFA)</th>
+                      <th className="p-5 ">Total(FCFA)</th>
+                      <th className="p-5">livraison</th>
+                      <th className="p-5 ">Status</th>
+                      <th className=""></th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {orders.map((order) => (
+                      <tr
+                        key={order.id}
+                        className="border-b hover:bg-gray-50 transition-colors"
+                      >
+                        <td className="px-5 py-5 font-bold">
+                          {order.customer.name} {order.customer.firstName}
+                        </td>
+                        <td className="px-5 py-5">
+                          {order.customer.phoneNumber}
+                        </td>
+                        <td className="px-5 py-5">
+                          {order.toOrders[0].product.name}
+                        </td>
+                        <td className="px-5 py-5">
+                          {order.toOrders[0].quantity}
+                        </td>
+                        <td className="px-5 py-5 font-medium text-gray-700">
+                          {order.toOrders[0].product.salePrice}
+                        </td>
+                        <td
+                          className={`px-5 py-5 font-medium ${
+                            order.customerCredit
+                              ? "text-red-600"
+                              : "text-green-600"
+                          }`}
+                        >
+                          {order.totalAmount}
+                        </td>
+                        <td className="px-5 py-5 text-gray-700">
+                          {order.deliveryAddress}
+                        </td>
+                        <td className="px-5 py-5">
+                          <span
+                            className={`w-[110px] flex gap-x-2 items-center justify-center text-base  rounded-sm ${
+                              order.status === "DELIVERED"
+                                ? "bg-green-50"
+                                : order.status === "PENDING"
+                                ? "bg-blue-50"
+                                : order.status === "CANCELLED"
+                                ? "bg-red-50"
+                                : "text-gray-600"
+                            }`}
+                          >
+                            {order.status === "DELIVERED" ? (
+                              <FaCheckCircle
+                                size={14}
+                                className="text-green-600"
+                              />
+                            ) : order.status === "PENDING" ? (
+                              <RiProgress2Fill
+                                size={15}
+                                className="text-blue-600"
+                              />
+                            ) : order.status === "CANCELLED" ? (
+                              <MdClose size={15} className="text-red-600" />
+                            ) : null}
+                            {order.status == "PENDING"
+                              ? "En attente"
+                              : order.status == "DELIVERED"
+                              ? "Livrée"
+                              : order.status == "CANCELLED"
+                              ? "Annulée"
+                              : null}
+                          </span>
+                        </td>
+                        <td className="pr-5">
+                          {" "}
+                          <DropdownMenu>
+                            <DropdownMenuTrigger
+                              onClick={() => setorderId(order.id)}
+                              className="border border-transparent focus:border focus:border-transparent active:border active:border-transparent"
+                            >
+                              <MdOutlineMoreVert />
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-40 border border-transparent">
+                              <DropdownMenuLabel className="text-xl">
+                                Actions
+                              </DropdownMenuLabel>
+                              <DropdownMenuSeparator />
+                              {order.status == "PENDING" ? (
+                                <div>
+                                  <DropdownMenuItem className="text-lg">
+                                    Confirmer
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem className="text-lg">
+                                    Payer
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem className="text-lg">
+                                    Livrer
+                                  </DropdownMenuItem>
+                                </div>
+                              ) : null}
+                              {order.status !== "CANCELLED" &&
+                              order.status == "PENDING" ? (
+                                <DropdownMenuItem
+                                  className="text-lg"
+                                  onClick={() => {
+                                    setorderId(order.id);
+                                    setisCancelModalOpen(true);
+                                  }}
+                                >
+                                  Annuler
+                                </DropdownMenuItem>
+                              ) : null}
+                              {order.status == "CANCELLED" ? (
+                                <DropdownMenuItem
+                                  className="text-lg"
+                                  onClick={() => {
+                                    setorderId(order.id);
+                                    setisModalOpen(true);
+                                  }}
+                                >
+                                  Supprimer
+                                </DropdownMenuItem>
+                              ) : null}
+                              {order.status == "DELIVERED" ||
+                              order.status == "CONFIRMED" ? (
+                                <DropdownMenuItem className="text-lg">
+                                  Payer
+                                </DropdownMenuItem>
+                              ) : null}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )
+            ) : sellings.length == 0 ? (
               <div className="w-full flex flex-col items-center gap-y-2 text-center py-5">
                 <div
                   className="w-[50%] sm:w-[100%] lg:w-[32%] h-[200px] relative overflow-hidden bg-contain bg-center bg-no-repeat cursor-pointer"
                   style={{ backgroundImage: `url(${Product2.src})` }}
                 ></div>
                 <div>
-                  <p className="text-2xl font-bold">Aucune commande trouvé</p>
+                  <p className="text-2xl font-bold">Aucune vente trouvé</p>
                   <p className="">
-                    La liste des commandes enrégistrées s'affiche ici. Vous
-                    n'avez aucune commande actuellement
+                    La liste des ventes enrégistrées s'affiche ici. Vous
+                    effectué aucune vente pour le moment
                   </p>
                 </div>
               </div>
             ) : (
               <table className="w-full text-xl ">
-                <thead className=" text-black bg-gray-100  ">
+                <thead className=" text-black bg-gray-100">
                   <tr className="border-b border-gray-200 text-left">
-                    <th className="p-5">Client</th>
-                    <th className="p-5">Téléphone</th>
-                    <th className="p-5">Produit</th>
-                    <th className="p-5">Quantité</th>
-                    <th className="p-5 ">Unité(FCFA)</th>
-                    <th className="p-5 ">Total(FCFA)</th>
-                    <th className="p-5">livraison</th>
+                    <th className="p-5 w-200">Client</th>
+                    {/* <th className="p-5 w-200">Téléphone</th> */}
+                    <th className="p-5 w-200">Produit</th>
+                    <th className="p-5 w-200">Quantité</th>
+                    <th className="p-5 w-200">Prix Achat(FCFA)</th>
+                    <th className="p-5 w-200 ">Prix vente(FCFA)</th>
+                    <th className="p-5 w-200 ">Total(FCFA)</th>
+                    <th className="p-5 w-200 ">Bénéfice(FCFA)</th>
                     <th className="p-5 ">Status</th>
                     <th className=""></th>
                   </tr>
                 </thead>
-
                 <tbody>
-                  {orders.map((order) => (
+                  {sellings.map((selling) => (
                     <tr
-                      key={order.id}
+                      key={selling.id}
                       className="border-b hover:bg-gray-50 transition-colors"
                     >
                       <td className="px-5 py-5 font-bold">
-                        {order.customer.name} {order.customer.firstName}
+                        {selling.customer.name} {selling.customer.firstName}
                       </td>
-                      <td className="px-5 py-5">
-                        {order.customer.phoneNumber}
+                      {/*  <td className="px-5 py-5">
+                      {selling.customer.phoneNumber}
+                    </td> */}
+                      <td className="p-5">
+                        {selling.toOrders[0].product.name}
                       </td>
-                      <td className="px-5 py-5">
-                        {order.toOrders[0].product.name}
+                      <td className="p-5">{selling.toOrders[0].quantity}</td>
+                      <td className="p-5">
+                        {selling.toOrders[0].product.purchasePrice}
                       </td>
-                      <td className="px-5 py-5">
-                        {order.toOrders[0].quantity}
+                      <td className="p-5">
+                        {selling.toOrders[0].product.salePrice}
                       </td>
-                      <td className="px-5 py-5 font-medium text-gray-700">
-                        {order.toOrders[0].product.salePrice}
-                      </td>
-                      <td
-                        className={`px-5 py-5 font-medium ${
-                          order.customerCredit
-                            ? "text-red-600"
-                            : "text-green-600"
-                        }`}
-                      >
-                        {order.totalAmount}
-                      </td>
-                      <td className="px-5 py-5 text-gray-700">
-                        {order.deliveryAddress}
+                      <td className="p-5">{selling.totalAmount}</td>
+                      <td className="p-5 text-green-600">
+                        {(selling.toOrders[0].product.salePrice -
+                          selling.toOrders[0].product.purchasePrice) *
+                          selling.toOrders[0].quantity}
                       </td>
                       <td className="px-5 py-5">
                         <span
                           className={`w-[110px] flex gap-x-2 items-center justify-center text-base  rounded-sm ${
-                            order.status === "DELIVERED"
-                              ? "bg-green-50"
-                              : order.status === "PENDING"
-                              ? "bg-blue-50"
-                              : order.status === "CANCELLED"
-                              ? "bg-red-50"
-                              : "text-gray-600"
+                            selling.isSale ? "bg-green-50" : "text-gray-600"
                           }`}
                         >
-                          {order.status === "DELIVERED" ? (
+                          {selling.isSale ? (
                             <FaCheckCircle
                               size={14}
                               className="text-green-600"
                             />
-                          ) : order.status === "PENDING" ? (
-                            <RiProgress2Fill
-                              size={15}
-                              className="text-blue-600"
-                            />
-                          ) : order.status === "CANCELLED" ? (
-                            <MdClose size={15} className="text-red-600" />
                           ) : null}
-                          {order.status == "PENDING"
-                            ? "En attente"
-                            : order.status == "DELIVERED"
-                            ? "Livrée"
-                            : order.status == "CANCELLED"
-                            ? "Annulée"
-                            : null}
+                          {selling.isSale ? "Confirmé" : null}
                         </span>
                       </td>
-                      <td className="pr-5">
+                      <td className="pr-2">
                         {" "}
                         <DropdownMenu>
-                          <DropdownMenuTrigger
-                            onClick={() => setorderId(order.id)}
-                            className="border border-transparent focus:border focus:border-transparent active:border active:border-transparent"
-                          >
+                          <DropdownMenuTrigger className="border border-transparent focus:border focus:border-transparent active:border active:border-transparent">
                             <MdOutlineMoreVert />
                           </DropdownMenuTrigger>
                           <DropdownMenuContent className="w-40 border border-transparent">
@@ -719,44 +871,7 @@ export default function Selling() {
                               Actions
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            {order.status == "PENDING" ? (
-                              <div>
-                                <DropdownMenuItem className="text-lg">
-                                  Confirmer
-                                </DropdownMenuItem>
-                                <DropdownMenuItem className="text-lg">
-                                  Payer
-                                </DropdownMenuItem>
-                                <DropdownMenuItem className="text-lg">
-                                  Livrer
-                                </DropdownMenuItem>
-                              </div>
-                            ) : null}
-                            {order.status !== "CANCELLED" &&
-                            order.status == "PENDING" ? (
-                              <DropdownMenuItem
-                                className="text-lg"
-                                onClick={() => {
-                                  setorderId(order.id);
-                                  setisCancelModalOpen(true);
-                                }}
-                              >
-                                Annuler
-                              </DropdownMenuItem>
-                            ) : null}
-                            {order.status == "CANCELLED" ? (
-                              <DropdownMenuItem
-                                className="text-lg"
-                                onClick={() => {
-                                  setorderId(order.id);
-                                  setisModalOpen(true);
-                                }}
-                              >
-                                Supprimer
-                              </DropdownMenuItem>
-                            ) : null}
-                            {order.status == "DELIVERED" ||
-                            order.status == "CONFIRMED" ? (
+                            {selling.isSale ? (
                               <DropdownMenuItem className="text-lg">
                                 Payer
                               </DropdownMenuItem>
@@ -768,100 +883,9 @@ export default function Selling() {
                   ))}
                 </tbody>
               </table>
-            )
-          ) : sellings.length == 0 ? (
-            <div className="w-full flex flex-col items-center gap-y-2 text-center py-5">
-              <div
-                className="w-[50%] sm:w-[100%] lg:w-[32%] h-[200px] relative overflow-hidden bg-contain bg-center bg-no-repeat cursor-pointer"
-                style={{ backgroundImage: `url(${Product2.src})` }}
-              ></div>
-              <div>
-                <p className="text-2xl font-bold">Aucune vente trouvé</p>
-                <p className="">
-                  La liste des ventes enrégistrées s'affiche ici. Vous effectué
-                  aucune vente pour le moment
-                </p>
-              </div>
-            </div>
-          ) : (
-            <table className="w-full text-xl ">
-              <thead className=" text-black bg-gray-100">
-                <tr className="border-b border-gray-200 text-left">
-                  <th className="p-5 w-200">Client</th>
-                  {/* <th className="p-5 w-200">Téléphone</th> */}
-                  <th className="p-5 w-200">Produit</th>
-                  <th className="p-5 w-200">Quantité</th>
-                  <th className="p-5 w-200">Prix Achat(FCFA)</th>
-                  <th className="p-5 w-200 ">Prix vente(FCFA)</th>
-                  <th className="p-5 w-200 ">Total(FCFA)</th>
-                  <th className="p-5 w-200 ">Bénéfice(FCFA)</th>
-                  <th className="p-5 ">Status</th>
-                  <th className=""></th>
-                </tr>
-              </thead>
-              <tbody>
-                {sellings.map((selling) => (
-                  <tr
-                    key={selling.id}
-                    className="border-b hover:bg-gray-50 transition-colors"
-                  >
-                    <td className="px-5 py-5 font-bold">
-                      {selling.customer.name} {selling.customer.firstName}
-                    </td>
-                    {/*  <td className="px-5 py-5">
-                      {selling.customer.phoneNumber}
-                    </td> */}
-                    <td className="p-5">{selling.toOrders[0].product.name}</td>
-                    <td className="p-5">{selling.toOrders[0].quantity}</td>
-                    <td className="p-5">
-                      {selling.toOrders[0].product.purchasePrice}
-                    </td>
-                    <td className="p-5">
-                      {selling.toOrders[0].product.salePrice}
-                    </td>
-                    <td className="p-5">{selling.totalAmount}</td>
-                    <td className="p-5 text-green-600">
-                      {(selling.toOrders[0].product.salePrice -
-                        selling.toOrders[0].product.purchasePrice) *
-                        selling.toOrders[0].quantity}
-                    </td>
-                    <td className="px-5 py-5">
-                      <span
-                        className={`w-[110px] flex gap-x-2 items-center justify-center text-base  rounded-sm ${
-                          selling.isSale ? "bg-green-50" : "text-gray-600"
-                        }`}
-                      >
-                        {selling.isSale ? (
-                          <FaCheckCircle size={14} className="text-green-600" />
-                        ) : null}
-                        {selling.isSale ? "Confirmé" : null}
-                      </span>
-                    </td>
-                    <td className="pr-2">
-                      {" "}
-                      <DropdownMenu>
-                        <DropdownMenuTrigger className="border border-transparent focus:border focus:border-transparent active:border active:border-transparent">
-                          <MdOutlineMoreVert />
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-40 border border-transparent">
-                          <DropdownMenuLabel className="text-xl">
-                            Actions
-                          </DropdownMenuLabel>
-                          <DropdownMenuSeparator />
-                          {selling.isSale ? (
-                            <DropdownMenuItem className="text-lg">
-                              Payer
-                            </DropdownMenuItem>
-                          ) : null}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
+            )}
+          </div>
+        )}
       </div>
 
       <div

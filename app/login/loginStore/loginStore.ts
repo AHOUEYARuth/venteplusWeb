@@ -2,7 +2,7 @@
 
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { loginRequest } from "../loginRequest/loginRequest";
+import { forgotPasswordRequest, loginRequest } from "../loginRequest/loginRequest";
 
 type State = {
   user: any;
@@ -18,6 +18,7 @@ type LoginActions = {
   setUser: (user: any) => void;
   setShop: (shop: any) => void;
   logout: () => void;
+  forgotPasswordAction: (data: any) => Promise<any>;
 };
 
 export const useLoginStore = create<State & LoginActions>()(
@@ -42,6 +43,10 @@ export const useLoginStore = create<State & LoginActions>()(
       logout: () => {
         set({ user: null, shop: null, token: null });
         localStorage.removeItem("access-token");
+      },
+      forgotPasswordAction: async(data) => {
+        const response = await forgotPasswordRequest(data);
+        return response
       },
     }),
     {

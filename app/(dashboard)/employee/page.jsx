@@ -31,6 +31,7 @@ import { ClipLoader } from "react-spinners";
 import { baseUrlNotApi } from "@/lib/httpClient";
 import { DatePicker } from "@/components/ui/date-picker";
 import copy from "copy-to-clipboard";
+import Product2 from "@/assets/images/emptyPro.png";
 const Employee = () => {
   const container = useRef(null);
   const timeLineModal = useRef();
@@ -51,24 +52,24 @@ const Employee = () => {
   const [isModalBlockedOpen, setIsModalBlockedOpen] = useState(false);
   const [linkModalOPen, setLinkModalOPen] = useState(false);
   const [shopId, setshopId] = useState("");
-  const [role, setrole] = useState("")
+  const [role, setrole] = useState("");
 
   const [nameFilter, setnameFilter] = useState("");
   const [rangeDate, setRangeDate] = useState(null);
 
   function copyLink() {
-    setemployeLoading(true)
-   try {
-    const base = "http://localhost:3000";
-    const registerLink = `/register-employee/?shopId=${shop?.id}&role=${role}`;
-    const link = base + registerLink;
-    toast.success('Lien copié avec succès')
-     setLinkModalOPen(false)
-     setemployeLoading(false);
-    return copy(link);
-   } catch (error) {
-    toast.error(error.message)
-   }
+    setemployeLoading(true);
+    try {
+      const base = "http://localhost:3000";
+      const registerLink = `/register-employee/?shopId=${shop?.id}&role=${role}`;
+      const link = base + registerLink;
+      toast.success("Lien copié avec succès");
+      setLinkModalOPen(false);
+      setemployeLoading(false);
+      return copy(link);
+    } catch (error) {
+      toast.error(error.message);
+    }
   }
 
   const { register, handleSubmit, watch, formState, trigger } = useForm({
@@ -126,6 +127,7 @@ const Employee = () => {
   }
 
   async function applyGetEmployeAction(shopId) {
+    setEmployees([]);
     setemployeLoading(true);
     await getEmployeeAction(shopId).then((response) => {
       console.log("data");
@@ -271,7 +273,7 @@ const Employee = () => {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={linkModalOPen} onOpenChange={setLinkModalOPen} >
+      <Dialog open={linkModalOPen} onOpenChange={setLinkModalOPen}>
         <DialogContent className="w-[500px] ">
           <DialogHeader>
             <DialogTitle className="text-lg">Inviter un employé</DialogTitle>
@@ -280,7 +282,7 @@ const Employee = () => {
               dernier
             </DialogDescription>
           </DialogHeader>
-          <div className="w-full space-y-5 py-10">
+          <div className="w-full space-y-5">
             <div className="w-full flex flex-col gap-y-2">
               <label>Nom</label>
               <select
@@ -364,100 +366,136 @@ const Employee = () => {
             </div>
           </div>
         </div>
-        <div className="w-full overflow-x-auto pb-10 mt-5 bg-white">
-          <table className="min-w-full text-xl">
-            <thead className=" text-black bg-gray-100  ">
-              <tr className="border-b border-gray-200 text-left">
-                <th className="p-5">Nom</th>
-                <th className="p-5">Prénoms</th>
-                <th className="p-5">Post</th>
-                <th className="p-5">Téléphone</th>
-                <th className="p-5">Date d&apos;embauche</th>
-                <th className="p-5">Status</th>
-                <th className=""></th>
-              </tr>
-            </thead>
-            <tbody>
-              {employees.map((employee) => (
-                <tr
-                  key={employee.id}
-                  className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
-                >
-                  <td className="px-5 py-5 text-black">{employee.user.name}</td>
-                  <td className="px-5 py-5">{employee.user.firstName}</td>
-                  <td className="px-5 py-5">{employee.role}</td>
-                  <td className="px-5 py-5">{employee.user.phoneNumber}</td>
-                  <td className="px-5 py-5">
-                    {moment(employee.user.createdAt).format("DD-MM-yyyy")}
-                  </td>
-                  <td
-                    className={`px-5 py-5 ${
-                      employee.isValidate ? "text-green-600" : "text-red-500"
-                    }`}
-                  >
-                    {employee.isValidate ? "Validé" : "Non validé"}
-                  </td>
-                  <td className="pr-3">
-                    {" "}
-                    <DropdownMenu>
-                      <DropdownMenuTrigger className="border border-transparent focus:border focus:border-transparent active:border active:border-transparent">
-                        <MdOutlineMoreVert />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent className="w-50 border border-transparent">
-                        <DropdownMenuLabel className="text-xl">
-                          Actions
-                        </DropdownMenuLabel>
-                        <DropdownMenuSeparator />
+        {employeLoading ? (
+          <div className="w-full h-[500px] flex items-center justify-center">
+            <ClipLoader color="#F39C12" size={50} />
+          </div>
+        ) : (
+          <div className="w-full overflow-x-auto pb-10 mt-5 bg-white">
+            {employees.length === 0 ? (
+              <div className="w-full flex flex-col items-center gap-y-2 text-center py-5">
+                <div
+                  className="w-[50%] sm:w-[100%] lg:w-[32%] h-[200px] relative overflow-hidden bg-contain bg-center bg-no-repeat cursor-pointer"
+                  style={{ backgroundImage: `url(${Product2.src})` }}
+                ></div>
+                <div>
+                  <p className="text-2xl font-bold">Aucun employé trouvé</p>
+                  <p className="">
+                    Liste d&apos;employés vide. La liste des employés s'affiche
+                    ici
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <table className="min-w-full text-xl">
+                <thead className=" text-black bg-gray-100  ">
+                  <tr className="border-b border-gray-200 text-left">
+                    <th className="p-5">Nom</th>
+                    <th className="p-5">Prénoms</th>
+                    <th className="p-5">Post</th>
+                    <th className="p-5">Téléphone</th>
+                    <th className="p-5">Date d&apos;embauche</th>
+                    <th className="p-5">Status</th>
+                    <th className=""></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {employees.map((employee) => (
+                    <tr
+                      key={employee.id}
+                      className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
+                    >
+                      <td className="px-5 py-5 text-black">
+                        {employee.user.name}
+                      </td>
+                      <td className="px-5 py-5">{employee.user.firstName}</td>
+                      <td className="px-5 py-5">
+                        {employee.role === "TRADER"
+                          ? "Commerçant (Vous)"
+                          : employee.role === "CASHIER"
+                          ? "Caissier"
+                          : employee.role === "DELIVERYMAN"
+                          ? "Livreur"
+                          : employee.role === "MANAGER"
+                          ? "Gérant"
+                          : ""}
+                      </td>
+                      <td className="px-5 py-5">{employee.user.phoneNumber}</td>
+                      <td className="px-5 py-5">
+                        {moment(employee.user.createdAt).format("DD-MM-yyyy")}
+                      </td>
+                      <td
+                        className={`px-5 py-5 ${
+                          employee.isValidate
+                            ? "text-green-600"
+                            : "text-red-500"
+                        }`}
+                      >
+                        {employee.isValidate ? "Validé" : "Non validé"}
+                      </td>
+                      <td className="pr-3">
+                        {" "}
+                        <DropdownMenu>
+                          <DropdownMenuTrigger className="border border-transparent focus:border focus:border-transparent active:border active:border-transparent">
+                            <MdOutlineMoreVert />
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent className="w-50 border border-transparent">
+                            <DropdownMenuLabel className="text-xl">
+                              Actions
+                            </DropdownMenuLabel>
+                            <DropdownMenuSeparator />
 
-                        {employee.isValidate == false ? (
-                          <DropdownMenuItem
-                            className="text-lg"
-                            onClick={() => {
-                              settraderId(employee.traderShops[0].traderId);
-                              setshopId(employee.traderShops[0].shopId);
-                              setisModalOpen(true);
-                            }}
-                          >
-                            Valider
-                          </DropdownMenuItem>
-                        ) : undefined}
+                            {employee.isValidate == false ? (
+                              <DropdownMenuItem
+                                className="text-lg"
+                                onClick={() => {
+                                  settraderId(employee.traderShops[0].traderId);
+                                  setshopId(employee.traderShops[0].shopId);
+                                  setisModalOpen(true);
+                                }}
+                              >
+                                Valider
+                              </DropdownMenuItem>
+                            ) : undefined}
 
-                        <DropdownMenuItem
-                          onClick={() => {
-                            setcurrentIdentityUrl(employee.identityCard);
-                            setIsIdentityCardOpen(true);
-                          }}
-                          className="text-lg"
-                        >
-                          Voir carte d&apos;identité
-                        </DropdownMenuItem>
-                        {employee.isValidate == true ? (
-                          <DropdownMenuItem
-                            onClick={() => {
-                              settraderId(employee.traderShops[0].traderId);
-                              setshopId(employee.traderShops[0].shopId);
-                              setIsModalBlockedOpen(true);
-                            }}
-                            className="text-lg"
-                          >
-                            Bloquer
-                          </DropdownMenuItem>
-                        ) : undefined}
-                        {employee.isValidate == false ? (
-                          <DropdownMenuItem className="text-lg">
-                            Supprimer
-                          </DropdownMenuItem>
-                        ) : undefined}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setcurrentIdentityUrl(employee.identityCard);
+                                setIsIdentityCardOpen(true);
+                              }}
+                              className="text-lg"
+                            >
+                              Voir carte d&apos;identité
+                            </DropdownMenuItem>
+                            {employee.isValidate == true ? (
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  settraderId(employee.traderShops[0].traderId);
+                                  setshopId(employee.traderShops[0].shopId);
+                                  setIsModalBlockedOpen(true);
+                                }}
+                                className="text-lg"
+                              >
+                                Bloquer
+                              </DropdownMenuItem>
+                            ) : undefined}
+                            {employee.isValidate == false ? (
+                              <DropdownMenuItem className="text-lg">
+                                Supprimer
+                              </DropdownMenuItem>
+                            ) : undefined}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        )}
       </div>
-      <div
+      {/*  <div
         style={{ pointerEvents: "none", opacity: 0 }}
         className={`modal_container w-full h-full fixed top-0 right-0 bg-black/30`}
       >
@@ -599,7 +637,7 @@ const Employee = () => {
             </form>
           </div>
         </div>
-      </div>
+      </div> */}
       <Toaster />
     </div>
   );

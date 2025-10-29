@@ -98,7 +98,7 @@ const NavBar = () => {
 
         <div className="flex items-center gap-3">
           <Link
-            href="/register"
+            href="/login"
             className="hidden lg:flex items-center gap-2 text-[#F39C12]"
           >
             <AiOutlineUser size={20} />

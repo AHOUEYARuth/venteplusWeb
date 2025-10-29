@@ -19,6 +19,7 @@ import { ClipLoader } from "react-spinners";
 import { useLoginStore } from "@/app/login/loginStore/loginStore";
 import moment from "moment";
 import { DatePicker } from "@/components/ui/date-picker";
+import Product2 from "@/assets/images/emptyPro.png";
 const Customer = () => {
   const container = useRef(null);
   const timeLineModal = useRef();
@@ -39,6 +40,7 @@ const Customer = () => {
   });
 
   async function applyGetCustomersAction(shopId) {
+    setCustomers([]);
     setloadingClient(true);
     await getCustomersAction(shopId).then((response) => {
       console.log("data");
@@ -49,11 +51,17 @@ const Customer = () => {
   }
 
   async function applyDelCustomersAction(customerId) {
-    await deleteCustomersAction(customerId).then((response) => {
-      toast.success(response?.message);
-    }).catch((error) => {
-      toast.error(error.message ? error.message : "Un problème est survenu lors de la suppression")
-    });
+    await deleteCustomersAction(customerId)
+      .then((response) => {
+        toast.success(response?.message);
+      })
+      .catch((error) => {
+        toast.error(
+          error.message
+            ? error.message
+            : "Un problème est survenu lors de la suppression"
+        );
+      });
     await applyGetCustomersAction(shop?.id);
   }
 
@@ -119,33 +127,36 @@ const Customer = () => {
     })();
   }, [shop]);
 
-
-   useEffect(() => {
-      (async function handleFilter() {
-        if (nameFilter != "" || rangeDate != null) {
-       
-          const dateFrom = rangeDate?.from;
-          const dateTo = rangeDate?.to;
-          await filterCustomerAction(
-            shop?.id,
-            nameFilter,
-            dateFrom != undefined && dateFrom != null
-              ? moment(dateFrom).format("DD-MM-YYYY")
-              : dateFrom,
-            dateTo != undefined && dateTo != null
-              ? moment(dateTo).format("DD-MM-YYYY")
-              : dateTo
-          ).then((response) => {
-            setCustomers(response.data);
-          });
-        } else {
-          if(shop?.id){
-            await applyGetCustomersAction(shop?.id)
-          }
+  useEffect(() => {
+    (async function handleFilter() {
+      if (nameFilter != "" || rangeDate != null) {
+        const dateFrom = rangeDate?.from;
+        const dateTo = rangeDate?.to;
+        await filterCustomerAction(
+          shop?.id,
+          nameFilter,
+          dateFrom != undefined && dateFrom != null
+            ? moment(dateFrom).format("DD-MM-YYYY")
+            : dateFrom,
+          dateTo != undefined && dateTo != null
+            ? moment(dateTo).format("DD-MM-YYYY")
+            : dateTo
+        ).then((response) => {
+          setCustomers(response.data);
+        });
+      } else {
+        if (shop?.id) {
+          await applyGetCustomersAction(shop?.id);
         }
-      })();
-   }, [nameFilter, rangeDate]);
-  
+      }
+    })();
+  }, [nameFilter, rangeDate]);
+
+  function handleClearFilter() {
+    setnameFilter("");
+    setRangeDate("");
+  }
+
   return (
     <div ref={container} className="w-full h-full p-5 bg-gray-50 rounded-xl">
       <div className="w-full flex flex-row items-center justify-between">
@@ -156,6 +167,14 @@ const Customer = () => {
             leur fidélité grâce à une gestion simplifiée.
           </p>
         </div>
+        <button
+          onClick={() => {
+            timeLineModal.current.play();
+          }}
+          className="bg-[#F39C12] cursor-pointer w-min-fit py-3 px-4 text-white rounded-lg"
+        >
+          Nouveau Client
+        </button>
       </div>
       <div className="w-full flex flex-col gap-y-5">
         <div className="w-full flex flex-row items-start justify-between mt-20">
@@ -173,79 +192,110 @@ const Customer = () => {
               </button>
             </div>
             <div className="w-[70%] flex flex-row gap-x-4 items-center">
-              <DatePicker className="p-5" onDateChange={(range) => setRangeDate(range)} />
+              <DatePicker
+                className="p-5"
+                onDateChange={(range) => setRangeDate(range)}
+              />
               <button
                 onClick={() => {
-                  timeLineModal.current.play();
+                  handleClearFilter();
                 }}
-                className="bg-[#F39C12] cursor-pointer w-min-fit py-3 px-4 text-white rounded-lg"
+                className=" bg-[#F39C12] cursor-pointer py-3 px-4 text-white rounded-lg"
               >
-                Nouveau Client
+                Effacer le filtre
               </button>
             </div>
           </div>
         </div>
-        <div className="w-full overflow-x-auto pb-10 mt-5 bg-white">
-          <table className="min-w-full text-xl">
-            <thead className=" text-black bg-gray-100  ">
-              <tr className="border-b border-gray-200 text-left">
-                <th className="p-5">N °</th>
-                <th className="p-5">Nom</th>
-                <th className="p-5">Prénoms</th>
-                <th className="p-5">Téléphone</th>
-                <th className="p-5">Date d&apos;ajout</th>
-                <th className=""></th>
-              </tr>
-            </thead>
-            <tbody>
-              {customers.map((customer, index) => {
-                return (
-                  <tr
-                    key={index}
-                    className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
-                  >
-                    <td className="px-5 py-5 font-bold">{index + 1}</td>
-                    <td className="px-5 py-5 text-black">{customer.name}</td>
-                    <td className="px-5 py-5">{customer.firstName}</td>
-                    <td className="px-5 py-5">{customer.phoneNumber}</td>
-                    <td className="px-5 py-5">
-                      {moment(customer.createdAt).format("DD-mm-yyyy")}
-                    </td>
-                    <td className="pr-5">
-                      {" "}
-                      <DropdownMenu>
-                        <DropdownMenuTrigger className="border border-transparent focus:border focus:border-transparent active:border active:border-transparent">
-                          <MdOutlineMoreVert />
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-40 border border-transparent">
-                          <DropdownMenuLabel className="text-xl">
-                            Actions
-                          </DropdownMenuLabel>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-lg">
-                            Modifier
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            className="text-lg"
-                            onClick={() => applyDelCustomersAction(customer.id)}
-                          >
-                            Supprimer
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </td>
+        {loadingClient ? (
+          <div className="w-full h-[500px] flex items-center justify-center">
+            <ClipLoader color="#F39C12" size={50} />
+          </div>
+        ) : (
+          <div className="w-full overflow-x-auto pb-10 mt-5 bg-white">
+            {customers.length === 0 ? (
+              <div className="w-full flex flex-col items-center gap-y-2 text-center py-5">
+                <div
+                  className="w-[50%] sm:w-[100%] lg:w-[32%] h-[200px] relative overflow-hidden bg-contain bg-center bg-no-repeat cursor-pointer"
+                  style={{ backgroundImage: `url(${Product2.src})` }}
+                ></div>
+                <div>
+                  <p className="text-2xl font-bold">
+                    Aucun crédit client trouvé
+                  </p>
+                  <p className="">
+                    Crédits client vide. La liste des crédits client s'affiche
+                    ici
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <table className="min-w-full text-xl">
+                <thead className=" text-black bg-gray-100  ">
+                  <tr className="border-b border-gray-200 text-left">
+                    <th className="p-5">N °</th>
+                    <th className="p-5">Nom</th>
+                    <th className="p-5">Prénoms</th>
+                    <th className="p-5">Téléphone</th>
+                    <th className="p-5">Date d&apos;ajout</th>
+                    <th className=""></th>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+                </thead>
+                <tbody>
+                  {customers.map((customer, index) => {
+                    return (
+                      <tr
+                        key={index}
+                        className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
+                      >
+                        <td className="px-5 py-5 font-bold">{index + 1}</td>
+                        <td className="px-5 py-5 text-black">
+                          {customer.name}
+                        </td>
+                        <td className="px-5 py-5">{customer.firstName}</td>
+                        <td className="px-5 py-5">{customer.phoneNumber}</td>
+                        <td className="px-5 py-5">
+                          {moment(customer.createdAt).format("DD-mm-yyyy")}
+                        </td>
+                        <td className="pr-5">
+                          {" "}
+                          <DropdownMenu>
+                            <DropdownMenuTrigger className="border border-transparent focus:border focus:border-transparent active:border active:border-transparent">
+                              <MdOutlineMoreVert />
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-40 border border-transparent">
+                              <DropdownMenuLabel className="text-xl">
+                                Actions
+                              </DropdownMenuLabel>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem className="text-lg">
+                                Modifier
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                className="text-lg"
+                                onClick={() =>
+                                  applyDelCustomersAction(customer.id)
+                                }
+                              >
+                                Supprimer
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
+          </div>
+        )}
       </div>
 
       <div
         style={{ pointerEvents: "none", opacity: 0 }}
         className={`modal_container w-full h-full fixed top-0 right-0 bg-black/30`}
-       >
+      >
         <div
           style={{ transform: "translateX(200%)", pointerEvents: "all" }}
           className={`form_container flex flex-col items-start gap-y-10 bg-white w-110 p-5 rounded-xl h-[96vh] absolute top-5 right-3 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden `}

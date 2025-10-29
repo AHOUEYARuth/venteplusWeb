@@ -29,6 +29,7 @@ import { ClipLoader } from "react-spinners";
 import toast, { Toaster } from "react-hot-toast";
 import { DatePicker } from "@/components/ui/date-picker";
 import moment from "moment";
+import Product2 from "@/assets/images/emptyPro.png";
 export default function CustomerCredits() {
   const {
     customersCredits,
@@ -38,7 +39,7 @@ export default function CustomerCredits() {
     getRecoveryCreditAction,
     createRecoveryAction,
     getCustomersCreditsAction,
-    filterCreditsAction
+    filterCreditsAction,
   } = useCustomerCreditsStore();
   const { shop } = useLoginStore();
   const container = useRef(null);
@@ -107,13 +108,22 @@ export default function CustomerCredits() {
   }, [container]);
 
   async function applyGetCustomersCreditAction(shopId) {
-    await getCustomersCreditsAction(shopId).then((response) => {
-      setCustomersCredits(response.data);
-    });
+    setCustomersCredits([]);
+    setloadingRecovery(true);
+    await getCustomersCreditsAction(shopId)
+      .then((response) => {
+        setCustomersCredits(response.data);
+      })
+      .catch((error) => {})
+      .finally(() => {
+        setloadingRecovery(false);
+      });
   }
   async function applyGetRecoveryCreditAction(customerCreditId) {
+    setloadingRecovery(true)
     await getRecoveryCreditAction(customerCreditId).then((response) => {
       setRecoveries(response.data);
+      setloadingRecovery(false)
     });
   }
   useEffect(() => {
@@ -124,31 +134,35 @@ export default function CustomerCredits() {
     })();
   }, [shop]);
 
-     useEffect(() => {
-        (async function handleFilter() {
-          if (nameFilter != "" || rangeDate != null) {
-         
-            const dateFrom = rangeDate?.from;
-            const dateTo = rangeDate?.to;
-            await filterCreditsAction(
-              shop?.id,
-              nameFilter,
-              dateFrom != undefined && dateFrom != null
-                ? moment(dateFrom).format("DD-MM-YYYY")
-                : dateFrom,
-              dateTo != undefined && dateTo != null
-                ? moment(dateTo).format("DD-MM-YYYY")
-                : dateTo
-            ).then((response) => {
-              setCustomersCredits(response.data);
-            });
-          } else {
-            if(shop?.id){
-              await applyGetCustomersCreditAction(shop?.id)
-            }
-          }
-        })();
-      }, [nameFilter, rangeDate]);
+  useEffect(() => {
+    (async function handleFilter() {
+      if (nameFilter != "" || rangeDate != null) {
+        const dateFrom = rangeDate?.from;
+        const dateTo = rangeDate?.to;
+        await filterCreditsAction(
+          shop?.id,
+          nameFilter,
+          dateFrom != undefined && dateFrom != null
+            ? moment(dateFrom).format("DD-MM-YYYY")
+            : dateFrom,
+          dateTo != undefined && dateTo != null
+            ? moment(dateTo).format("DD-MM-YYYY")
+            : dateTo
+        ).then((response) => {
+          setCustomersCredits(response.data);
+        });
+      } else {
+        if (shop?.id) {
+          await applyGetCustomersCreditAction(shop?.id);
+        }
+      }
+    })();
+  }, [nameFilter, rangeDate]);
+
+  function handleClearFilter() {
+    setnameFilter("");
+    setRangeDate("");
+  }
   return (
     <div ref={container} className="w-full h-full p-5 bg-gray-50 rounded-xl">
       <Dialog open={isModalOpen} onOpenChange={setisModalOpen}>
@@ -172,7 +186,7 @@ export default function CustomerCredits() {
                   })}
                   name="amountPaid"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-                  placeholder="Entrer le montant à payer"
+                  placeholder="Entrer le montant  payé"
                 />
                 {errors.amountPaid && (
                   <p className="text-red-500 text-sm">
@@ -230,113 +244,140 @@ export default function CustomerCredits() {
               </button>
             </div>
             <div className="w-[70%] flex flex-row gap-x-4 items-center">
-              <DatePicker className="p-5" onDateChange={(range) => setRangeDate(range)} />
+              <DatePicker
+                className="p-5"
+                onDateChange={(range) => setRangeDate(range)}
+              />
               <button
                 onClick={() => {
-                  timeLineModal.current.play();
+                  handleClearFilter();
                 }}
-                className="bg-[#F39C12] cursor-pointer py-3 px-4 text-white rounded-lg"
+                className="border-1 border-[#F39C12] text-[#F39C12] hover:bg-[#F39C12] cursor-pointer py-3 px-4 hover:text-white rounded-lg"
               >
-                Nouvelle Dette
+                Effacer le filtre
               </button>
             </div>
           </div>
         </div>
-        <div className="w-[95%] overflow-x-auto pb-10 mt-5 bg-white">
-          <table className="min-w-full text-xl">
-            <thead className=" text-black bg-gray-100">
-              <tr className="border-b border-gray-200 text-left">
-                <th className="p-5">Client</th>
-                <th className="p-5">Téléphone</th>
-                <th className="p-5">Produit</th>
-                <th className="p-5">Quantité</th>
-                <th className="p-5 ">Unité(FCFA)</th>
-                <th className="p-5 ">Reste(FCFA)</th>
-                <th className="p-5 ">Payé(FCFA)</th>
-                <th className="p-5 ">Status</th>
-                <th className=""></th>
-              </tr>
-            </thead>
-            <tbody>
-              {customersCredits.map((credit) => (
-                <tr
-                  key={credit.id}
-                  className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
-                >
-                  <td className="px-5 py-5 font-bold">
-                    {credit.customer.name} {credit.customer.firstName}
-                  </td>
-                  <td className="px-5 py-5 text-black">
-                    {credit.customer.phoneNumber}
-                  </td>
-                  <td className="px-5 py-5">
-                    {credit.order.toOrders[0].product.name}
-                  </td>
-                  <td className="px-5 py-5">
-                    {credit.order.toOrders[0].quantity}
-                  </td>
-                  <td className="px-5 py-5 font-medium text-gray-700">
-                    {credit.order.toOrders[0].product.purchasePrice}
-                  </td>
-                  <td className="px-5 py-5 font-medium text-gray-700">
-                    {credit.order.totalAmount - credit.amountPaid}
-                  </td>
-                  <td className="px-5 py-5 font-medium text-green-600">
-                    {credit.amountPaid}
-                  </td>
-                  <td
-                    className={`px-5 py-5 font-medium text-gray-700 ${
-                      credit.isPaid === false
-                        ? "text-red-500"
-                        : "text-green-500"
-                    }`}
-                  >
-                    {credit.isPaid === false ? "Impayé" : "Payé"}
-                  </td>
-                  <td className="pr-5">
-                    {" "}
-                    <DropdownMenu>
-                      <DropdownMenuTrigger
-                        onClick={() => setcustomerCreditsId(credit.id)}
-                        className="border border-transparent focus:border focus:border-transparent active:border active:border-transparent"
+        {loadingRecovery ? (
+          <div className="w-full h-[500px] flex items-center justify-center">
+            <ClipLoader color="#F39C12" size={50} />
+          </div>
+        ) : (
+          <div className="w-full overflow-x-auto pb-10 mt-5 bg-white">
+            {customersCredits.length === 0 ? (
+              <div className="w-full flex flex-col items-center gap-y-2 text-center py-5">
+                <div
+                  className="w-[50%] sm:w-[100%] lg:w-[32%] h-[200px] relative overflow-hidden bg-contain bg-center bg-no-repeat cursor-pointer"
+                  style={{ backgroundImage: `url(${Product2.src})` }}
+                ></div>
+                <div>
+                  <p className="text-2xl font-bold">
+                    Aucun crédit client trouvé
+                  </p>
+                  <p className="">
+                    Crédits client vide. La liste des crédits client s'affiche
+                    ici
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <table className="min-w-full text-xl">
+                <thead className=" text-black bg-gray-100">
+                  <tr className="border-b border-gray-200 text-left">
+                    <th className="p-5">Client</th>
+                    <th className="p-5">Téléphone</th>
+                    <th className="p-5">Produit</th>
+                    <th className="p-5">Quantité</th>
+                    <th className="p-5 ">Unité(FCFA)</th>
+                    <th className="p-5 ">Reste(FCFA)</th>
+                    <th className="p-5 ">Payé(FCFA)</th>
+                    <th className="p-5 ">Status</th>
+                    <th className=""></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {customersCredits.map((credit) => (
+                    <tr
+                      key={credit.id}
+                      className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
+                    >
+                      <td className="px-5 py-5 font-bold">
+                        {credit.customer.name} {credit.customer.firstName}
+                      </td>
+                      <td className="px-5 py-5 text-black">
+                        {credit.customer.phoneNumber}
+                      </td>
+                      <td className="px-5 py-5">
+                        {credit.order.toOrders[0].product.name}
+                      </td>
+                      <td className="px-5 py-5">
+                        {credit.order.toOrders[0].quantity}
+                      </td>
+                      <td className="px-5 py-5 font-medium text-gray-700">
+                        {credit.order.toOrders[0].product.salePrice}
+                      </td>
+                      <td className="px-5 py-5 font-medium text-gray-700">
+                        {credit.order.totalAmount - credit.amountPaid}
+                      </td>
+                      <td className="px-5 py-5 font-medium text-green-600">
+                        {credit.amountPaid}
+                      </td>
+                      <td
+                        className={`px-5 py-5 font-medium text-gray-700 ${
+                          credit.isPaid === false
+                            ? "text-red-500"
+                            : "text-green-500"
+                        }`}
                       >
-                        <MdOutlineMoreVert />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent className="w-70 border border-transparent">
-                        <DropdownMenuLabel className="text-xl">
-                          Actions
-                        </DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                          onClick={() => {
-                            setcustomerCreditsId(credit.id);
-                            setisModalOpen(true);
-                          }}
-                          className="text-lg"
-                        >
-                          Faire un Recouvrements
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => {
-                            setcustomerCreditsId(credit.id);
-                            applyGetRecoveryCreditAction(credit.id);
-                            timeLineModal.current.play();
-                          }}
-                          className="text-lg"
-                        >
-                          Recouvrements
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="text-lg">
-                          Valider
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                        {credit.isPaid === false ? "Impayé" : "Payé"}
+                      </td>
+                      <td className="pr-5">
+                        {" "}
+                        <DropdownMenu>
+                          <DropdownMenuTrigger
+                            onClick={() => setcustomerCreditsId(credit.id)}
+                            className="border border-transparent focus:border focus:border-transparent active:border active:border-transparent"
+                          >
+                            <MdOutlineMoreVert />
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent className="w-70 border border-transparent">
+                            <DropdownMenuLabel className="text-xl">
+                              Actions
+                            </DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setcustomerCreditsId(credit.id);
+                                setisModalOpen(true);
+                              }}
+                              className="text-lg"
+                            >
+                              Faire un Recouvrements
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setcustomerCreditsId(credit.id);
+                                applyGetRecoveryCreditAction(credit.id);
+                                timeLineModal.current.play();
+                              }}
+                              className="text-lg"
+                            >
+                              Recouvrements
+                            </DropdownMenuItem>
+                            <DropdownMenuItem className="text-lg">
+                              Valider
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        )}
       </div>
 
       <div
@@ -358,142 +399,34 @@ export default function CustomerCredits() {
             <h3 className="text-xl text-[#F39C12] font-bold text-center">
               Liste des recouvrements
             </h3>
-            <div className="mt-5">
-              {recoveries.map((recovery) => (
-                <div
-                  key={recovery.id}
-                  className="w-full flex flex-row items-center justify-between border rounded-lg p-3 border-gray-200 py-3"
-                >
-                  <div className="flex flex-col">
-                    <span className="font-medium text-lg text-gray-700">
-                      Montant payé: {recovery.amountPaid} FCFA
-                    </span>
-                    <span className="text-gray-500 text-lg text-sm">
-                      Date: {new Date(recovery.createdAt).toLocaleDateString()}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* <h3 className="text-xl text-[#F39C12] font-bold text-center">
-              Ajouter une nouvelle dette
-            </h3>
-            <form onSubmit={handleSubmit(submitForm)}>
-              <div className="w-full space-y-6 py-10">
-                <div className="w-full flex flex-col gap-y-2">
-                  <label htmlFor="clientName">Nom du client</label>
-                  <input
-                    {...register("clientName", {
-                      required: "Le nom du client est obligatoire",
-                      minLength: {
-                        value: 2,
-                        message:
-                          "Le nom du client doit contenir au moins 2 caractères",
-                      },
-                    })}
-                    type="text"
-                    name="clientName"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-                    placeholder="Entrer le nom du client"
-                  />
-                  {formState.errors.clientName && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {formState.errors.clientName.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="w-full flex flex-col gap-y-2">
-                  <label htmlFor="phone">Téléphone</label>
-                  <PhoneInput
-                    defaultCountry="BJ"
-                    {...register("phoneNumber", {
-                      required: "Le numéro de téléphone est obligatoire",
-                    })}
-                  />
-                  {formState.errors.phoneNumber && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {formState.errors.phoneNumber.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="w-full flex flex-col gap-y-2">
-                  <label htmlFor="product">Produit acheté</label>
-                  <select
-                    {...register("product", {
-                      required: "Le produit acheté est obligatoire",
-                    })}
-                    name="product"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-                    defaultValue=""
-                  >
-                    <option value="" disabled>
-                      Sélectionner un produit
-                    </option>
-                    <option value="Ciment">Ciment</option>
-                    <option value="Fer à béton">Fer à béton</option>
-                    <option value="Peinture">Peinture</option>
-                    <option value="Carrelage">Carrelage</option>
-                    <option value="Plâtre">Plâtre</option>
-                  </select>
-                  {formState.errors.product && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {formState.errors.product.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="w-full flex flex-col gap-y-2">
-                  <label htmlFor="quantity">Quantité</label>
-                  <input
-                    {...register("quantity", {
-                      required: "La quantité est obligatoire",
-                      min: {
-                        value: 1,
-                        message: "La quantité doit être au moins de 1",
-                      },
-                    })}
-                    type="number"
-                    name="quantity"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-                    placeholder="Quantité achetée"
-                  />
-                  {formState.errors.quantity && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {formState.errors.quantity.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="w-full flex flex-col gap-y-2">
-                  <label htmlFor="unitPrice">Prix Unitaire</label>
-                  <input
-                    {...register("unitPrice", {
-                      required: "Le prix unitaire est obligatoire",
-                      min: {
-                        value: 1,
-                        message: "Le prix unitaire doit être supérieur à 0",
-                      },
-                    })}
-                    type="number"
-                    name="unitPrice"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-                    placeholder="Prix unitaire"
-                  />
-                  {formState.errors.unitPrice && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {formState.errors.unitPrice.message}
-                    </p>
-                  )}
-                </div>
-
-                <button className="auth-btn w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] focus:ring-offset-2 transition-all shadow-lg">
-                  Enrégistrer la dette
-                </button>
+            {loadingRecovery ? (
+              <div className="w-full h-[500px] flex items-center justify-center">
+                <ClipLoader color="#F39C12" size={50} />
               </div>
-            </form> */}
+            ) : recoveries.length === 0 ? (
+              <div className="text-center mt-10 text-xl">
+                Aucun recouvrement enrégistré
+              </div>
+            ) : (
+              <div className="mt-5 space-y-4">
+                {recoveries.map((recovery) => (
+                  <div
+                    key={recovery.id}
+                    className="w-full flex flex-row items-center justify-between border rounded-lg p-3 border-gray-200 py-3"
+                  >
+                    <div className="flex flex-col">
+                      <span className="font-medium text-lg text-gray-700">
+                        Montant payé: {recovery.amountPaid} FCFA
+                      </span>
+                      <span className="text-gray-500 text-lg text-sm">
+                        Date:{" "}
+                        {new Date(recovery.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

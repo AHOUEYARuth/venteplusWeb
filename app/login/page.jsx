@@ -6,55 +6,70 @@ import LoginP from "@/assets/images/login.jpg";
 import { ClipLoader } from "react-spinners";
 
 import "@/style/style.scss";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import toast, { Toaster } from "react-hot-toast";
 import { useForm } from "react-hook-form";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { useRouter } from "next/navigation";
 import { useLoginStore } from "./loginStore/loginStore";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog.tsx";
 
 const Login = () => {
-  const { name, showLogin, loginActions,setToken,setUser,setShop } = useLoginStore();
+  const {
+    name,
+    showLogin,
+    loginActions,
+    setToken,
+    setUser,
+    setShop,
+    forgotPasswordAction,
+  } = useLoginStore();
   const router = useRouter();
   const { register, handleSubmit, watch, formState, trigger, reset } = useForm({
     mode: "onChange",
   });
-  const [loading, setLoading] = useState(false)
-  const [isSelectedShop, setIsSelectedShop] = useState(false)
+  const [loading, setLoading] = useState(false);
+  const [isSelectedShop, setIsSelectedShop] = useState(false);
   const [shops, setShops] = useState([]);
+  const [isModalOpen, setisModalOpen] = useState(false);
+  const [phoneNum, setphoneNum] = useState("");
+  const [isOtpModalOpen, setisOtpModalOpen] = useState(false)
+
   async function submitForm(data) {
     setLoading(true);
     console.log(data);
-     await loginActions(data)
+    await loginActions(data)
       .then((response) => {
         setLoading(false);
         console.log(response);
         if (response.data.shops) {
-          setIsSelectedShop(true)
-          setShops(response.data.shops)
-        }else if(response.data.token){
-          console.log("access-token")
+          setIsSelectedShop(true);
+          setShops(response.data.shops);
+        } else if (response.data.token) {
+          console.log("access-token");
           console.log(JSON.stringify(response.data.token));
-          
-          localStorage.setItem("access-token",response.data.token);
 
-          setToken(response.data.token) 
-          setUser(response.data.user)
-          setShop(response.data.shop)
-          router.push('/dashboard')
+          localStorage.setItem("access-token", response.data.token);
+
+          setToken(response.data.token);
+          setUser(response.data.user);
+          setShop(response.data.shop);
+          router.push("/dashboard");
         }
       })
       .catch((error) => {
         setLoading(false);
         console.log(error);
-        reset();
-        if(error.message) toast.error(error.message)
+        /* reset(); */
+        if (error.message) toast.error(error.message);
       });
     trigger().then((isValid) => {
       if (isValid) {
@@ -62,10 +77,117 @@ const Login = () => {
       }
     });
   }
-    
-  
+
+  async function submitPassForm(data) {
+    await forgotPasswordAction(data)
+      .then((response) => {
+
+      })
+      .catch((error) => {
+        toast.error(
+          error.message
+            ? error.message
+            : "Un problème est survenu réessayez plus tard"
+        );
+      });
+  }
+
   return (
     <div className="min-h-screen bg-[#F9FAFB] flex items-center justify-center">
+      <Dialog open={isModalOpen} onOpenChange={setisModalOpen}>
+        <DialogContent className="w-[500px] ">
+          <DialogHeader>
+            <DialogTitle className="text-lg">Mot de passe oublié</DialogTitle>
+            <DialogDescription className="text-base">
+              Veuillez saisir le numéro de téléphone avec lequel vous avez créé
+              le compte
+            </DialogDescription>
+          </DialogHeader>
+          <div className="w-full space-y-5">
+            <div className="mb-6">
+              <label className="block text-gray-700 text-sm font-medium mb-2">
+                Téléphone
+              </label>
+              <PhoneInput
+                defaultCountry="BJ"
+                onChange={(e) => setphoneNum(e.target.value)}
+              />
+            </div>
+
+            <DialogFooter className="sm:justify-start items-center justify-center">
+              <button
+                type="button"
+                onClick={() => {
+                  setisModalOpen(false);
+                  setisOtpModalOpen(true);
+                }}
+                /* onClick={() => submitPassForm(phoneNum)} */
+                className="w-50 auth-btn flex flex-row items-center justify-center gap-x-2 w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] cursor-pointer focus:ring-offset-2 transition-all shadow-lg"
+              >
+                Valider
+                {/* {employeLoading ? <ClipLoader color="white" size={20} /> : null} */}
+              </button>
+              <button
+                type="button"
+                className="w-50 auth-btn border border-1 border-gray-600 text-black flex flex-row items-center justify-center gap-x-2 w-full mt-5 text-black py-3 px-4 rounded-lg font-semibold hover:bg-[#000] hover:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#000] focus:ring-offset-2 transition-all shadow-lg"
+                onClick={() => setisModalOpen(false)}
+              >
+                Fermer
+              </button>
+            </DialogFooter>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isOtpModalOpen} onOpenChange={setisOtpModalOpen}>
+        <DialogContent className="w-[500px] ">
+          <DialogHeader>
+            <DialogTitle className="text-lg">Code OTP</DialogTitle>
+            <DialogDescription className="text-base">
+              Veuillez saisir le code OTP envoyé sur le 67xxxxxx
+            </DialogDescription>
+          </DialogHeader>
+          <div className="w-full space-y-5">
+            <div className="w-full flex flex-row justify-center gap-x-5 ">
+              <input
+                type="text"
+                className="w-[60px] px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+              />
+              <input
+                type="text"
+                className="w-[60px] px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+              />
+              <input
+                type="text"
+                className="w-[60px] px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+              />
+              <input
+                type="text"
+                className="w-[60px] px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+              />
+            </div>
+
+            <DialogFooter className="sm:justify-start items-center justify-center">
+              <button
+                type="submit"
+                onClick={() => submitPassForm(phoneNum)}
+                className="w-50 auth-btn flex flex-row items-center justify-center gap-x-2 w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] cursor-pointer focus:ring-offset-2 transition-all shadow-lg"
+              >
+                Valider
+                {/* {employeLoading ? <ClipLoader color="white" size={20} /> : null} */}
+              </button>
+              <button
+                type="button"
+                className="w-50 auth-btn border border-1 border-gray-600 text-black flex flex-row items-center justify-center gap-x-2 w-full mt-5 text-black py-3 px-4 rounded-lg font-semibold hover:bg-[#000] hover:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#000] focus:ring-offset-2 transition-all shadow-lg"
+                onClick={() => setisModalOpen(false)}
+              >
+                Fermer
+              </button>
+            </DialogFooter>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <div className="content w-[55%] bg-white rounded-xl flex items-center justify-between p-5">
         <div className="custom-box w-[50%] overflow-hidden">
           <div className="p-8 center-text">
@@ -125,20 +247,6 @@ const Login = () => {
               </div>
               {isSelectedShop == true && (
                 <div className="mb-6">
-                  {/* <Select
-                    name="shopId"
-                     
-                  >
-                    <SelectTrigger className="w-full py-6 outline-none">
-                      <SelectValue placeholder="Chosissez une boutique " />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {shops.map((shop, index) => {
-                       return <SelectItem key={index} value={shop.id}>{shop.name}</SelectItem>;
-                      })}
-                      
-                    </SelectContent>
-                  </Select> */}
                   <select
                     name="shopId"
                     {...register("shopId", {
@@ -176,16 +284,17 @@ const Login = () => {
                     Se souvenir de moi
                   </label>
                 </div>
-                <Link
-                  href=""
-                  className="text-sm text-gray-700 hover:text-[#F39C12] font-medium"
+                <div
+                  onClick={() => setisModalOpen(true)}
+                  className="text-sm text-gray-700 hover:text-[#F39C12] font-medium cursor-pointer"
                 >
                   Mot de passe oublié ?
-                </Link>
+                </div>
               </div>
 
-              <button className="auth-btn w-[50%] flex flex-row items-center gap-x-2 justify-center bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d6860f] focus:outline-none focus:ring-2 focus:ring-[#F39C12] focus:ring-offset-2 transition-all shadow-lg">
-                Se connecter {loading ? <ClipLoader color="white"  size={20}/> : null}
+              <button className="auth-btn w-[50%] flex flex-row items-center gap-x-2 justify-center bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d6860f] focus:outline-none focus:ring-2 focus:ring-[#F39C12] focus:ring-offset-2 transition-all shadow-lg cursor-pointer">
+                Se connecter{" "}
+                {loading ? <ClipLoader color="white" size={20} /> : null}
               </button>
 
               <div className="mt-6 text-center">
@@ -211,7 +320,7 @@ const Login = () => {
           />
         </div>
       </div>
-      <Toaster/>
+      <Toaster />
     </div>
   );
 };

@@ -19,6 +19,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { ClipLoader } from "react-spinners";
 import moment from "moment";
 import { DatePicker } from "@/components/ui/date-picker";
+import Product2 from "@/assets/images/emptyPro.png";
 
 export default function Spending() {
   const container = useRef(null);
@@ -31,7 +32,7 @@ export default function Spending() {
     expenseActions,
     getExpenseAction,
     setExpenses,
-    filterSpendingAction
+    filterSpendingAction,
   } = spendingStore();
   const { shop } = useLoginStore();
 
@@ -40,6 +41,7 @@ export default function Spending() {
   });
 
   async function applyGetExpenseAction(shopId) {
+    setExpenses([]);
     setexpenseLoadind(true);
     await getExpenseAction(shopId).then((response) => {
       console.log("data");
@@ -115,28 +117,27 @@ export default function Spending() {
   }, [shop]);
 
   useEffect(() => {
-          (async function handleFilter() {
-            if (rangeDate != null) {
-           
-              const dateFrom = rangeDate?.from;
-              const dateTo = rangeDate?.to;
-              await filterSpendingAction(
-                shop?.id,
-                dateFrom != undefined && dateFrom != null
-                  ? moment(dateFrom).format("DD-MM-YYYY")
-                  : dateFrom,
-                dateTo != undefined && dateTo != null
-                  ? moment(dateTo).format("DD-MM-YYYY")
-                  : dateTo
-              ).then((response) => {
-                setExpenses(response.data);
-              });
-            } else {
-              if(shop?.id){
-                await applyGetExpenseAction(shop?.id)
-              }
-            }
-          })();
+    (async function handleFilter() {
+      if (rangeDate != null) {
+        const dateFrom = rangeDate?.from;
+        const dateTo = rangeDate?.to;
+        await filterSpendingAction(
+          shop?.id,
+          dateFrom != undefined && dateFrom != null
+            ? moment(dateFrom).format("DD-MM-YYYY")
+            : dateFrom,
+          dateTo != undefined && dateTo != null
+            ? moment(dateTo).format("DD-MM-YYYY")
+            : dateTo
+        ).then((response) => {
+          setExpenses(response.data);
+        });
+      } else {
+        if (shop?.id) {
+          await applyGetExpenseAction(shop?.id);
+        }
+      }
+    })();
   }, [rangeDate]);
   return (
     <div ref={container} className="w-full h-full p-5 bg-gray-50 rounded-xl">
@@ -216,86 +217,102 @@ export default function Spending() {
       <div className="w-full flex flex-col gap-y-5">
         <div className="w-full flex flex-row items-start justify-between mt-20">
           <h2 className="text-2xl font-semibold ">Listes des Dépenses</h2>
-          <div className="w-[50%] flex flex-row items-center justify-center gap-x-4">
-            {/* <div className="w-[40%] relative flex items-center justify-between bg-white gap-x-2 rounded-lg">
-              <input
-                type="text"
-                placeholder="Recherche par nom"
-                className="bg-white text-sm py-3 pl-2 outline-hidden rounded-lg focus:outline-none  transition-all"
-              />
-              <button className="py-3 bg-[#F39C12] text-white rounded-tr-lg rounded-br-lg cursor-pointer px-4">
-                <MdSearch size={25} />
-              </button>
-            </div> */}
-            <div className="flex flex-row gap-x-4 items-center">
-               <DatePicker className="p-5" onDateChange={(range) => setRangeDate(range)} />
-              <button
-                onClick={() => {
-                  setRangeDate(null)
-                  if(shop?.id){
-                      applyGetExpenseAction(shop?.id)
-                  }
-                  
-                }}
-                className="bg-[#F39C12] cursor-pointer py-3 px-4 text-white rounded-lg"
-              >
-               Effacer
-              </button>
-            </div>
+          <div className="flex flex-row gap-x-4 items-center">
+            <DatePicker
+              className="p-5"
+              onDateChange={(range) => setRangeDate(range)}
+            />
+            <button
+              onClick={() => {
+                setRangeDate(null);
+                if (shop?.id) {
+                  applyGetExpenseAction(shop?.id);
+                }
+              }}
+              className="bg-[#F39C12] cursor-pointer py-3 px-4 text-white rounded-lg"
+            >
+              Effacer
+            </button>
           </div>
         </div>
-        <div className="w-[95%] overflow-x-auto pb-10 mt-5 bg-white">
-          <table className="min-w-full text-xl">
-            <thead className=" text-black bg-gray-100  ">
-              <tr className="border-b border-gray-200 text-left">
-                <th className="p-5">N °</th>
-                <th className="p-5">Label</th>
-                <th className="p-5">Montant(FCFA)</th>
-                <th className="p-5">Description</th>
-                <th className="p-5">Date</th>
-                <th className=""></th>
-              </tr>
-            </thead>
-            <tbody>
-              {spendings.map((Spending, index) => {
-                return (
-                  <tr
-                    key={Spending.id}
-                    className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
-                  >
-                    <td className="px-5 py-5">{index + 1}</td>
-                    <td className="px-5 py-5 font-bold">{Spending.label}</td>
-                    <td className="px-5 py-5 text-black">{Spending.spendAmount}</td>
-                    <td className="px-5 py-5 text-black">
-                      {Spending.description}
-                    </td>
-                    <td className="px-5 py-5 text-black">
-                      {moment(Spending.date).format('DD-mm-yyyy')}
-                    </td>
-
-                    <td className="pr-5">
-                      {" "}
-                      <DropdownMenu>
-                        <DropdownMenuTrigger className="border border-transparent focus:border focus:border-transparent active:border active:border-transparent">
-                          <MdOutlineMoreVert />
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-40 border border-transparent">
-                          <DropdownMenuLabel className="text-xl">
-                            Actions
-                          </DropdownMenuLabel>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-lg">
-                            Modifier
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </td>
+        {expenseLoadind ? (
+          <div className="w-full h-[500px] flex items-center justify-center">
+            <ClipLoader color="#F39C12" size={50} />
+          </div>
+        ) : (
+          <div className="w-full overflow-x-auto pb-10 mt-5 bg-white">
+            {spendings.length === 0 ? (
+              <div className="w-full flex flex-col items-center gap-y-2 text-center py-5">
+                <div
+                  className="w-[50%] sm:w-[100%] lg:w-[32%] h-[200px] relative overflow-hidden bg-contain bg-center bg-no-repeat cursor-pointer"
+                  style={{ backgroundImage: `url(${Product2.src})` }}
+                ></div>
+                <div>
+                  <p className="text-2xl font-bold">Aucune dépense trouvée</p>
+                  <p className="">
+                    Dépenses et achats. La liste des dépenses et achats
+                    enrégistrés s'affiche ici
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <table className="min-w-full text-xl">
+                <thead className=" text-black bg-gray-100  ">
+                  <tr className="border-b border-gray-200 text-left">
+                    <th className="p-5">N °</th>
+                    <th className="p-5">Label</th>
+                    <th className="p-5">Montant(FCFA)</th>
+                    <th className="p-5">Description</th>
+                    <th className="p-5">Date</th>
+                    <th className=""></th>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+                </thead>
+                <tbody>
+                  {spendings.map((Spending, index) => {
+                    return (
+                      <tr
+                        key={Spending.id}
+                        className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
+                      >
+                        <td className="px-5 py-5">{index + 1}</td>
+                        <td className="px-5 py-5 font-bold">
+                          {Spending.label}
+                        </td>
+                        <td className="px-5 py-5 text-black">
+                          {Spending.spendAmount}
+                        </td>
+                        <td className="px-5 py-5 text-black">
+                          {Spending.description}
+                        </td>
+                        <td className="px-5 py-5 text-black">
+                          {moment(Spending.date).format("DD-mm-yyyy")}
+                        </td>
+
+                        <td className="pr-5">
+                          {" "}
+                          <DropdownMenu>
+                            <DropdownMenuTrigger className="border border-transparent focus:border focus:border-transparent active:border active:border-transparent">
+                              <MdOutlineMoreVert />
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-40 border border-transparent">
+                              <DropdownMenuLabel className="text-xl">
+                                Actions
+                              </DropdownMenuLabel>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem className="text-lg">
+                                Modifier
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
+          </div>
+        )}
       </div>
 
       <div

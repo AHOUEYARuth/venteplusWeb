@@ -22,6 +22,8 @@ import {
 import { useLoginStore } from "@/app/login/loginStore/loginStore";
 import { baseUrlNotApi } from "@/lib/httpClient";
 import { useSellingStore } from "../selling/sellingStore/sellingStore";
+import Product2 from "@/assets/images/emptyPro.png";
+
 export const description = "A bar chart with a label";
 /* const chartData = [
   { month: "January", desktop: 186 },
@@ -198,106 +200,136 @@ export default function Dashboard() {
       </div>
       <div className="py-8">
         <h2 className="text-2xl font-bold mb-5">Top Produits</h2>
-        <div className="w-full flex flex-row flex-wrap items-center justify-start gap-4 ">
-          {topProducts.map((product, index) => {
-            return (
-              <div
-                key={index}
-                className="shop-item min-w-93 flex flex-col gap-5 bg-white rounded-2xl p-3 relative shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
-              >
-                <div className="w-full bg-gray-300 flex flex-col gap-5 rounded-tl-xl rounded-2xl">
-                  <div
-                    className="w-full h-[300px] bg-center bg-cover bg-no-repeat rounded-2xl"
-                    style={{
-                      backgroundImage: `url("${baseUrlNotApi}${product?.image}")`,
-                    }}
-                  >
-                    <div>
-                      <div className="w-full flex items-center justify-between pt-2 px-2"></div>
+        {topProducts.length === 0 ? (
+          <div className="w-full flex flex-col items-center gap-y-2 text-center py-5">
+            <div
+              className="w-[50%] sm:w-[100%] lg:w-[32%] h-[200px] relative overflow-hidden bg-contain bg-center bg-no-repeat cursor-pointer"
+              style={{ backgroundImage: `url(${Product2.src})` }}
+            ></div>
+            <div>
+              <p className="text-2xl font-bold">Aucun produit trouvée</p>
+              <p className="">
+                La liste des top produits est vide. La liste des top produits
+                enrégistrés s&apos;affiche ici
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="w-full flex flex-row flex-wrap items-center justify-start gap-4 ">
+            {topProducts.map((product, index) => {
+              return (
+                <div
+                  key={index}
+                  className="shop-item min-w-93 flex flex-col gap-5 bg-white rounded-2xl p-3 relative shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
+                >
+                  <div className="w-full bg-gray-300 flex flex-col gap-5 rounded-tl-xl rounded-2xl">
+                    <div
+                      className="w-full h-[300px] bg-center bg-cover bg-no-repeat rounded-2xl"
+                      style={{
+                        backgroundImage: `url("${baseUrlNotApi}${product?.image}")`,
+                      }}
+                    >
+                      <div>
+                        <div className="w-full flex items-center justify-between pt-2 px-2"></div>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="px-2 flex flex-col gap-2">
-                  <p className="text-base">
-                    <span className="text-[#F39C12] font-semibold text-2xl">
-                      {product.name}
-                    </span>
-                  </p>
-                  <p className="font-medium text-lg text-gray-500">
-                    {product.description}
-                  </p>
-                </div>
-                <div className="px-2 flex items-center justify-between gap-4 text-sm text-gray-700">
-                  <h3 className="text-2xl font-semibold">
-                    {product.salePrice} F
-                  </h3>
-                  <button className="bg-[#F39C12] text-white text-xl py-2 px-4 rounded-xl cursor-pointer">
-                    <h3>
-                      Prix d&apos;achat :{" "}
-                      <span className="font-bold">{product.purchasePrice}</span>
+                  <div className="px-2 flex flex-col gap-2">
+                    <p className="text-base">
+                      <span className="text-[#F39C12] font-semibold text-2xl">
+                        {product.name}
+                      </span>
+                    </p>
+                    <p className="font-medium text-lg text-gray-500">
+                      {product.description}
+                    </p>
+                  </div>
+                  <div className="px-2 flex items-center justify-between gap-4 text-sm text-gray-700">
+                    <h3 className="text-2xl font-semibold">
+                      {product.salePrice} F
                     </h3>
-                  </button>
+                    <button className="bg-[#F39C12] text-white text-xl py-2 px-4 rounded-xl cursor-pointer">
+                      <h3>
+                        Prix d&apos;achat :{" "}
+                        <span className="font-bold">
+                          {product.purchasePrice}
+                        </span>
+                      </h3>
+                    </button>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
       </div>
       <div className="py-8">
         <h2 className="text-2xl font-bold mb-5">Listes des ventes</h2>
-        <div className="text-2xl bg-white p-5 rounded-2xl">
-          <div className="overflow-x-auto">
-            <table className="w-full text-xl ">
-              <thead className="text-black bg-gray-100">
-                <tr className="border-b border-gray-200 text-left">
-                  {/* <th className="p-5">Client</th>
+        {monthSelling.length === 0 ? (
+          <div className="w-full flex flex-col items-center justify-center">
+            <p className="text-xl font-bold">Aucun produit trouvée</p>
+            <p className="">
+              La liste des top produits est vide. La liste des top produits
+              enrégistrés s&apos;affiche ici
+            </p>
+          </div>
+        ) : (
+          <div className="text-2xl bg-white p-5 rounded-2xl">
+            <div className="overflow-x-auto">
+              <table className="w-full text-xl ">
+                <thead className="text-black bg-gray-100">
+                  <tr className="border-b border-gray-200 text-left">
+                    {/* <th className="p-5">Client</th>
                   <th className="p-5">Téléphone</th> */}
-                  <th className="p-5">Produit</th>
-                  <th className="p-5">Quantité</th>
-                  <th className="p-5 ">Prix d&apos;achat(FCFA)</th>
-                  <th className="p-5 ">Prix vente(FCFA)</th>
-                  <th className="p-5 ">Total(FCFA)</th>
-                  <th className="p-5 ">Bénéfice net(FCFA)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {monthSelling.map((selling) => (
-                  <tr
-                    key={selling.id}
-                    className="border-b hover:bg-gray-50 transition-colors"
-                  >
-                    {/* <td className="px-5 py-5">{selling.customer.name} {selling.customer.firstName}</td>
-                    <td className="px-5 py-5">{selling.customer.phoneNumber}</td> */}
-                    <td className="p-5">{selling.toOrders[0].product.name}</td>
-                    <td className="p-5">{selling.toOrders[0].quantity}</td>
-                    <td className="p-5">
-                      {selling.toOrders[0].product.purchasePrice}
-                    </td>
-                    <td className="p-5">
-                      {selling.toOrders[0].product.salePrice}
-                    </td>
-                    <td className="p-5">{selling.totalAmount}</td>
-                    <td className="p-5 text-green-600">{selling.profit}</td>
+                    <th className="p-5">Produit</th>
+                    <th className="p-5">Quantité</th>
+                    <th className="p-5 ">Prix d&apos;achat(FCFA)</th>
+                    <th className="p-5 ">Prix vente(FCFA)</th>
+                    <th className="p-5 ">Total(FCFA)</th>
+                    <th className="p-5 ">Bénéfice net(FCFA)</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {monthSelling.map((selling) => (
+                    <tr
+                      key={selling.id}
+                      className="border-b hover:bg-gray-50 transition-colors"
+                    >
+                      {/* <td className="px-5 py-5">{selling.customer.name} {selling.customer.firstName}</td>
+                    <td className="px-5 py-5">{selling.customer.phoneNumber}</td> */}
+                      <td className="p-5">
+                        {selling.toOrders[0].product.name}
+                      </td>
+                      <td className="p-5">{selling.toOrders[0].quantity}</td>
+                      <td className="p-5">
+                        {selling.toOrders[0].product.purchasePrice}
+                      </td>
+                      <td className="p-5">
+                        {selling.toOrders[0].product.salePrice}
+                      </td>
+                      <td className="p-5">{selling.totalAmount}</td>
+                      <td className="p-5 text-green-600">{selling.profit}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-          <div className="pt-4 flex flex-col sm:flex-row justify-between text-lg font-semibold text-gray-700">
-            <p>
-              <span className="text-gray-500 text-xl">Total vendues : </span>
-              <span className="text-green-600">{monthSaleTotal} FCFA</span>
-            </p>
-            <p>
-              <span className="text-gray-500 text-xl">Bénéfice total : </span>
-              <span className="text-[#F39C12]">
-                {monthSaleProfitTotal} FCFA
-              </span>
-            </p>
+            <div className="pt-4 flex flex-col sm:flex-row justify-between text-lg font-semibold text-gray-700">
+              <p>
+                <span className="text-gray-500 text-xl">Total vendues : </span>
+                <span className="text-green-600">{monthSaleTotal} FCFA</span>
+              </p>
+              <p>
+                <span className="text-gray-500 text-xl">Bénéfice total : </span>
+                <span className="text-[#F39C12]">
+                  {monthSaleProfitTotal} FCFA
+                </span>
+              </p>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
