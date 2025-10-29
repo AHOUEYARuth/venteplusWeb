@@ -77,3 +77,33 @@ export const filterOrderAndSellingRequest = async (
     searchParams: params,
   });
 };
+
+export const confirmOrderRequest = async (orderId) => {
+  return HttpClient.makeRequest({
+    method: "PUT",
+    url: `orders/confirm/${orderId}`,
+  });
+};
+
+export const paidOrderRequest = async (orderId) => {
+  return HttpClient.makeRequest({
+    method: "PUT",
+    url: `orders/paid/${orderId}`,
+  });
+};
+
+export const deliverOrderRequest = async (orderId) => {
+  return HttpClient.makeRequest({
+    method: "PUT",
+    url: `orders/deliver/${orderId}`,
+  });
+};
+
+export const deliverSellingRequest = async (orderId, isSale) => {
+  const params = new URLSearchParams("");
+  if (isSale != null) params.append("isSale", JSON.stringify(isSale));
+  return HttpClient.makeRequest({
+    method: "PUT",
+    url: `orders/deliver-selling/${orderId}`,
+  });
+};

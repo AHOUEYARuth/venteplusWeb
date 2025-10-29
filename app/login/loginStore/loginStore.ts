@@ -2,7 +2,7 @@
 
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { forgotPasswordRequest, loginRequest, updateFcmTokenRequest } from "../loginRequest/loginRequest";
+import { loginRequest, postNewPasswordRequest, postOtpRequest, postPasswordRequest, updateFcmTokenRequest } from "../loginRequest/loginRequest";
 
 type State = {
   user: any;
@@ -20,6 +20,8 @@ type LoginActions = {
   setShop: (shop: any) => void;
   logout: () => void;
   forgotPasswordAction: (data: any) => Promise<any>;
+  postOtpCodeAction: (data: any) => Promise<any>;
+  postNewPasswordAction: (data: any) => Promise<any>;
 };
 
 export const useLoginStore = create<State & LoginActions>()(
@@ -48,9 +50,17 @@ export const useLoginStore = create<State & LoginActions>()(
         set({ user: null, shop: null, token: null });
         localStorage.removeItem("access-token");
       },
-      forgotPasswordAction: async(data) => {
-        const response = await forgotPasswordRequest(data);
-        return response
+      forgotPasswordAction: async (data) => {
+        const response = await postPasswordRequest(data);
+        return response;
+      },
+      postOtpCodeAction: async (data) => {
+        const response = await postOtpRequest(data);
+        return response;
+      },
+      postNewPasswordAction: async (data) => {
+        const response = await postNewPasswordRequest(data);
+        return response;
       },
     }),
     {
@@ -61,7 +71,6 @@ export const useLoginStore = create<State & LoginActions>()(
         shop: state.shop,
         token: state.token,
       }),
-      
     }
   )
 );

@@ -59,6 +59,10 @@ export default function Selling() {
     cancelOrderAction,
     deleteOrderAction,
     filterOrderAndSellingAction,
+    confirmOrderAction,
+    paidOrderAction,
+    deliverOrderAction,
+    deliverSellingAction,
   } = useSellingStore();
   const { customers, setCustomers, getCustomersAction, customerAction } =
     customerStore();
@@ -71,6 +75,11 @@ export default function Selling() {
   const timeLineModalClient = useRef();
   const [isModalOpen, setisModalOpen] = useState(false);
   const [isCancelModalOpen, setisCancelModalOpen] = useState(false);
+  const [isConfirmModal, setisConfirmModal] = useState(false);
+  const [isPaidModal, setisPaidModal] = useState(false);
+  const [isDeliveredModal, setisDeliveredModal] = useState(false);
+  const [isSaleDeliveredModal, setisSaleDeliveredModal] = useState(false);
+
   const [orderId, setorderId] = useState("");
 
   const [rangeDate, setRangeDate] = useState(null);
@@ -244,7 +253,7 @@ export default function Selling() {
       });
     await applyGetOrdersAction(shop?.id);
   }
-  async function applDeleteOderAction(shopId) {
+  async function applyDeleteOderAction(shopId) {
     setLoadingOrder(true);
     await deleteOrderAction(shopId)
       .then((response) => {
@@ -263,6 +272,86 @@ export default function Selling() {
       });
     await applyGetOrdersAction(shop?.id);
   }
+  async function applyConfirmOderAction(shopId) {
+    setLoadingOrder(true);
+    await confirmOrderAction(shopId)
+      .then((response) => {
+        toast.success(response?.message);
+        setisModalOpen(false);
+      })
+      .catch((error) => {
+        toast.error(
+          error.message
+            ? error.message
+            : "Un problème est survenu lors de la confirmation de la commande"
+        );
+      })
+      .finally(() => {
+        setLoadingOrder(false);
+      });
+    await applyGetOrdersAction(shop?.id);
+  }
+
+  async function applyPaidOderAction(shopId) {
+    setLoadingOrder(true);
+    await paidOrderAction(shopId)
+      .then((response) => {
+        toast.success(response?.message);
+        setisModalOpen(false);
+      })
+      .catch((error) => {
+        toast.error(
+          error.message
+            ? error.message
+            : "Un problème est survenu lors de la déclaration de la commande à payé"
+        );
+      })
+      .finally(() => {
+        setLoadingOrder(false);
+      });
+    await applyGetOrdersAction(shop?.id);
+  }
+
+  async function applyDeliverOderAction(shopId) {
+    setLoadingOrder(true);
+    await deliverOrderAction(shopId)
+      .then((response) => {
+        toast.success(response?.message);
+        setisModalOpen(false);
+      })
+      .catch((error) => {
+        toast.error(
+          error.message
+            ? error.message
+            : "Un problème est survenu lors de la déclaration de la commande livrée"
+        );
+      })
+      .finally(() => {
+        setLoadingOrder(false);
+      });
+    await applyGetOrdersAction(shop?.id);
+  }
+
+  async function applyDeliverSellingAction(shopId) {
+    setLoadingOrder(true);
+    await deliverSellingAction(shopId, true)
+      .then((response) => {
+        toast.success(response?.message);
+        setisModalOpen(false);
+      })
+      .catch((error) => {
+        toast.error(
+          error.message
+            ? error.message
+            : "Un problème est survenu lors de la déclaration de la commande livrée"
+        );
+      })
+      .finally(() => {
+        setLoadingOrder(false);
+      });
+    await applyGetOrdersAction(shop?.id);
+  }
+
   useEffect(() => {
     (function init() {
       if (shop?.id) {
@@ -320,7 +409,7 @@ export default function Selling() {
           </DialogHeader>
           <DialogFooter className="sm:justify-start items-center justify-center">
             <button
-              onClick={() => applDeleteOderAction(orderId)}
+              onClick={() => applyDeleteOderAction(orderId)}
               className="w-50 auth-btn flex flex-row items-center justify-center gap-x-2 w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] cursor-pointer focus:ring-offset-2 transition-all shadow-lg"
             >
               OUI {loadingOrder ? <ClipLoader color="white" size={20} /> : null}
@@ -357,6 +446,118 @@ export default function Selling() {
               className="w-50 auth-btn border border-1 border-gray-600 text-black flex flex-row items-center justify-center gap-x-2 w-full mt-5 text-black py-3 px-4 rounded-lg font-semibold hover:bg-[#000] hover:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#000] focus:ring-offset-2 transition-all shadow-lg"
               onClick={() => setisCancelModalOpen(false)}
               variant="ghost"
+            >
+              NON
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isConfirmModal} onOpenChange={setisConfirmModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-lg">
+              Confirmer une commande
+            </DialogTitle>
+            <DialogDescription className="text-base">
+              Voulez-vous vraiment confirmer cette commande?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-start items-center justify-center">
+            <button
+              onClick={() => applyConfirmOderAction(orderId)}
+              className="w-50 auth-btn flex flex-row items-center justify-center gap-x-2 w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] cursor-pointer focus:ring-offset-2 transition-all shadow-lg"
+            >
+              OUI {loadingOrder ? <ClipLoader color="white" size={20} /> : null}
+            </button>
+            <button
+              type="button"
+              className="w-50 auth-btn border border-1 border-gray-600 text-black flex flex-row items-center justify-center gap-x-2 w-full mt-5 text-black py-3 px-4 rounded-lg font-semibold hover:bg-[#000] hover:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#000] focus:ring-offset-2 transition-all shadow-lg"
+              onClick={() => setisConfirmModal(false)}
+            >
+              NON
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isPaidModal} onOpenChange={setisPaidModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-lg">
+              Déclarer une commande payée
+            </DialogTitle>
+            <DialogDescription className="text-base">
+              Voulez-vous vraiment déclarer cette commande payée?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-start items-center justify-center">
+            <button
+              onClick={() => applyPaidOderAction(orderId)}
+              className="w-50 auth-btn flex flex-row items-center justify-center gap-x-2 w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] cursor-pointer focus:ring-offset-2 transition-all shadow-lg"
+            >
+              OUI {loadingOrder ? <ClipLoader color="white" size={20} /> : null}
+            </button>
+            <button
+              type="button"
+              className="w-50 auth-btn border border-1 border-gray-600 text-black flex flex-row items-center justify-center gap-x-2 w-full mt-5 text-black py-3 px-4 rounded-lg font-semibold hover:bg-[#000] hover:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#000] focus:ring-offset-2 transition-all shadow-lg"
+              onClick={() => setisPaidModal(false)}
+            >
+              NON
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isDeliveredModal} onOpenChange={setisDeliveredModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-lg">
+              Déclarer une commande livrée
+            </DialogTitle>
+            <DialogDescription className="text-base">
+              Voulez-vous vraiment déclarer cette commande livrée?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-start items-center justify-center">
+            <button
+              onClick={() => applyDeliverOderAction(orderId)}
+              className="w-50 auth-btn flex flex-row items-center justify-center gap-x-2 w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] cursor-pointer focus:ring-offset-2 transition-all shadow-lg"
+            >
+              OUI {loadingOrder ? <ClipLoader color="white" size={20} /> : null}
+            </button>
+            <button
+              type="button"
+              className="w-50 auth-btn border border-1 border-gray-600 text-black flex flex-row items-center justify-center gap-x-2 w-full mt-5 text-black py-3 px-4 rounded-lg font-semibold hover:bg-[#000] hover:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#000] focus:ring-offset-2 transition-all shadow-lg"
+              onClick={() => setisDeliveredModal(false)}
+            >
+              NON
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isSaleDeliveredModal} onOpenChange={setisSaleDeliveredModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-lg">
+              Déclarer une vente livrée
+            </DialogTitle>
+            <DialogDescription className="text-base">
+              Voulez-vous vraiment déclarer cette vente livrée?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-start items-center justify-center">
+            <button
+              onClick={() => applyDeliverSellingAction(orderId)}
+              className="w-50 auth-btn flex flex-row items-center justify-center gap-x-2 w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] cursor-pointer focus:ring-offset-2 transition-all shadow-lg"
+            >
+              OUI {loadingOrder ? <ClipLoader color="white" size={20} /> : null}
+            </button>
+            <button
+              type="button"
+              className="w-50 auth-btn border border-1 border-gray-600 text-black flex flex-row items-center justify-center gap-x-2 w-full mt-5 text-black py-3 px-4 rounded-lg font-semibold hover:bg-[#000] hover:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#000] focus:ring-offset-2 transition-all shadow-lg"
+              onClick={() => setisSaleDeliveredModal(false)}
             >
               NON
             </button>
@@ -739,13 +940,31 @@ export default function Selling() {
                               <DropdownMenuSeparator />
                               {order.status == "PENDING" ? (
                                 <div>
-                                  <DropdownMenuItem className="text-lg">
+                                  <DropdownMenuItem
+                                    className="text-lg"
+                                    onClick={() => {
+                                      setorderId(order.id);
+                                      setisConfirmModal(true)
+                                    }}
+                                  >
                                     Confirmer
                                   </DropdownMenuItem>
-                                  <DropdownMenuItem className="text-lg">
+                                  <DropdownMenuItem
+                                    className="text-lg"
+                                    onClick={() => {
+                                      setorderId(order.id);
+                                      setisPaidModal(true)
+                                    }}
+                                  >
                                     Payer
                                   </DropdownMenuItem>
-                                  <DropdownMenuItem className="text-lg">
+                                  <DropdownMenuItem
+                                    className="text-lg"
+                                    onClick={() => {
+                                      setorderId(order.id);
+                                      setisDeliveredModal(true)
+                                    }}
+                                  >
                                     Livrer
                                   </DropdownMenuItem>
                                 </div>
@@ -863,7 +1082,7 @@ export default function Selling() {
                       <td className="pr-2">
                         {" "}
                         <DropdownMenu>
-                          <DropdownMenuTrigger className="border border-transparent focus:border focus:border-transparent active:border active:border-transparent">
+                          <DropdownMenuTrigger onClick={()=> setorderId(selling.id)} className="border border-transparent focus:border focus:border-transparent active:border active:border-transparent">
                             <MdOutlineMoreVert />
                           </DropdownMenuTrigger>
                           <DropdownMenuContent className="w-40 border border-transparent">
@@ -872,8 +1091,11 @@ export default function Selling() {
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             {selling.isSale ? (
-                              <DropdownMenuItem className="text-lg">
-                                Payer
+                              <DropdownMenuItem className="text-lg" onClick={() => {
+                                setorderId(selling.id);
+                                setisSaleDeliveredModal(true)
+                              }}>
+                                Livrer
                               </DropdownMenuItem>
                             ) : null}
                           </DropdownMenuContent>

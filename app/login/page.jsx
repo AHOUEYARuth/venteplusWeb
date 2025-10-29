@@ -32,19 +32,56 @@ const Login = () => {
     setUser,
     setShop,
     forgotPasswordAction,
-    setFcmTokenActions
+    setFcmTokenActions,
+    postOtpCodeAction,
+    postNewPasswordAction,
   } = useLoginStore();
   const router = useRouter();
   const { register, handleSubmit, watch, formState, trigger, reset } = useForm({
     mode: "onChange",
   });
+
+    const {
+      register: registerPhoneNumber,
+      handleSubmit: handleSubmitPhoneNumber,
+      formState: formStatePhoneNumber,
+      reset:resetPhoneNumber,
+    } = useForm({
+      mode: "onChange",
+    });
+  
+   const {
+     register: registerOtp,
+     handleSubmit: handleSubmitOtp,
+     formState: formStateOtp,
+     reset: resetOtp,
+     trigger:triggerOtp
+   } = useForm({
+     mode: "onChange",
+   });
+  
+     const {
+       register: registerMdp,
+       handleSubmit: handleSubmitMdp,
+       formState: formStateMdp,
+       reset: resetMdp,
+       trigger: triggerMdp,
+       watch: watchMdp,
+     } = useForm({
+       mode: "onChange",
+     });
+  
+  
   const [loading, setLoading] = useState(false);
   const [isSelectedShop, setIsSelectedShop] = useState(false);
   const [shops, setShops] = useState([]);
   const [isModalOpen, setisModalOpen] = useState(false);
   const [phoneNum, setphoneNum] = useState("");
   const [isOtpModalOpen, setisOtpModalOpen] = useState(false);
-  const [newpassModal, setnewpassModal] = useState(false)
+  const [newpassModal, setnewpassModal] = useState(false);
+  const [resetMdpLoader, setresetMdpLoader] = useState(false)
+  const [currentPhoneNumber, setcurrentPhoneNumber] = useState("")
+  const [currentCode, setcurrentCode] = useState("")
 
   async function submitForm(data) {
     setLoading(true);
@@ -62,7 +99,7 @@ const Login = () => {
           console.log(JSON.stringify(response.data.token));
           localStorage.setItem("access-token", response.data.token);
 
-          setFcmTokenActions({ fcmToken: token })
+          setFcmTokenActions({ fcmToken: token });
           setToken(response.data.token);
           setUser(response.data.user);
           setShop(response.data.shop);
@@ -83,9 +120,58 @@ const Login = () => {
   }
 
   async function submitPassForm(data) {
+    setresetMdpLoader(true);
     await forgotPasswordAction(data)
       .then((response) => {
+        setcurrentPhoneNumber(data.phoneNumber)
+        setisModalOpen(false)
+        setisOtpModalOpen(true)
+      })
+      .catch((error) => {
+        toast.error(
+          error.message
+            ? error.message
+            : "Un problème est survenu réessayez plus tard"
+        );
+      }).finally(() => {
+        setresetMdpLoader(false);
+      });
+  }
 
+  async function submitOtpForm(data) {
+    triggerOtp().then(async (isValid) => {
+      if (isValid) {
+        const payload = {
+          code: data.otp1 + data.otp2 + data.otp3 + data.otp4,
+          phoneNumber:currentPhoneNumber
+        }
+        setcurrentCode(payload.code)
+         await postOtpCodeAction(payload)
+           .then((response) => {
+             setisOtpModalOpen(false);
+             setnewpassModal(true);
+           })
+           .catch((error) => {
+             toast.error(
+               error.message
+                 ? error.message
+                 : "Un problème est survenu réessayez plus tard"
+             );
+           });
+      }
+    });
+   
+  }
+
+  async function submitnewPasswForm(data) {
+    const payload = {
+      code: currentCode,
+      phoneNumber: currentPhoneNumber,
+      ...data
+    };
+    await postNewPasswordAction(payload)
+      .then((response) => {
+        router.push("/login")
       })
       .catch((error) => {
         toast.error(
@@ -107,39 +193,43 @@ const Login = () => {
               le compte
             </DialogDescription>
           </DialogHeader>
-          <div className="w-full space-y-5">
-            <div className="mb-6">
-              <label className="block text-gray-700 text-sm font-medium mb-2">
-                Téléphone
-              </label>
-              <PhoneInput
-                defaultCountry="BJ"
-                onChange={(e) => setphoneNum(e.target.value)}
-              />
-            </div>
+          <form action="" onSubmit={handleSubmitPhoneNumber(submitPassForm)}>
+            <div className="w-full space-y-5">
+              <div className="mb-6">
+                <label className="block text-gray-700 text-sm font-medium mb-2">
+                  Téléphone
+                </label>
+                <PhoneInput
+                  defaultCountry="BJ"
+                  {...registerPhoneNumber("phoneNumber", {
+                    required: "Le numéro de téléphone est obligatoire",
+                  })}
+                />
+                {formStatePhoneNumber.errors.phoneNumber && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {formStatePhoneNumber.errors.phoneNumber.message}
+                  </p>
+                )}
+              </div>
 
-            <DialogFooter className="sm:justify-start items-center justify-center">
-              <button
-                type="button"
-                onClick={() => {
-                  setisModalOpen(false);
-                  setisOtpModalOpen(true);
-                }}
-                /* onClick={() => submitPassForm(phoneNum)} */
-                className="w-50 auth-btn flex flex-row items-center justify-center gap-x-2 w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] cursor-pointer focus:ring-offset-2 transition-all shadow-lg"
-              >
-                Valider
-                {/* {employeLoading ? <ClipLoader color="white" size={20} /> : null} */}
-              </button>
-              <button
-                type="button"
-                className="w-50 auth-btn border border-1 border-gray-600 text-black flex flex-row items-center justify-center gap-x-2 w-full mt-5 text-black py-3 px-4 rounded-lg font-semibold hover:bg-[#000] hover:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#000] focus:ring-offset-2 transition-all shadow-lg"
-                onClick={() => setisModalOpen(false)}
-              >
-                Fermer
-              </button>
-            </DialogFooter>
-          </div>
+              <DialogFooter className="sm:justify-start items-center justify-center">
+                <button
+                  type="submit"
+                  className="w-50 auth-btn flex flex-row items-center justify-center gap-x-2 w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] cursor-pointer focus:ring-offset-2 transition-all shadow-lg"
+                >
+                  Valider
+                  {/* {employeLoading ? <ClipLoader color="white" size={20} /> : null} */}
+                </button>
+                <button
+                  type="button"
+                  className="w-50 auth-btn border border-1 border-gray-600 text-black flex flex-row items-center justify-center gap-x-2 w-full mt-5 text-black py-3 px-4 rounded-lg font-semibold hover:bg-[#000] hover:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#000] focus:ring-offset-2 transition-all shadow-lg"
+                  onClick={() => setisModalOpen(false)}
+                >
+                  Fermer
+                </button>
+              </DialogFooter>
+            </div>
+          </form>
         </DialogContent>
       </Dialog>
 
@@ -151,47 +241,68 @@ const Login = () => {
               Veuillez saisir le code OTP envoyé sur le 67xxxxxx
             </DialogDescription>
           </DialogHeader>
-          <div className="w-full space-y-5">
-            <div className="w-full flex flex-row justify-center gap-x-5 ">
-              <input
-                type="text"
-                className="w-[60px] px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-              />
-              <input
-                type="text"
-                className="w-[60px] px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-              />
-              <input
-                type="text"
-                className="w-[60px] px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-              />
-              <input
-                type="text"
-                className="w-[60px] px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-              />
+          <form action="" onSubmit={handleSubmitOtp(submitOtpForm)}>
+            <div className="w-full space-y-5">
+              <div className="w-full flex flex-row justify-center gap-x-5 ">
+                <input
+                  type="text"
+                  name="otp1"
+                  {...registerOtp("otp1", {
+                    required: "Le numéro de téléphone est obligatoire",
+                  })}
+                  className="w-[60px] px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                />
+                <input
+                  type="text"
+                  name="otp2"
+                  {...registerOtp("otp2", {
+                    required: "Le numéro de téléphone est obligatoire",
+                  })}
+                  className="w-[60px] px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                />
+                <input
+                  type="text"
+                  name="otp3"
+                  {...registerOtp("otp3", {
+                    required: "Le numéro de téléphone est obligatoire",
+                  })}
+                  className="w-[60px] px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                />
+                <input
+                  type="text"
+                  name="otp4"
+                  {...registerOtp("otp4", {
+                    required: "Le numéro de téléphone est obligatoire",
+                  })}
+                  className="w-[60px] px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                />
+              </div>
+              <p className="text-red-500 text-lg">
+                {formStateOtp.errors.otp1 ||
+                formStateOtp.errors.otp2 ||
+                formStateOtp.errors.otp3 ||
+                formStateOtp.errors.otp4
+                  ? "Entrez le code otp"
+                  : ""}
+              </p>
+              <DialogFooter className="sm:justify-start items-center justify-center">
+                <button
+                  type="submit"
+                  className="w-50 auth-btn flex flex-row items-center justify-center gap-x-2 w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] cursor-pointer focus:ring-offset-2 transition-all shadow-lg"
+                >
+                  Valider
+                  {/* {employeLoading ? <ClipLoader color="white" size={20} /> : null} */}
+                </button>
+                <button
+                  type="button"
+                  className="w-50 auth-btn border border-1 border-gray-600 text-black flex flex-row items-center justify-center gap-x-2 w-full mt-5 text-black py-3 px-4 rounded-lg font-semibold hover:bg-[#000] hover:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#000] focus:ring-offset-2 transition-all shadow-lg"
+                  onClick={() => setisOtpModalOpen(false)}
+                >
+                  Fermer
+                </button>
+              </DialogFooter>
             </div>
-
-            <DialogFooter className="sm:justify-start items-center justify-center">
-              <button
-                type="submit"
-                onClick={() => {
-                  setisOtpModalOpen(false)
-                  setnewpassModal(true)
-                }}
-                className="w-50 auth-btn flex flex-row items-center justify-center gap-x-2 w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] cursor-pointer focus:ring-offset-2 transition-all shadow-lg"
-              >
-                Valider
-                {/* {employeLoading ? <ClipLoader color="white" size={20} /> : null} */}
-              </button>
-              <button
-                type="button"
-                className="w-50 auth-btn border border-1 border-gray-600 text-black flex flex-row items-center justify-center gap-x-2 w-full mt-5 text-black py-3 px-4 rounded-lg font-semibold hover:bg-[#000] hover:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#000] focus:ring-offset-2 transition-all shadow-lg"
-                onClick={() => setisOtpModalOpen(false)}
-              >
-                Fermer
-              </button>
-            </DialogFooter>
-          </div>
+          </form>
         </DialogContent>
       </Dialog>
 
@@ -203,41 +314,65 @@ const Login = () => {
               Veuillez saisir votre nouveau mot de passe
             </DialogDescription>
           </DialogHeader>
-          <div className="w-full space-y-5">
-            <div className=" ">
-              <label htmlFor="">Nouveau mot de passe</label>
-              <input
-                type="text"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-                placeholder="saisissez votre nouveau mot de passe"
-              />
+
+          <form action="" onSubmit={handleSubmitMdp(submitnewPasswForm)}>
+            <div className="w-full space-y-5">
+              <div className=" ">
+                <label htmlFor="">Nouveau mot de passe</label>
+                <input
+                  type="password"
+                  name="newPassword"
+                  {...registerMdp("newPassword", {
+                    required: "Veuillez confirmer le mot de passe",
+                  })}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                  placeholder="saisissez votre nouveau mot de passe"
+                />
+                {formStateMdp.errors.newPassword && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {formStateMdp.errors.newPassword.message}
+                  </p>
+                )}
+              </div>
+              <div className=" ">
+                <label htmlFor="">Confimer le mot de passe</label>
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  {...registerMdp("confirmPassword", {
+                    required: "Veuillez confirmer le mot de passe",
+                    validate: (value) =>
+                      value === watchMdp("newPassword") ||
+                      "Les mots de passe ne correspondent pas",
+                  })}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                  placeholder="confirmer le nouveau mot de passe"
+                />
+                {formStateMdp.errors.confirmPassword && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {formStateMdp.errors.confirmPassword.message}
+                  </p>
+                )}
+              </div>
+              <DialogFooter className="sm:justify-start items-center justify-center">
+                <button
+                  type="submit"
+                  /*  onClick={() => submitPassForm(phoneNum)} */
+                  className="w-50 auth-btn flex flex-row items-center justify-center gap-x-2 w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] cursor-pointer focus:ring-offset-2 transition-all shadow-lg"
+                >
+                  Valider
+                  {/* {employeLoading ? <ClipLoader color="white" size={20} /> : null} */}
+                </button>
+                <button
+                  type="button"
+                  className="w-50 auth-btn border border-1 border-gray-600 text-black flex flex-row items-center justify-center gap-x-2 w-full mt-5 text-black py-3 px-4 rounded-lg font-semibold hover:bg-[#000] hover:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#000] focus:ring-offset-2 transition-all shadow-lg"
+                  onClick={() => setnewpassModal(false)}
+                >
+                  Fermer
+                </button>
+              </DialogFooter>
             </div>
-            <div className=" ">
-              <label htmlFor="">Confimer le mot de passe</label>
-              <input
-                type="text"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-                placeholder="confirmer le nouveau mot de passe"
-              />
-            </div>
-            <DialogFooter className="sm:justify-start items-center justify-center">
-              <button
-                type="submit"
-                onClick={() => submitPassForm(phoneNum)}
-                className="w-50 auth-btn flex flex-row items-center justify-center gap-x-2 w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] cursor-pointer focus:ring-offset-2 transition-all shadow-lg"
-              >
-                Valider
-                {/* {employeLoading ? <ClipLoader color="white" size={20} /> : null} */}
-              </button>
-              <button
-                type="button"
-                className="w-50 auth-btn border border-1 border-gray-600 text-black flex flex-row items-center justify-center gap-x-2 w-full mt-5 text-black py-3 px-4 rounded-lg font-semibold hover:bg-[#000] hover:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#000] focus:ring-offset-2 transition-all shadow-lg"
-                onClick={() => setnewpassModal(false)}
-              >
-                Fermer
-              </button>
-            </DialogFooter>
-          </div>
+          </form>
         </DialogContent>
       </Dialog>
       <div className="content w-[55%] bg-white rounded-xl flex items-center justify-between p-5">

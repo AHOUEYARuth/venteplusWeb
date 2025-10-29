@@ -23,10 +23,26 @@ export const updateFcmTokenRequest = async (userData) => {
   });
 }
 
-export const forgotPasswordRequest = async (data) => {
+export const postPasswordRequest = async (data) => {
   return HttpClient.makeRequest({
     method: "POST",
     url: "auth/forgot-password",
+    payload: data,
+  });
+};
+
+export const postOtpRequest = async (data) => {
+  return HttpClient.makeRequest({
+    method: "POST",
+    url: "auth/verify-otp",
+    payload: data,
+  });
+};
+
+export const postNewPasswordRequest = async (data) => {
+  return HttpClient.makeRequest({
+    method: "POST",
+    url: "auth/reset-password",
     payload: data,
   });
 };
