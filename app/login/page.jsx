@@ -11,6 +11,7 @@ import { useForm } from "react-hook-form";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { useRouter } from "next/navigation";
 import { useLoginStore } from "./loginStore/loginStore";
+
 import {
   Dialog,
   DialogClose,
@@ -31,6 +32,7 @@ const Login = () => {
     setUser,
     setShop,
     forgotPasswordAction,
+    setFcmTokenActions
   } = useLoginStore();
   const router = useRouter();
   const { register, handleSubmit, watch, formState, trigger, reset } = useForm({
@@ -48,18 +50,19 @@ const Login = () => {
     setLoading(true);
     console.log(data);
     await loginActions(data)
-      .then((response) => {
+      .then(async (response) => {
         setLoading(false);
         console.log(response);
         if (response.data.shops) {
           setIsSelectedShop(true);
           setShops(response.data.shops);
         } else if (response.data.token) {
+          const token = localStorage.getItem("fcmToken");
           console.log("access-token");
           console.log(JSON.stringify(response.data.token));
-
           localStorage.setItem("access-token", response.data.token);
 
+          setFcmTokenActions({ fcmToken: token })
           setToken(response.data.token);
           setUser(response.data.user);
           setShop(response.data.shop);

@@ -2,7 +2,7 @@
 
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { forgotPasswordRequest, loginRequest } from "../loginRequest/loginRequest";
+import { forgotPasswordRequest, loginRequest, updateFcmTokenRequest } from "../loginRequest/loginRequest";
 
 type State = {
   user: any;
@@ -14,6 +14,7 @@ type State = {
 type LoginActions = {
   showLogin: (type: string) => string;
   loginActions: (userFormData: any) => Promise<any>;
+  setFcmTokenActions: (userFormData: any) => Promise<any>;
   setToken: (token: string) => void;
   setUser: (user: any) => void;
   setShop: (shop: any) => void;
@@ -39,7 +40,10 @@ export const useLoginStore = create<State & LoginActions>()(
         const response = await loginRequest(userFormData);
         return response;
       },
-
+      setFcmTokenActions: async (userFormData) => {
+        const response = await updateFcmTokenRequest(userFormData);
+        return response;
+      },
       logout: () => {
         set({ user: null, shop: null, token: null });
         localStorage.removeItem("access-token");

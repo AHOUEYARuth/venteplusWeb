@@ -1,6 +1,7 @@
 "use client";
 import { useEffect } from "react";
 import { messaging, getToken, onMessage } from "@/lib/firebase";
+import { toast } from "sonner";
 
 export default function NotificationHandler() {
   useEffect(() => {
@@ -14,6 +15,7 @@ export default function NotificationHandler() {
             vapidKey: "BFxZFQNy_OL-tMeeoCp_DcHv4BWIOBnNHDkkgDf7m9eyQkUbxfORyGzc44WD5PwjGvIVCNKVXb9eq-XSr4B93Cc",  
           });
           console.log("FCM Token:", currentToken);
+          localStorage.setItem("fcmToken",currentToken)
  
         } else {
           console.log("Permission refusée");
@@ -25,12 +27,16 @@ export default function NotificationHandler() {
 
     requestPermission();
     onMessage(messaging, (payload) => {
-    //   new Notification(payload.notification.title, {
-    //     body: payload.notification.body,
-    //     icon: "/icon.png",
-    //   });
+     
+      toast(`${payload.notification.title}`, {
+          description: `${payload.notification.body}`,
+          action: {
+            label: "Liste des commandes",
+            onClick: () => console.log("Undo"),
+          },
+        })
       console.log("Message reçu :", payload);
-      alert(`${payload.notification.title} - ${payload.notification.body}`);
+    //   alert(`${payload.notification.title} - ${payload.notification.body}`);
     });
   }, []);
 

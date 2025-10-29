@@ -15,6 +15,14 @@ export const loginRequest = async (userData) => {
   });
 }
 
+export const updateFcmTokenRequest = async (userData) => {
+  return HttpClient.makeRequest({
+    method: "POST",
+    url: "auth/update-fcm-token",
+    payload: userData,
+  });
+}
+
 export const forgotPasswordRequest = async (data) => {
   return HttpClient.makeRequest({
     method: "POST",

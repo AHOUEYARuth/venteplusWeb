@@ -4,6 +4,7 @@ import "./globals.css";
 import Footer from "@/components/layout/Footer";
 import NavBar from "@/components/layout/NavBar";
 import NotificationHandler from "@/components/NotificationHandler";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,10 +31,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        
         <NotificationHandler/>
         <NavBar></NavBar>
         {children}
         <Footer/>
+        <Toaster closeButton={true}/>
       </body>
     </html>
   );
