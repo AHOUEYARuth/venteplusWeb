@@ -7,9 +7,7 @@ import { ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useLoginStore } from "../login/loginStore/loginStore";
 import { ClipLoader, PuffLoader } from "react-spinners";
-
-
-
+ 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [loading, setLoading] = useState(true);
