@@ -334,7 +334,7 @@ export default function Selling() {
 
   async function applyDeliverSellingAction(shopId) {
     setLoadingOrder(true);
-    await deliverSellingAction(shopId, true)
+    await deliverSellingAction(shopId)
       .then((response) => {
         toast.success(response?.message);
         setisSaleDeliveredModal(false);
@@ -1090,9 +1090,9 @@ export default function Selling() {
                             />
                           ) : null}
                           {selling.isSale
-                            ? "Confirmé"
-                            : selling.status === "CONFIRMED"
-                            ? "Livré"
+                            ? "Confirmée"
+                            : selling.status === "DELIVERED"
+                            ? "Livrée"
                             : null}
                         </span>
                       </td>
@@ -1115,7 +1115,7 @@ export default function Selling() {
                                 className="text-lg"
                                 onClick={() => {
                                   setorderId(selling.id);
-                                  setisSaleDeliveredModal(true);
+                                  setisDeliveredModal(true);
                                 }}
                               >
                                 Livrer

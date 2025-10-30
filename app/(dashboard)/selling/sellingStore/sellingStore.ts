@@ -55,7 +55,7 @@ type SellingAction = {
   confirmOrderAction: (orderId: string) => Promise<void>;
   paidOrderAction: (orderId: string) => Promise<void>;
   deliverOrderAction: (orderId: string) => Promise<void>;
-  deliverSellingAction: (orderId: string, isSale: boolean) => Promise<void>;
+  deliverSellingAction: (orderId: string) => Promise<void>;
 };
 
 export const useSellingStore = create<State & SellingAction>((set) => ({
@@ -145,8 +145,8 @@ export const useSellingStore = create<State & SellingAction>((set) => ({
     const response = await deliverOrderRequest(orderId);
     return response;
   },
-  deliverSellingAction: async (orderId, isSale) => {
-    const response = await deliverSellingRequest(orderId, isSale);
+  deliverSellingAction: async (orderId) => {
+    const response = await deliverOrderRequest(orderId,);
     return response;
   },
 }));
