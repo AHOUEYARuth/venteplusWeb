@@ -277,7 +277,7 @@ export default function Selling() {
     await confirmOrderAction(shopId)
       .then((response) => {
         toast.success(response?.message);
-        setisModalOpen(false);
+        setisConfirmModal(false);
       })
       .catch((error) => {
         toast.error(
@@ -297,7 +297,7 @@ export default function Selling() {
     await paidOrderAction(shopId)
       .then((response) => {
         toast.success(response?.message);
-        setisModalOpen(false);
+        setisPaidModal(false);
       })
       .catch((error) => {
         toast.error(
@@ -317,7 +317,7 @@ export default function Selling() {
     await deliverOrderAction(shopId)
       .then((response) => {
         toast.success(response?.message);
-        setisModalOpen(false);
+        setisDeliveredModal(false);
       })
       .catch((error) => {
         toast.error(
@@ -337,7 +337,7 @@ export default function Selling() {
     await deliverSellingAction(shopId, true)
       .then((response) => {
         toast.success(response?.message);
-        setisModalOpen(false);
+        setisSaleDeliveredModal(false);
       })
       .catch((error) => {
         toast.error(
@@ -537,7 +537,10 @@ export default function Selling() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={isSaleDeliveredModal} onOpenChange={setisSaleDeliveredModal}>
+      <Dialog
+        open={isSaleDeliveredModal}
+        onOpenChange={setisSaleDeliveredModal}
+      >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-lg">
@@ -893,7 +896,8 @@ export default function Selling() {
                         <td className="px-5 py-5">
                           <span
                             className={`w-[110px] flex gap-x-2 items-center justify-center text-base  rounded-sm ${
-                              order.status === "DELIVERED"
+                              order.status === "DELIVERED" ||
+                              order.status === "CONFIRMED"
                                 ? "bg-green-50"
                                 : order.status === "PENDING"
                                 ? "bg-blue-50"
@@ -902,7 +906,8 @@ export default function Selling() {
                                 : "text-gray-600"
                             }`}
                           >
-                            {order.status === "DELIVERED" ? (
+                            {order.status === "DELIVERED" ||
+                            order.status === "CONFIRMED" ? (
                               <FaCheckCircle
                                 size={14}
                                 className="text-green-600"
@@ -921,6 +926,8 @@ export default function Selling() {
                               ? "Livrée"
                               : order.status == "CANCELLED"
                               ? "Annulée"
+                              : order.status == "CONFIRMED"
+                              ? "Confirmé"
                               : null}
                           </span>
                         </td>
@@ -944,7 +951,7 @@ export default function Selling() {
                                     className="text-lg"
                                     onClick={() => {
                                       setorderId(order.id);
-                                      setisConfirmModal(true)
+                                      setisConfirmModal(true);
                                     }}
                                   >
                                     Confirmer
@@ -953,7 +960,7 @@ export default function Selling() {
                                     className="text-lg"
                                     onClick={() => {
                                       setorderId(order.id);
-                                      setisPaidModal(true)
+                                      setisPaidModal(true);
                                     }}
                                   >
                                     Payer
@@ -962,7 +969,7 @@ export default function Selling() {
                                     className="text-lg"
                                     onClick={() => {
                                       setorderId(order.id);
-                                      setisDeliveredModal(true)
+                                      setisDeliveredModal(true);
                                     }}
                                   >
                                     Livrer
@@ -994,7 +1001,13 @@ export default function Selling() {
                               ) : null}
                               {order.status == "DELIVERED" ||
                               order.status == "CONFIRMED" ? (
-                                <DropdownMenuItem className="text-lg">
+                                <DropdownMenuItem
+                                  className="text-lg"
+                                  onClick={() => {
+                                    setorderId(order.id);
+                                    setisPaidModal(true);
+                                  }}
+                                >
                                   Payer
                                 </DropdownMenuItem>
                               ) : null}
@@ -1070,19 +1083,26 @@ export default function Selling() {
                             selling.isSale ? "bg-green-50" : "text-gray-600"
                           }`}
                         >
-                          {selling.isSale ? (
+                          {selling.isSale || selling.status === "CONFIRMED" ? (
                             <FaCheckCircle
                               size={14}
                               className="text-green-600"
                             />
                           ) : null}
-                          {selling.isSale ? "Confirmé" : null}
+                          {selling.isSale
+                            ? "Confirmé"
+                            : selling.status === "CONFIRMED"
+                            ? "Livré"
+                            : null}
                         </span>
                       </td>
                       <td className="pr-2">
                         {" "}
                         <DropdownMenu>
-                          <DropdownMenuTrigger onClick={()=> setorderId(selling.id)} className="border border-transparent focus:border focus:border-transparent active:border active:border-transparent">
+                          <DropdownMenuTrigger
+                            onClick={() => setorderId(selling.id)}
+                            className="border border-transparent focus:border focus:border-transparent active:border active:border-transparent"
+                          >
                             <MdOutlineMoreVert />
                           </DropdownMenuTrigger>
                           <DropdownMenuContent className="w-40 border border-transparent">
@@ -1091,10 +1111,13 @@ export default function Selling() {
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             {selling.isSale ? (
-                              <DropdownMenuItem className="text-lg" onClick={() => {
-                                setorderId(selling.id);
-                                setisSaleDeliveredModal(true)
-                              }}>
+                              <DropdownMenuItem
+                                className="text-lg"
+                                onClick={() => {
+                                  setorderId(selling.id);
+                                  setisSaleDeliveredModal(true);
+                                }}
+                              >
                                 Livrer
                               </DropdownMenuItem>
                             ) : null}

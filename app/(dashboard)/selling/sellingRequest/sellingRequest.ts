@@ -88,14 +88,14 @@ export const confirmOrderRequest = async (orderId) => {
 export const paidOrderRequest = async (orderId) => {
   return HttpClient.makeRequest({
     method: "PUT",
-    url: `orders/paid/${orderId}`,
+    url: `orders/pay/${orderId}`,
   });
 };
 
 export const deliverOrderRequest = async (orderId) => {
   return HttpClient.makeRequest({
     method: "PUT",
-    url: `orders/deliver/${orderId}`,
+    url: `orders/delivered/${orderId}`,
   });
 };
 

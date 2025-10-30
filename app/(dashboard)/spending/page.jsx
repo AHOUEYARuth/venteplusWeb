@@ -20,6 +20,7 @@ import { ClipLoader } from "react-spinners";
 import moment from "moment";
 import { DatePicker } from "@/components/ui/date-picker";
 import Product2 from "@/assets/images/emptyPro.png";
+import { Button } from "@/components/ui/button";
 
 export default function Spending() {
   const container = useRef(null);
@@ -149,6 +150,14 @@ export default function Spending() {
             pour mieux maîtriser votre rentabilité.
           </p>
         </div>
+        <Button
+          onClick={() => {
+            timeLineModal.current.play();
+          }}
+          className="bg-[#F39C12] cursor-pointer"
+        >
+          Nouvelle Dépense
+        </Button>
       </div>
       <div className="w-full flex flex-row flex-wrap items-center py-8 gap-x-10">
         <div className="w-90 bg-gradient-to-br from-[#F39C12]/70 to-[#F39C12] text-white rounded-xl p-5 shadow-md hover:shadow-xl flex flex-col justify-between cursor-pointer">

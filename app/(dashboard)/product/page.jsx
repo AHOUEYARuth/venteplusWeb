@@ -306,7 +306,6 @@ export default function Product() {
         <div className="flex items-center gap-x-5">
           <Button
             onClick={() => {
-              reset();
               timeLineModal.current.play();
             }}
             className="bg-[#F39C12] cursor-pointer"
