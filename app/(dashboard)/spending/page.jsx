@@ -21,12 +21,14 @@ import moment from "moment";
 import { DatePicker } from "@/components/ui/date-picker";
 import Product2 from "@/assets/images/emptyPro.png";
 import { Button } from "@/components/ui/button";
+import { useDashboardStore } from "../dashboard/dashboardStore/dashboardStore";
 
 export default function Spending() {
   const container = useRef(null);
   const timeLineModal = useRef();
   const [rangeDate, setRangeDate] = useState(null);
   const [expenseLoadind, setexpenseLoadind] = useState(false);
+  const { stats } = useDashboardStore()
   const {
     spendings,
     fetchData,
@@ -163,14 +165,14 @@ export default function Spending() {
       <div className="w-full flex flex-row flex-wrap items-center py-8 gap-x-10">
         <div className="w-90 bg-gradient-to-br from-[#F39C12]/70 to-[#F39C12] text-white rounded-xl p-5 shadow-md hover:shadow-xl flex flex-col justify-between cursor-pointer">
           <div className="flex justify-between items-start">
-            <h2 className="text-2xl font-bold">Montant dépensé (FCFA)</h2>
+            <h2 className="text-2xl font-bold">Dépenses du mois (FCFA)</h2>
             <div className="bg-white hover:bg-white/30 transition-colors rounded-full p-2">
               <FiArrowUpRight className="text-[#F39C12]" size={16} />
             </div>
           </div>
 
           <div className="mt-4">
-            <h2 className="text-4xl font-semibold">20 000</h2>
+            <h2 className="text-4xl font-semibold">{stats?.expenses?.totalMonthExpenses ?? 0}</h2>
           </div>
 
           <div className="flex items-center gap-2 mt-4">
@@ -191,7 +193,7 @@ export default function Spending() {
           </div>
 
           <div className="mt-4">
-            <h2 className="text-4xl font-semibold">26 000</h2>
+            <h2 className="text-4xl font-semibold">{stats?.expenses?.monthNetProfit ?? 0}</h2>
           </div>
 
           <div className="flex items-center gap-2 mt-4">
@@ -212,7 +214,7 @@ export default function Spending() {
           </div>
 
           <div className="mt-4">
-            <h2 className="text-4xl font-semibold">0</h2>
+            <h2 className="text-4xl font-semibold">{stats?.expenses?.spentingMonth ?? 0}</h2>
           </div>
 
           <div className="flex items-center gap-2 mt-4">

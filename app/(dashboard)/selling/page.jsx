@@ -671,7 +671,7 @@ export default function Selling() {
 
               <div className="mt-4">
                 <h2 className="text-4xl font-semibold">
-                  {orderStatistics?.monthlySales ?? 0}
+                  {orderStatistics?.salesCount ?? 0}
                 </h2>
               </div>
 

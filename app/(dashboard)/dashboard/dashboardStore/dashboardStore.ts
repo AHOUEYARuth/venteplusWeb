@@ -7,7 +7,7 @@ type State = {
   monthSelling:Array<any>;
   monthSaleTotal:any;
   monthSaleProfitTotal: any;
-  stats: Array<any>;
+  stats: any;
 };
 
 type Action = {
@@ -24,7 +24,7 @@ export const useDashboardStore = create<State & Action>((set) => ({
   monthSelling: [],
   monthSaleTotal: 0,
   monthSaleProfitTotal: 0,
-  stats: [],
+  stats: {},
   setTopProducts: (topProducts) => set({ topProducts }),
   setMonthSelling: (monthSelling) => set({ monthSelling }),
   setStats: (stats) => set({ stats }),

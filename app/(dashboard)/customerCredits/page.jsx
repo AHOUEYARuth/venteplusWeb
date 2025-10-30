@@ -30,6 +30,9 @@ import toast, { Toaster } from "react-hot-toast";
 import { DatePicker } from "@/components/ui/date-picker";
 import moment from "moment";
 import Product2 from "@/assets/images/emptyPro.png";
+import { useDashboardStore } from "../dashboard/dashboardStore/dashboardStore";
+import { FiArrowUpRight } from "react-icons/fi";
+import { IoMdArrowDropup } from "react-icons/io";
 export default function CustomerCredits() {
   const {
     customersCredits,
@@ -50,6 +53,7 @@ export default function CustomerCredits() {
   const [nameFilter, setnameFilter] = useState("");
   const [rangeDate, setRangeDate] = useState(null);
   const [listLoading, setlistLoading] = useState(false);
+  const { stats } = useDashboardStore()
 
   const {
     register,
@@ -221,7 +225,7 @@ export default function CustomerCredits() {
         </DialogContent>
       </Dialog>
 
-      <div className="w-full flex flex-row items-center justify-between">
+      <div className="w-full flex flex-row flex-wrap items-center py-8 gap-x-10">
         <div>
           <h2 className="text-2xl font-bold ">Dettes Clients</h2>
           <p className="text-gray-500 text-xl pt-3">
@@ -229,9 +233,55 @@ export default function CustomerCredits() {
             et relancez facilement les paiements en attente.
           </p>
         </div>
+
+        <div className="w-full flex flex-row flex-wrap items-center py-8 gap-x-10">
+                <div className="w-90 bg-gradient-to-br from-[#F39C12]/70 to-[#F39C12] text-white rounded-xl p-5 shadow-md hover:shadow-xl flex flex-col justify-between cursor-pointer">
+                  <div className="flex justify-between items-start">
+                    <h2 className="text-2xl font-bold">Crédits Impayé (FCFA)</h2>
+                    <div className="bg-white hover:bg-white/30 transition-colors rounded-full p-2">
+                      <FiArrowUpRight className="text-[#F39C12]" size={16} />
+                    </div>
+                  </div>
+        
+                  <div className="mt-4">
+                    <h2 className="text-4xl font-semibold">{stats?.customers?.totalCredits ?? 0}</h2>
+                  </div>
+        
+                  <div className="flex items-center gap-2 mt-4">
+                    <span className="flex items-center gap-1 border border-white/30 px-1 py-0.5 rounded-xl text-lg font-medium">
+                      3
+                      <IoMdArrowDropup size={30} />
+                    </span>
+                    <p className="text-sm text-white/80">Progression mensuelle</p>
+                  </div>
+                </div>
+        
+                <div className="w-90 bg-white text-black rounded-xl p-5 shadow-md hover:shadow-xl flex flex-col justify-between cursor-pointer">
+                  <div className="flex justify-between items-start">
+                    <h2 className="text-2xl font-bold">Crédit total payé(FCFA)</h2>
+                    <div className="bg-[#F39C12] hover:bg-white/30 transition-colors rounded-full p-2">
+                      <FiArrowUpRight className="text-white" size={16} />
+                    </div>
+                  </div>
+        
+                  <div className="mt-4">
+                    <h2 className="text-4xl font-semibold">{stats?.customers?.paidCredits ?? 0}</h2>
+                  </div>
+        
+                  <div className="flex items-center gap-2 mt-4">
+                    <span className="flex items-center gap-1 border border-[#F39C12] px-1 py-0.5 rounded-xl text-lg font-medium">
+                      3
+                      <IoMdArrowDropup size={30} />
+                    </span>
+                    <p className="text-sm text-[#F39C12]">Progression mensuelle</p>
+                  </div>
+                </div>
+        
+              
+              </div>
       </div>
       <div className="w-full flex flex-col gap-y-5">
-        <div className="w-full flex flex-row items-start justify-between mt-20">
+        <div className="w-full flex flex-row items-start justify-between mt-5">
           <h2 className="text-2xl font-semibold ">Listes des Dettes Clients</h2>
           <div className="w-[50%] flex flex-row items-center justify-center gap-x-4">
             <div className="w-[40%] relative flex items-center justify-between bg-white gap-x-2 rounded-lg">

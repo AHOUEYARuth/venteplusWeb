@@ -81,7 +81,20 @@ const Login = () => {
   const [resetMdpLoader, setresetMdpLoader] = useState(false);
   const [currentPhoneNumber, setcurrentPhoneNumber] = useState("");
   const [currentCode, setcurrentCode] = useState("");
+  const [otp, setOtp] = useState(['', '', '', '']);
 
+  const handleOtpChange = (value, index) => {
+    if (!/^\d*$/.test(value)) return;
+    
+    const newOtp = [...otp];
+    newOtp[index] = value;
+    setOtp(newOtp);
+    
+    if (value && index < 3) {
+      const nextInput = document.getElementById(`otp${index + 1}`);
+      if (nextInput) nextInput.focus();
+    }
+  };
   async function submitForm(data) {
     setLoading(true);
     console.log(data);
@@ -143,7 +156,7 @@ const Login = () => {
     triggerOtp().then(async (isValid) => {
       if (isValid) {
         const payload = {
-          code: data.otp1 + data.otp2 + data.otp3 + data.otp4,
+          code: data.otp0 + data.otp1 + data.otp2 + data.otp3,
           phoneNumber: currentPhoneNumber,
         };
         setcurrentCode(payload.code);
@@ -252,6 +265,26 @@ const Login = () => {
           <form action="" onSubmit={handleSubmitOtp(submitOtpForm)}>
             <div className="w-full space-y-5">
               <div className="w-full flex flex-row justify-center gap-x-5 ">
+
+
+                <div className="flex gap-5 justify-center">
+                  {otp.map((digit, index) => (
+                    <input
+                      key={index}
+                      id={`otp${index}`}
+                      type="text"
+                      maxLength={1}
+                      value={digit}
+                      {...registerOtp(`otp${index}`, {
+                        required: "Le numéro de téléphone est obligatoire",
+                      })}
+                      onChange={(e) => handleOtpChange(e.target.value, index)}
+                      className="w-[60px] px-4 py-3 text-lg border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
+                      autoFocus={index === 0}
+                    />
+                  ))}
+                </div>
+{/* 
                 <input
                   type="text"
                   name="otp1"
@@ -283,7 +316,11 @@ const Login = () => {
                     required: "Le numéro de téléphone est obligatoire",
                   })}
                   className="w-[60px] px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F39C12] focus:border-transparent outline-none transition-all"
-                />
+                /> */}
+
+
+
+
               </div>
               <p className="text-red-500 text-lg">
                 {formStateOtp.errors.otp1 ||
