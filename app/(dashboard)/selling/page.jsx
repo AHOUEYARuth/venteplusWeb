@@ -1077,25 +1077,44 @@ export default function Selling() {
                           selling.toOrders[0].product.purchasePrice) *
                           selling.toOrders[0].quantity}
                       </td>
-                      <td className="px-5 py-5">
-                        <span
-                          className={`w-[110px] flex gap-x-2 items-center justify-center text-base  rounded-sm ${
-                            selling.isSale ? "bg-green-50" : "text-gray-600"
-                          }`}
-                        >
-                          {selling.isSale || selling.status === "CONFIRMED" ? (
-                            <FaCheckCircle
-                              size={14}
-                              className="text-green-600"
-                            />
-                          ) : null}
-                          {selling.isSale
-                            ? "Confirmée"
-                            : selling.status === "DELIVERED"
-                            ? "Livrée"
-                            : null}
-                        </span>
-                      </td>
+                       <td className="px-5 py-5">
+                          <span
+                            className={`w-[110px] flex gap-x-2 items-center justify-center text-base  rounded-sm ${
+                              selling.status === "DELIVERED" ||
+                              selling.status === "CONFIRMED"
+                                ? "bg-green-50"
+                                : selling.status === "PENDING"
+                                ? "bg-blue-50"
+                                : selling.status === "CANCELLED"
+                                ? "bg-red-50"
+                                : "text-gray-600"
+                            }`}
+                          >
+                            {selling.status === "DELIVERED" ||
+                            selling.status === "CONFIRMED" ? (
+                              <FaCheckCircle
+                                size={14}
+                                className="text-green-600"
+                              />
+                            ) : selling.status === "PENDING" ? (
+                              <RiProgress2Fill
+                                size={15}
+                                className="text-blue-600"
+                              />
+                            ) : selling.status === "CANCELLED" ? (
+                              <MdClose size={15} className="text-red-600" />
+                            ) : null}
+                            {selling.status == "PENDING"
+                              ? "En attente"
+                              : selling.status == "DELIVERED"
+                              ? "Livrée"
+                              : selling.status == "CANCELLED"
+                              ? "Annulée"
+                              : selling.status == "CONFIRMED"
+                              ? "Confirmé"
+                              : null}
+                          </span>
+                        </td>
                       <td className="pr-2">
                         {" "}
                         <DropdownMenu>
