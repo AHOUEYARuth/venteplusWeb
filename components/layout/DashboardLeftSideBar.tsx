@@ -31,6 +31,7 @@ const DashboardLeftSideBar = () => {
   const pathname = usePathname();
   const [logoutLoading, setlogoutLoading] = useState(false);
   const [isModalOpen, setisModalOpen] = useState(false);
+  const { user } = useLoginStore()
   const { logout } = useLoginStore();
   const router = useRouter();
 
@@ -84,113 +85,136 @@ const DashboardLeftSideBar = () => {
           <div className="flex flex-col gap-y-8">
             <h2 className="text-xl font-bold">MENU</h2>
             <ul className="space-y-8">
-              <li className="text-lg text-[#2C3E50] font-medium">
-                <Link
-                  href="/dashboard"
-                  className={`flex flex-row items-center gap-x-3 hover:text-[#F39C12] transition-colors ${
-                    pathname === "/dashboard" ? "active" : ""
-                  }`}
-                >
-                  <FaTh className="flex-shrink-0 text-xl" />
-                  <span>Tableau de Bord</span>
-                </Link>
-              </li>
+              {user?.trader?.role != "DELIVERYMAN" ? (
+                <li className="text-lg text-[#2C3E50] font-medium">
+                  <Link
+                    href="/dashboard"
+                    className={`flex flex-row items-center gap-x-3 hover:text-[#F39C12] transition-colors ${
+                      pathname === "/dashboard" ? "active" : ""
+                    }`}
+                  >
+                    <FaTh className="flex-shrink-0 text-xl" />
+                    <span>Tableau de Bord</span>
+                  </Link>
+                </li>
+              ) : undefined}
 
-              <li className="text-lg text-[#2C3E50] font-medium">
-                <details className="group">
-                  <summary className="flex justify-between items-center cursor-pointer list-none hover:text-[#F39C12] transition-colors">
-                    <div className="flex items-center gap-x-3">
-                      <AiFillProduct className="text-xl flex-shrink-0" />
-                      <span>Produits et Stocks</span>
-                    </div>
-                    <FiChevronDown className="w-4 h-4 transform group-open:rotate-180 transition-transform duration-300 flex-shrink-0" />
-                  </summary>
-                  <ul className="mt-3 ml-7 space-y-3">
-                    <li className="text-lg text-[#2C3E50] font-medium">
-                      <Link
-                        href="/product"
-                        className={`flex items-center gap-x-3 hover:text-[#F39C12] transition-colors w-full ${
-                          pathname === "/product" ? "active" : ""
-                        }`}
-                      >
-                        <FiList className="w-5 h-5 flex-shrink-0" />
-                        Liste des Produits
-                      </Link>
-                    </li>
-                    <li className="text-lg text-[#2C3E50] font-medium">
-                      <Link
-                        href="/stock"
-                        className={`flex items-center gap-x-3 hover:text-[#F39C12] transition-colors w-full ${
-                          pathname === "/stock" ? "active" : ""
-                        }`}
-                      >
-                        <AiFillProduct className="w-5 h-5 flex-shrink-0" />
-                        Gestion des Stocks
-                      </Link>
-                    </li>
-                  </ul>
-                </details>
-              </li>
+              {user?.trader?.role == "TRADER" ||
+              user?.trader?.role == "MANAGER" ? (
+                <li className="text-lg text-[#2C3E50] font-medium">
+                  <details className="group">
+                    <summary className="flex justify-between items-center cursor-pointer list-none hover:text-[#F39C12] transition-colors">
+                      <div className="flex items-center gap-x-3">
+                        <AiFillProduct className="text-xl flex-shrink-0" />
+                        <span>Produits et Stocks</span>
+                      </div>
+                      <FiChevronDown className="w-4 h-4 transform group-open:rotate-180 transition-transform duration-300 flex-shrink-0" />
+                    </summary>
+                    <ul className="mt-3 ml-7 space-y-3">
+                      <li className="text-lg text-[#2C3E50] font-medium">
+                        <Link
+                          href="/product"
+                          className={`flex items-center gap-x-3 hover:text-[#F39C12] transition-colors w-full ${
+                            pathname === "/product" ? "active" : ""
+                          }`}
+                        >
+                          <FiList className="w-5 h-5 flex-shrink-0" />
+                          Liste des Produits
+                        </Link>
+                      </li>
+                      <li className="text-lg text-[#2C3E50] font-medium">
+                        <Link
+                          href="/stock"
+                          className={`flex items-center gap-x-3 hover:text-[#F39C12] transition-colors w-full ${
+                            pathname === "/stock" ? "active" : ""
+                          }`}
+                        >
+                          <AiFillProduct className="w-5 h-5 flex-shrink-0" />
+                          Gestion des Stocks
+                        </Link>
+                      </li>
+                    </ul>
+                  </details>
+                </li>
+              ) : undefined}
 
-              <li className="text-lg text-[#2C3E50] font-medium">
-                <Link
-                  href="/selling"
-                  className={`flex flex-row items-center gap-x-3 hover:text-[#F39C12] transition-colors ${
-                    pathname === "/selling" ? "active" : ""
-                  }`}
-                >
-                  <FaShoppingCart className="text-xl flex-shrink-0" />
-                  <span>Commandes et Ventes</span>
-                </Link>
-              </li>
+              {user?.trader?.role == "TRADER" ||
+              user?.trader?.role == "MANAGER" ||
+              user?.trader?.role == "DELIVERYMAN" ? (
+                <li className="text-lg text-[#2C3E50] font-medium">
+                  <Link
+                    href="/selling"
+                    className={`flex flex-row items-center gap-x-3 hover:text-[#F39C12] transition-colors ${
+                      pathname === "/selling" ? "active" : ""
+                    }`}
+                  >
+                    <FaShoppingCart className="text-xl flex-shrink-0" />
+                    <span>Commandes et Ventes</span>
+                  </Link>
+                </li>
+              ) : undefined}
 
-              <li className="text-lg text-[#2C3E50] font-medium">
-                <Link
-                  href="/spending"
-                  className={`flex flex-row items-center gap-x-3 hover:text-[#F39C12] transition-colors ${
-                    pathname === "/spending" ? "active" : ""
-                  }`}
-                >
-                  <FiDollarSign className="text-xl flex-shrink-0" />
-                  <span>Dépenses et Achats</span>
-                </Link>
-              </li>
+              {user?.trader?.role == "TRADER" ||
+              user?.trader?.role == "MANAGER" ||
+              user?.trader?.role == "CASHIER" ? (
+                <li className="text-lg text-[#2C3E50] font-medium">
+                  <Link
+                    href="/spending"
+                    className={`flex flex-row items-center gap-x-3 hover:text-[#F39C12] transition-colors ${
+                      pathname === "/spending" ? "active" : ""
+                    }`}
+                  >
+                    <FiDollarSign className="text-xl flex-shrink-0" />
+                    <span>Dépenses et Achats</span>
+                  </Link>
+                </li>
+              ) : undefined}
 
-              <li className="text-lg text-[#2C3E50] font-medium">
-                <Link
-                  href="/customerCredits"
-                  className={`flex flex-row items-center gap-x-3 hover:text-[#F39C12] transition-colors ${
-                    pathname === "/customerCredits" ? "active" : ""
-                  }`}
-                >
-                  <FaCreditCard className="text-xl flex-shrink-0" />
-                  <span>Crédits Clients</span>
-                </Link>
-              </li>
+              {user?.trader?.role != "DELIVERYMAN" ? (
+                <li className="text-lg text-[#2C3E50] font-medium">
+                  <Link
+                    href="/customerCredits"
+                    className={`flex flex-row items-center gap-x-3 hover:text-[#F39C12] transition-colors ${
+                      pathname === "/customerCredits" ? "active" : ""
+                    }`}
+                  >
+                    <FaCreditCard className="text-xl flex-shrink-0" />
+                    <span>Crédits Clients</span>
+                  </Link>
+                </li>
+              ) : undefined}
 
-              <li className="text-lg text-[#2C3E50] font-medium">
-                <Link
-                  href="/report"
-                  className={`flex flex-row items-center gap-x-3 hover:text-[#F39C12] transition-colors ${
-                    pathname === "/report" ? "active" : ""
-                  }`}
-                >
-                  <FaChartBar className="text-xl flex-shrink-0" />
-                  <span>Rapports & Statistiques</span>
-                </Link>
-              </li>
-              <li className="text-lg text-[#2C3E50] font-medium">
-                <Link
-                  href="/customer"
-                  className={`flex flex-row items-center gap-x-3 hover:text-[#F39C12] transition-colors ${
-                    pathname === "/customer" ? "active" : ""
-                  }`}
-                >
-                  <FaUser className="text-xl flex-shrink-0" />
-                  <span>Clients</span>
-                </Link>
-              </li>
-              <li className="text-lg text-[#2C3E50] font-medium">
+              {user?.trader?.role == "TRADER" ? (
+                <li className="text-lg text-[#2C3E50] font-medium">
+                  <Link
+                    href="/report"
+                    className={`flex flex-row items-center gap-x-3 hover:text-[#F39C12] transition-colors ${
+                      pathname === "/report" ? "active" : ""
+                    }`}
+                  >
+                    <FaChartBar className="text-xl flex-shrink-0" />
+                    <span>Rapports & Statistiques</span>
+                  </Link>
+                </li>
+              ) : undefined}
+
+              {user?.trader?.role == "TRADER" ||
+              user?.trader?.role == "MANAGER" ? (
+                <li className="text-lg text-[#2C3E50] font-medium">
+                  <Link
+                    href="/customer"
+                    className={`flex flex-row items-center gap-x-3 hover:text-[#F39C12] transition-colors ${
+                      pathname === "/customer" ? "active" : ""
+                    }`}
+                  >
+                    <FaUser className="text-xl flex-shrink-0" />
+                    <span>Clients</span>
+                  </Link>
+                </li>
+              ) : undefined}
+
+              {user?.trader?.role == "TRADER" ?
+                <li className="text-lg text-[#2C3E50] font-medium">
                 <Link
                   href="/employee"
                   className={`flex flex-row items-center gap-x-3 hover:text-[#F39C12] transition-colors ${
@@ -200,14 +224,18 @@ const DashboardLeftSideBar = () => {
                   <ImUsers className="text-xl flex-shrink-0" />
                   <span>Employées</span>
                 </Link>
-              </li>
+              </li> : undefined}
+              
             </ul>
           </div>
 
           <div className="flex flex-col gap-y-8">
             <h2 className="text-xl font-bold">GÉNÉRAL</h2>
             <ul className="space-y-8">
-              <li onClick={()=> setisModalOpen(true)} className="flex flex-row items-center gap-x-3 hover:text-[#F39C12] cursor-pointer text-lg text-[#2C3E50] font-medium">
+              <li
+                onClick={() => setisModalOpen(true)}
+                className="flex flex-row items-center gap-x-3 hover:text-[#F39C12] cursor-pointer text-lg text-[#2C3E50] font-medium"
+              >
                 <IoLogOut className="text-xl flex-shrink-0" />
                 <span>Logout</span>
                 {/* <Link

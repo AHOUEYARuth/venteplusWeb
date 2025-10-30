@@ -36,6 +36,7 @@ export default function Spending() {
     filterSpendingAction,
   } = spendingStore();
   const { shop } = useLoginStore();
+  const [listLoading, setlistLoading] = useState(false);
 
   const { register, handleSubmit, watch, formState, trigger, reset } = useForm({
     mode: "onChange",
@@ -43,12 +44,12 @@ export default function Spending() {
 
   async function applyGetExpenseAction(shopId) {
     setExpenses([]);
-    setexpenseLoadind(true);
+    setlistLoading(true);
     await getExpenseAction(shopId).then((response) => {
       console.log("data");
       console.log(response.data);
       setExpenses(response.data);
-      setexpenseLoadind(false);
+      setlistLoading(false);
     });
   }
 
@@ -244,7 +245,7 @@ export default function Spending() {
             </button>
           </div>
         </div>
-        {expenseLoadind ? (
+        {listLoading ? (
           <div className="w-full h-[500px] flex items-center justify-center">
             <ClipLoader color="#F39C12" size={50} />
           </div>

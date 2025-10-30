@@ -53,6 +53,7 @@ const Employee = () => {
   const [linkModalOPen, setLinkModalOPen] = useState(false);
   const [shopId, setshopId] = useState("");
   const [role, setrole] = useState("");
+  const [listLoading, setlistLoading] = useState(false);
 
   const [nameFilter, setnameFilter] = useState("");
   const [rangeDate, setRangeDate] = useState(null);
@@ -128,12 +129,12 @@ const Employee = () => {
 
   async function applyGetEmployeAction(shopId) {
     setEmployees([]);
-    setemployeLoading(true);
+    setlistLoading(true);
     await getEmployeeAction(shopId).then((response) => {
       console.log("data");
       console.log(response.data);
       setEmployees(response.data);
-      setemployeLoading(false);
+      setlistLoading(false);
     });
   }
 
@@ -366,7 +367,7 @@ const Employee = () => {
             </div>
           </div>
         </div>
-        {employeLoading ? (
+        {listLoading ? (
           <div className="w-full h-[500px] flex items-center justify-center">
             <ClipLoader color="#F39C12" size={50} />
           </div>

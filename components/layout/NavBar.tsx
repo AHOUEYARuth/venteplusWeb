@@ -61,7 +61,7 @@ const NavBar = () => {
                 Services
               </Link>
             </li>
-           {/*  <li>
+            {/*  <li>
               <Link
                 href="/shop"
                 className={pathname === "/shop" ? "nav_active" : "inactive"}
@@ -97,13 +97,23 @@ const NavBar = () => {
         </nav>
 
         <div className="flex items-center gap-3">
-          <Link
-            href="/login"
-            className="hidden lg:flex items-center gap-2 text-[#F39C12]"
-          >
-            <AiOutlineUser size={20} />
-            <span className="text-base lg:text-lg">Se connecter</span>
-          </Link>
+          {localStorage.getItem("access-token") ? (
+            <Link
+              href="/dashboard"
+              className="hidden lg:flex items-center gap-2 text-[#F39C12]"
+            >
+             {/*  <AiOutlineUser size={20} /> */}
+              <span className="text-base lg:text-lg mr-5">Dashboard</span>
+            </Link>
+          ) : (
+            <Link
+              href="/login"
+              className="hidden lg:flex items-center gap-2 text-[#F39C12]"
+            >
+              <AiOutlineUser size={20} />
+              <span className="text-base lg:text-lg">Se connecter</span>
+            </Link>
+          )}
 
           <button
             onClick={() => setOpen(!open)}

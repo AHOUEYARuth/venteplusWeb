@@ -46,3 +46,4 @@ export const postNewPasswordRequest = async (data) => {
     payload: data,
   });
 };
+

@@ -65,6 +65,7 @@ export default function Product() {
   const [productInfos, setproductInfos] = useState({});
   const [availableQuantity, setavailableQuantity] = useState("");
   const [additionalCosts, setadditionalCosts] = useState("");
+  const [listLoading, setlistLoading] = useState(false);
 
   const { register, handleSubmit, formState, reset } = useForm({
     mode: "onChange",
@@ -90,11 +91,11 @@ export default function Product() {
   }
   async function applyGetProductAction(shopId) {
     setProducts([]);
-    setproductLoading(true);
+    setlistLoading(true);
     await getProductsActions(shopId).then((response) => {
       setProducts(response.data);
       clearCategoryFilter();
-      setproductLoading(false);
+      setlistLoading(false);
     });
   }
   async function applyDeleteProdAction(productId) {
@@ -327,29 +328,29 @@ export default function Product() {
           </button>
         </div>
         {/* <div className="w-[50%] flex items-center gap-3"> */}
-          <div className="flex flex-row gap-x-5 items-center ">
-            <DatePicker onDateChange={(range) => setRangeDate(range)} />
-            <Select
-              value={categorieFilter || "all"}
-              onValueChange={setCategorieFilter}
-              disabled={filterLoading}
-            >
-              <SelectTrigger className="w-[200px] py-5 outline-none focus:outline-none border border-[#F39C12]">
-                <SelectValue placeholder="Catégorie">
-                  {filterLoading ? "Chargement..." : "Catégorie"}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Toutes les catégories</SelectItem>
-                {categories.map((category, index) => (
-                  <SelectItem key={index} value={category.id}>
-                    {category.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-       {/*  </div> */}
+        <div className="flex flex-row gap-x-5 items-center ">
+          <DatePicker onDateChange={(range) => setRangeDate(range)} />
+          <Select
+            value={categorieFilter || "all"}
+            onValueChange={setCategorieFilter}
+            disabled={filterLoading}
+          >
+            <SelectTrigger className="w-[200px] py-5 outline-none focus:outline-none border border-[#F39C12]">
+              <SelectValue placeholder="Catégorie">
+                {filterLoading ? "Chargement..." : "Catégorie"}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Toutes les catégories</SelectItem>
+              {categories.map((category, index) => (
+                <SelectItem key={index} value={category.id}>
+                  {category.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        {/*  </div> */}
       </div>
 
       <div className="py-8 mt-10">
@@ -363,7 +364,7 @@ export default function Product() {
             Effacer le filtre
           </Button>
         </div>
-        {productLoading ? (
+        {listLoading ? (
           <div className="w-full h-[500px] flex items-center justify-center">
             <ClipLoader color="#F39C12" size={50} />
           </div>

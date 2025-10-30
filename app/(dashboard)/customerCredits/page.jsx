@@ -49,6 +49,8 @@ export default function CustomerCredits() {
   const [isModalOpen, setisModalOpen] = useState(false);
   const [nameFilter, setnameFilter] = useState("");
   const [rangeDate, setRangeDate] = useState(null);
+  const [listLoading, setlistLoading] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -109,21 +111,21 @@ export default function CustomerCredits() {
 
   async function applyGetCustomersCreditAction(shopId) {
     setCustomersCredits([]);
-    setloadingRecovery(true);
+    setlistLoading(true);
     await getCustomersCreditsAction(shopId)
       .then((response) => {
         setCustomersCredits(response.data);
       })
       .catch((error) => {})
       .finally(() => {
-        setloadingRecovery(false);
+        setlistLoading(false);
       });
   }
   async function applyGetRecoveryCreditAction(customerCreditId) {
-    setloadingRecovery(true)
+    setloadingRecovery(true);
     await getRecoveryCreditAction(customerCreditId).then((response) => {
       setRecoveries(response.data);
-      setloadingRecovery(false)
+      setloadingRecovery(false);
     });
   }
   useEffect(() => {
@@ -259,7 +261,7 @@ export default function CustomerCredits() {
             </div>
           </div>
         </div>
-        {loadingRecovery ? (
+        {listLoading ? (
           <div className="w-full h-[500px] flex items-center justify-center">
             <ClipLoader color="#F39C12" size={50} />
           </div>

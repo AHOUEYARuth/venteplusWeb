@@ -53,20 +53,26 @@ export default function Stock() {
   const [categorieFilter, setCategorieFilter] = useState("");
   const [nameFilter, setnameFilter] = useState("");
   const [rangeDate, setRangeDate] = useState(null);
+  const [listLoading, setlistLoading] = useState(false);
 
   const { register, handleSubmit, watch, formState, trigger, reset } = useForm({
     mode: "onChange",
   });
   async function applyGetProductAction(shopId) {
     setProducts([]);
-    setloadingProduct(true)
-    await getProductsActions(shopId).then((response) => {
-      setProducts(response.data);
-    }).catch((error) => {
-      toast.error("Un problème est survenu lors de la récupération des stocks")
-    }).finally(() => {
-      setloadingProduct(false)
-    });
+    setlistLoading(true);
+    await getProductsActions(shopId)
+      .then((response) => {
+        setProducts(response.data);
+      })
+      .catch((error) => {
+        toast.error(
+          "Un problème est survenu lors de la récupération des stocks"
+        );
+      })
+      .finally(() => {
+        setlistLoading(false);
+      });
   }
   async function applyUpdateProductAction(productId, payload) {
     await editedProductAction(productId, payload)
@@ -329,7 +335,7 @@ export default function Stock() {
             </div>
           </div>
         </div>
-        {loadingProduct ? (
+        {listLoading ? (
           <div className="w-full h-[500px] flex items-center justify-center">
             <ClipLoader color="#F39C12" size={50} />
           </div>

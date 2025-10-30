@@ -7,27 +7,44 @@ import { ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useLoginStore } from "../login/loginStore/loginStore";
 import { ClipLoader, PuffLoader } from "react-spinners";
+import { useDashboardStore } from "./dashboard/dashboardStore/dashboardStore";
  
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [loading, setLoading] = useState(true);
   const { user } = useLoginStore();
   const router = useRouter();
+  const { stats, setStats, getStatsAction } = useDashboardStore();
+  const { shop } = useLoginStore();
+
+   async function applyGetStatsAction(shopId) {
+     setStats([]);
+     setLoading(true);
+     await getStatsAction(shopId).then((response) => {
+       console.log("data");
+        console.log(response.data);
+       setStats(response.data);
+       setLoading(false);
+     });
+   }
 
   useEffect(() => {
     (function init() {
       if (!localStorage.getItem("access-token")) {
-        router.push('/login')
+        router.push("/login");
       } else {
         if (loading) {
           setTimeout(() => {
             setLoading(false);
           }, 5000);
         }
+        if (shop?.id) {
+          applyGetStatsAction(shop?.id);
+        }
+        
       }
-      
     })();
-  }, [])
+  }, [shop]);
 
   const hidePaths = [
     "/selling",

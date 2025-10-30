@@ -41,37 +41,36 @@ const Login = () => {
     mode: "onChange",
   });
 
-    const {
-      register: registerPhoneNumber,
-      handleSubmit: handleSubmitPhoneNumber,
-      formState: formStatePhoneNumber,
-      reset:resetPhoneNumber,
-    } = useForm({
-      mode: "onChange",
-    });
-  
-   const {
-     register: registerOtp,
-     handleSubmit: handleSubmitOtp,
-     formState: formStateOtp,
-     reset: resetOtp,
-     trigger:triggerOtp
-   } = useForm({
-     mode: "onChange",
-   });
-  
-     const {
-       register: registerMdp,
-       handleSubmit: handleSubmitMdp,
-       formState: formStateMdp,
-       reset: resetMdp,
-       trigger: triggerMdp,
-       watch: watchMdp,
-     } = useForm({
-       mode: "onChange",
-     });
-  
-  
+  const {
+    register: registerPhoneNumber,
+    handleSubmit: handleSubmitPhoneNumber,
+    formState: formStatePhoneNumber,
+    reset: resetPhoneNumber,
+  } = useForm({
+    mode: "onChange",
+  });
+
+  const {
+    register: registerOtp,
+    handleSubmit: handleSubmitOtp,
+    formState: formStateOtp,
+    reset: resetOtp,
+    trigger: triggerOtp,
+  } = useForm({
+    mode: "onChange",
+  });
+
+  const {
+    register: registerMdp,
+    handleSubmit: handleSubmitMdp,
+    formState: formStateMdp,
+    reset: resetMdp,
+    trigger: triggerMdp,
+    watch: watchMdp,
+  } = useForm({
+    mode: "onChange",
+  });
+
   const [loading, setLoading] = useState(false);
   const [isSelectedShop, setIsSelectedShop] = useState(false);
   const [shops, setShops] = useState([]);
@@ -79,9 +78,9 @@ const Login = () => {
   const [phoneNum, setphoneNum] = useState("");
   const [isOtpModalOpen, setisOtpModalOpen] = useState(false);
   const [newpassModal, setnewpassModal] = useState(false);
-  const [resetMdpLoader, setresetMdpLoader] = useState(false)
-  const [currentPhoneNumber, setcurrentPhoneNumber] = useState("")
-  const [currentCode, setcurrentCode] = useState("")
+  const [resetMdpLoader, setresetMdpLoader] = useState(false);
+  const [currentPhoneNumber, setcurrentPhoneNumber] = useState("");
+  const [currentCode, setcurrentCode] = useState("");
 
   async function submitForm(data) {
     setLoading(true);
@@ -123,9 +122,9 @@ const Login = () => {
     setresetMdpLoader(true);
     await forgotPasswordAction(data)
       .then((response) => {
-        setcurrentPhoneNumber(data.phoneNumber)
-        setisModalOpen(false)
-        setisOtpModalOpen(true)
+        setcurrentPhoneNumber(data.phoneNumber);
+        setisModalOpen(false);
+        setisOtpModalOpen(true);
       })
       .catch((error) => {
         toast.error(
@@ -133,46 +132,51 @@ const Login = () => {
             ? error.message
             : "Un problème est survenu réessayez plus tard"
         );
-      }).finally(() => {
+      })
+      .finally(() => {
         setresetMdpLoader(false);
       });
   }
 
   async function submitOtpForm(data) {
+    setresetMdpLoader(true);
     triggerOtp().then(async (isValid) => {
       if (isValid) {
         const payload = {
           code: data.otp1 + data.otp2 + data.otp3 + data.otp4,
-          phoneNumber:currentPhoneNumber
-        }
-        setcurrentCode(payload.code)
-         await postOtpCodeAction(payload)
-           .then((response) => {
-             setisOtpModalOpen(false);
-             setnewpassModal(true);
-           })
-           .catch((error) => {
-             toast.error(
-               error.message
-                 ? error.message
-                 : "Un problème est survenu réessayez plus tard"
-             );
-           });
+          phoneNumber: currentPhoneNumber,
+        };
+        setcurrentCode(payload.code);
+        await postOtpCodeAction(payload)
+          .then((response) => {
+            setisOtpModalOpen(false);
+            setnewpassModal(true);
+          })
+          .catch((error) => {
+            toast.error(
+              error.message
+                ? error.message
+                : "Un problème est survenu réessayez plus tard"
+            );
+          })
+          .finally(() => {
+            setresetMdpLoader(false);
+          });
       }
     });
-   
   }
 
   async function submitnewPasswForm(data) {
+    setresetMdpLoader(true);
     const payload = {
       code: currentCode,
       phoneNumber: currentPhoneNumber,
-      ...data
+      ...data,
     };
     await postNewPasswordAction(payload)
       .then((response) => {
-       setnewpassModal(false)
-       toast.success(response.message ?? "Connectez vous")
+        setnewpassModal(false);
+        toast.success(response.message ?? "Connectez vous");
       })
       .catch((error) => {
         toast.error(
@@ -180,7 +184,8 @@ const Login = () => {
             ? error.message
             : "Un problème est survenu réessayez plus tard"
         );
-      });
+      })
+      .finally(() => setresetMdpLoader(false));
   }
 
   return (
@@ -219,7 +224,9 @@ const Login = () => {
                   className="w-50 auth-btn flex flex-row items-center justify-center gap-x-2 w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] cursor-pointer focus:ring-offset-2 transition-all shadow-lg"
                 >
                   Valider
-                  {/* {employeLoading ? <ClipLoader color="white" size={20} /> : null} */}
+                  {resetMdpLoader ? (
+                    <ClipLoader color="white" size={20} />
+                  ) : null}
                 </button>
                 <button
                   type="button"
@@ -292,7 +299,9 @@ const Login = () => {
                   className="w-50 auth-btn flex flex-row items-center justify-center gap-x-2 w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] cursor-pointer focus:ring-offset-2 transition-all shadow-lg"
                 >
                   Valider
-                  {/* {employeLoading ? <ClipLoader color="white" size={20} /> : null} */}
+                  {resetMdpLoader ? (
+                    <ClipLoader color="white" size={20} />
+                  ) : null}
                 </button>
                 <button
                   type="button"
@@ -362,7 +371,9 @@ const Login = () => {
                   className="w-50 auth-btn flex flex-row items-center justify-center gap-x-2 w-full mt-5 bg-[#F39C12] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#d5850c] focus:outline-none focus:ring-2 focus:ring-[#F39C12] cursor-pointer focus:ring-offset-2 transition-all shadow-lg"
                 >
                   Valider
-                  {/* {employeLoading ? <ClipLoader color="white" size={20} /> : null} */}
+                  {resetMdpLoader ? (
+                    <ClipLoader color="white" size={20} />
+                  ) : null}
                 </button>
                 <button
                   type="button"

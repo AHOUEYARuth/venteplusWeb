@@ -67,7 +67,7 @@ export default function Selling() {
   const { customers, setCustomers, getCustomersAction, customerAction } =
     customerStore();
   const { products, setProducts, getProductsActions } = useProductStore();
-  const { shop } = useLoginStore();
+  const { shop, user } = useLoginStore();
   const [loadingClient, setloadingClient] = useState(false);
   const [loadingOrder, setLoadingOrder] = useState(false);
   const container = useRef(null);
@@ -79,6 +79,7 @@ export default function Selling() {
   const [isPaidModal, setisPaidModal] = useState(false);
   const [isDeliveredModal, setisDeliveredModal] = useState(false);
   const [isSaleDeliveredModal, setisSaleDeliveredModal] = useState(false);
+  const [listLoading, setlistLoading] = useState(false);
 
   const [orderId, setorderId] = useState("");
 
@@ -200,27 +201,27 @@ export default function Selling() {
 
   async function applyGetOrdersAction(shopId) {
     setOrders([]);
-    setLoadingOrder(true);
+   setlistLoading(true);
     await getOrdersAndSellingsAction(shopId, false)
       .then((response) => {
         setOrders(response.data);
       })
       .catch((error) => {})
       .finally(() => {
-        setLoadingOrder(false);
+       setlistLoading(false);
       });
   }
 
   async function applyGetSellingsAction(shopId) {
     setSellings([]);
-    setLoadingOrder(true);
+    setlistLoading(true);
     await getOrdersAndSellingsAction(shopId, true)
       .then((response) => {
         setSellings(response.data);
       })
       .catch((error) => {})
       .finally(() => {
-        setLoadingOrder(false);
+        setlistLoading(false);
       });
   }
 
@@ -716,7 +717,7 @@ export default function Selling() {
 
               <div className="mt-4">
                 <h2 className="text-4xl font-semibold">
-                  {orderStatistics?.totalProfit ?? 0}
+                  {orderStatistics?.monthlySales ?? 0}
                 </h2>
               </div>
 
@@ -823,7 +824,7 @@ export default function Selling() {
             </div>
           </div>
         </div>
-        {loadingOrder ? (
+        {listLoading ? (
           <div className="w-full h-[500px] flex items-center justify-center">
             <ClipLoader color="#F39C12" size={50} />
           </div>
@@ -945,7 +946,21 @@ export default function Selling() {
                                 Actions
                               </DropdownMenuLabel>
                               <DropdownMenuSeparator />
-                              {order.status == "PENDING" ? (
+
+                              {order.status == "PENDING" &&
+                              user?.trader.role == "DELIVERYMAN" ? (
+                                <DropdownMenuItem
+                                  className="text-lg"
+                                  onClick={() => {
+                                    setorderId(order.id);
+                                    setisDeliveredModal(true);
+                                  }}
+                                >
+                                  Livrer
+                                </DropdownMenuItem>
+                              ) : undefined}
+                              {order.status == "PENDING" &&
+                              user?.trader.role != "DELIVERYMAN" ? (
                                 <div>
                                   <DropdownMenuItem
                                     className="text-lg"
@@ -965,6 +980,7 @@ export default function Selling() {
                                   >
                                     Payer
                                   </DropdownMenuItem>
+
                                   <DropdownMenuItem
                                     className="text-lg"
                                     onClick={() => {
@@ -976,8 +992,10 @@ export default function Selling() {
                                   </DropdownMenuItem>
                                 </div>
                               ) : null}
+
                               {order.status !== "CANCELLED" &&
-                              order.status == "PENDING" ? (
+                              order.status == "PENDING" &&
+                              user?.trader.role != "DELIVERYMAN" ? (
                                 <DropdownMenuItem
                                   className="text-lg"
                                   onClick={() => {
@@ -988,7 +1006,9 @@ export default function Selling() {
                                   Annuler
                                 </DropdownMenuItem>
                               ) : null}
-                              {order.status == "CANCELLED" ? (
+
+                              {order.status == "CANCELLED" &&
+                              user?.trader.role != "DELIVERYMAN" ? (
                                 <DropdownMenuItem
                                   className="text-lg"
                                   onClick={() => {
@@ -999,8 +1019,10 @@ export default function Selling() {
                                   Supprimer
                                 </DropdownMenuItem>
                               ) : null}
-                              {order.status == "DELIVERED" ||
-                              order.status == "CONFIRMED" ? (
+
+                              {(order.status == "DELIVERED" ||
+                                order.status == "CONFIRMED") &&
+                              user?.trader.role != "DELIVERYMAN" ? (
                                 <DropdownMenuItem
                                   className="text-lg"
                                   onClick={() => {
@@ -1077,44 +1099,44 @@ export default function Selling() {
                           selling.toOrders[0].product.purchasePrice) *
                           selling.toOrders[0].quantity}
                       </td>
-                       <td className="px-5 py-5">
-                          <span
-                            className={`w-[110px] flex gap-x-2 items-center justify-center text-base  rounded-sm ${
-                              selling.status === "DELIVERED" ||
-                              selling.status === "CONFIRMED"
-                                ? "bg-green-50"
-                                : selling.status === "PENDING"
-                                ? "bg-blue-50"
-                                : selling.status === "CANCELLED"
-                                ? "bg-red-50"
-                                : "text-gray-600"
-                            }`}
-                          >
-                            {selling.status === "DELIVERED" ||
-                            selling.status === "CONFIRMED" ? (
-                              <FaCheckCircle
-                                size={14}
-                                className="text-green-600"
-                              />
-                            ) : selling.status === "PENDING" ? (
-                              <RiProgress2Fill
-                                size={15}
-                                className="text-blue-600"
-                              />
-                            ) : selling.status === "CANCELLED" ? (
-                              <MdClose size={15} className="text-red-600" />
-                            ) : null}
-                            {selling.status == "PENDING"
-                              ? "En attente"
-                              : selling.status == "DELIVERED"
-                              ? "Livrée"
-                              : selling.status == "CANCELLED"
-                              ? "Annulée"
-                              : selling.status == "CONFIRMED"
-                              ? "Confirmé"
-                              : null}
-                          </span>
-                        </td>
+                      <td className="px-5 py-5">
+                        <span
+                          className={`w-[110px] flex gap-x-2 items-center justify-center text-base  rounded-sm ${
+                            selling.status === "DELIVERED" ||
+                            selling.status === "CONFIRMED"
+                              ? "bg-green-50"
+                              : selling.status === "PENDING"
+                              ? "bg-blue-50"
+                              : selling.status === "CANCELLED"
+                              ? "bg-red-50"
+                              : "text-gray-600"
+                          }`}
+                        >
+                          {selling.status === "DELIVERED" ||
+                          selling.status === "CONFIRMED" ? (
+                            <FaCheckCircle
+                              size={14}
+                              className="text-green-600"
+                            />
+                          ) : selling.status === "PENDING" ? (
+                            <RiProgress2Fill
+                              size={15}
+                              className="text-blue-600"
+                            />
+                          ) : selling.status === "CANCELLED" ? (
+                            <MdClose size={15} className="text-red-600" />
+                          ) : null}
+                          {selling.status == "PENDING"
+                            ? "En attente"
+                            : selling.status == "DELIVERED"
+                            ? "Livrée"
+                            : selling.status == "CANCELLED"
+                            ? "Annulée"
+                            : selling.status == "CONFIRMED"
+                            ? "Confirmé"
+                            : null}
+                        </span>
+                      </td>
                       <td className="pr-2">
                         {" "}
                         <DropdownMenu>

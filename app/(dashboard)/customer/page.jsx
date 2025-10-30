@@ -26,6 +26,7 @@ const Customer = () => {
   const [nameFilter, setnameFilter] = useState("");
   const [rangeDate, setRangeDate] = useState(null);
   const [loadingClient, setloadingClient] = useState(false);
+  const [listLoading, setlistLoading] = useState(false)
   const {
     customers,
     customerAction,
@@ -41,12 +42,12 @@ const Customer = () => {
 
   async function applyGetCustomersAction(shopId) {
     setCustomers([]);
-    setloadingClient(true);
+    setlistLoading(true);
     await getCustomersAction(shopId).then((response) => {
       console.log("data");
       console.log(response.data);
       setCustomers(response.data);
-      setloadingClient(false);
+      setlistLoading(false);
     });
   }
 
@@ -207,7 +208,7 @@ const Customer = () => {
             </div>
           </div>
         </div>
-        {loadingClient ? (
+        {listLoading ? (
           <div className="w-full h-[500px] flex items-center justify-center">
             <ClipLoader color="#F39C12" size={50} />
           </div>

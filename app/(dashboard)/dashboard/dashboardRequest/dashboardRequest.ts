@@ -14,3 +14,9 @@ export const getMonthSellingsRequest = async (shopId) => {
   });
 };
  
+export const getStatRequest = async (shopId) => {
+  return HttpClient.makeRequest({
+    method: "GET",
+    url: `stats/dashboard/${shopId}`,
+  });
+};
