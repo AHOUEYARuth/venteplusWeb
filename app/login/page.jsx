@@ -171,7 +171,8 @@ const Login = () => {
     };
     await postNewPasswordAction(payload)
       .then((response) => {
-        router.push("/login")
+       setnewpassModal(false)
+       toast.success(response.message ?? "Connectez vous")
       })
       .catch((error) => {
         toast.error(
