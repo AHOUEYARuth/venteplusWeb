@@ -7,11 +7,13 @@ import { Button } from "../ui/button";
 import { usePathname } from "next/navigation";
 import { AiOutlineUser, AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
 import { FiShoppingCart } from "react-icons/fi";
+import { useLoginStore } from "@/app/login/loginStore/loginStore";
 
 const NavBar = () => {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-
+  const [token, settoken] = useState("")
+  const {user} = useLoginStore()
 
   const hidePaths = [
     "/register",
@@ -33,6 +35,7 @@ const NavBar = () => {
     return null;
   }
 
+ 
   return (
     <header className="w-full bg-[#F9FAFB] fixed top-0 left-0 z-50  py-4">
       <div className="max-w-[80%] mx-auto flex items-center justify-between py-4">
@@ -97,7 +100,7 @@ const NavBar = () => {
         </nav>
 
         <div className="flex items-center gap-3">
-          {localStorage.getItem("access-token") ? (
+          {user != null  ? (
             <Link
               href="/dashboard"
               className="hidden lg:flex items-center gap-2 text-[#F39C12]"
